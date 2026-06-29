@@ -937,6 +937,15 @@ footer {
   to { transform: translate(-200px, -200px); }
 }
 
+.space-bg.travel-mode::after {
+  animation: starsTravel 15s linear infinite;
+}
+
+@keyframes starsTravel {
+  from { transform: translate(-200px, 0); }
+  to { transform: translate(0, 0); }
+}
+
 /* Specific nav/footer colors on space page */
 .space-header .nav-name,
 .space-header .nav-links a {
