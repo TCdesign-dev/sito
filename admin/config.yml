@@ -1,0 +1,108 @@
+# Decap CMS Configuration
+# Documentazione: https://decapcms.org/docs/
+
+backend:
+  name: github
+  repo: YOUR_GITHUB_USERNAME/YOUR_REPO_NAME   # <-- cambia con il tuo repo
+  branch: main
+
+# Dove vengono salvate le immagini caricate dall'editor
+media_folder: "projects/images"
+public_folder: "projects/images"
+
+collections:
+  - name: "projects"
+    label: "Projects"
+    label_singular: "Project"
+    folder: "projects"
+    extension: "json"
+    format: "json"
+    create: true
+    identifier_field: "id"
+    slug: "{{id}}"
+    summary: "{{name}} ({{year}})"
+
+    fields:
+      - label: "ID"
+        name: "id"
+        widget: "string"
+        hint: "Identificatore unico, es: compact-camera (solo lettere, numeri e trattini)"
+        pattern: ['^[a-z0-9-]+$', "Solo minuscole, numeri e trattini"]
+
+      - label: "Nome progetto"
+        name: "name"
+        widget: "string"
+
+      - label: "Anno"
+        name: "year"
+        widget: "number"
+        value_type: "int"
+        min: 2000
+        max: 2099
+
+      - label: "Immagine di anteprima"
+        name: "preview"
+        widget: "image"
+        media_folder: "projects/images"
+        public_folder: "projects/images"
+
+      - label: "Colore post-it"
+        name: "color"
+        widget: "select"
+        options:
+          - { label: "Giallo", value: "yellow" }
+          - { label: "Verde", value: "green" }
+          - { label: "Rosa", value: "pink" }
+          - { label: "Blu", value: "blue" }
+        default: "yellow"
+
+      - label: "Tag"
+        name: "tags"
+        widget: "list"
+        field:
+          label: "Tag"
+          name: "tag"
+          widget: "string"
+        hint: "Es: Design, Web, Figma"
+
+      - label: "Descrizione breve"
+        name: "description"
+        widget: "text"
+
+      - label: "Link esterno"
+        name: "link"
+        widget: "string"
+        required: false
+        hint: "Se vuoi che il progetto rimandi a un URL esterno (es: GitHub)"
+
+      - label: "Ha una pagina dedicata?"
+        name: "page"
+        widget: "boolean"
+        default: true
+        hint: "Se attivo, il progetto avrà una pagina dedicata con testo e immagini"
+
+      - label: "Contenuto pagina"
+        name: "content"
+        widget: "list"
+        required: false
+        hint: "Blocchi di testo e immagini per la pagina del progetto"
+        types:
+          - label: "Testo"
+            name: "text"
+            widget: "object"
+            fields:
+              - { label: "Testo", name: "value", widget: "text" }
+
+          - label: "Immagine"
+            name: "image"
+            widget: "object"
+            fields:
+              - label: "Immagine"
+                name: "src"
+                widget: "image"
+                media_folder: "projects/images"
+                public_folder: "projects/images"
+              - label: "Didascalia"
+                name: "caption"
+                widget: "string"
+                required: false

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Esplorazioni — Tommaso Costanza</title>
+  <meta name="description" content="Esplorazioni giornaliere e progetti brevi" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header class="page-wrap">
+    <nav>
+      <a href="index.html?skipIntro=true" class="nav-name">Tommaso Costanza</a>
+      <ul class="nav-links">
+        <li><a href="#" style="opacity: 0.6; cursor: default;">Contact me</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="page-wrap" style="padding-top: 4rem;">
+    <div class="content-narrow">
+      <h1 style="margin-bottom: 0.5rem;">Esplorazioni</h1>
+      <p style="color: var(--text-muted); margin-bottom: 3rem;">Progetti giornalieri e sperimentazioni veloci.</p>
+      
+      <div class="explorations-list" id="explorations-list">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+  </main>
+
+  <footer class="page-wrap">
+    <div class="footer-inner">
+      <span>© <span class="copyright-year"></span> v3.0.0</span>
+      <ul class="footer-links">
+        <li><a href="https://github.com" target="_blank" rel="noopener">GitHub</a></li>
+        <li><a href="https://x.com" target="_blank" rel="noopener">Twitter/X</a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <script src="main.js"></script>
+  <script>
+    loadExplorations('explorations-list');
+  </script>
+</body>
+</html>

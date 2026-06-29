@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tommaso Costanza</title>
+  <meta name="description" content="All projects by Tommaso Costanza — design, product, web development." />
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
+  <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com" />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+  <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
+  <link rel="preload" href="style.css" as="style" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="space-page">
+
+  <!-- Intro Screen -->
+  <div id="intro-screen">
+    <h1 class="intro-title">Tommaso Costanza</h1>
+  </div>
+
+  <!-- Star field background -->
+  <div class="space-bg" id="space-bg"></div>
+
+  <!-- Nav — transparent, floating over space -->
+  <header id="space-header" class="space-header page-wrap initially-hidden">
+    <nav>
+      <a href="index.html" class="nav-name nav--light">Tommaso Costanza</a>
+      <ul class="nav-links nav-links--light">
+        <li><a href="#" style="opacity: 0.6; cursor: default;">Contact me</a></li>
+      </ul>
+    </nav>
+    <div class="hero-bio-wrap">
+      <p class="hero-bio">
+        Passionate about design since the age of 14, each of my projects stems from the
+        balance between form and function, an essential principle for creating quality
+        products. As a student, I developed and continue to develop projects independently
+        as a self-taught designer, to constantly hone my skills and technical expertise.
+      </p>
+    </div>
+  </header>
+
+  <!-- Solar system instructions -->
+  <div id="solar-instructions" class="solar-instructions">
+    <p>Questo è il mio sistema solare, clicca i pianeti per esplorare i progetti delle varie categorie.</p>
+  </div>
+
+  <!-- Solar system -->
+  <main class="space-main">
+    
+    <!-- Controls (Hidden initially) -->
+    <button id="galaxy-back-btn" class="galaxy-back-btn" aria-label="Back to Galaxy">
+      Galaxy
+    </button>
+    
+    <div id="mobile-category-title" class="mobile-category-title"></div>
+
+    <div class="solar-system" id="solar-system">
+      <!-- ThreeJS renders here -->
+    </div>
+
+    <div id="mobile-planet-list" class="mobile-planet-list"></div>
+
+    <!-- Mobile Bottom Sheet Popup -->
+    <div id="mobile-moon-popup" class="mobile-moon-popup">
+      <button id="mobile-close-btn" class="mobile-close-btn" aria-label="Close">✕</button>
+      <div class="mobile-moon-popup-content">
+        <img id="mobile-moon-img" src="" alt="preview" />
+        <h3 id="mobile-moon-title"></h3>
+        <p id="mobile-moon-desc"></p>
+        <a href="#" id="mobile-explore-btn" class="mobile-explore-btn">Explore project</a>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="space-footer page-wrap">
+    <div class="footer-inner footer-inner--light">
+      <span>© <span class="copyright-year"></span></span>
+      <ul class="footer-links footer-links--light">
+        <li><a href="https://github.com" target="_blank" rel="noopener">GitHub</a></li>
+        <li><a href="https://x.com" target="_blank" rel="noopener">Twitter/X</a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <!-- Three.js & TWEEN for WebGL 3D -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+
+  <script src="main.js"></script>
+  <script>
+    loadSolarSystem('solar-system', 'space-bg', 'mobile-planet-list');
+  </script>
+</body>
+</html>

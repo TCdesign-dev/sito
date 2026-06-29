@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Project — Tommaso Costanza</title>
+  <meta name="description" content="Project detail page" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header class="page-wrap">
+    <nav>
+      <a href="index.html?skipIntro=true" class="nav-name">Tommaso Costanza</a>
+      <ul class="nav-links">
+        <li><a href="#" style="opacity: 0.6; cursor: default;">Contact me</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="page-wrap">
+    <div class="content-narrow">
+      <article class="project-detail" id="project-detail">
+        <!-- Populated by JS based on ?id= URL param -->
+      </article>
+    </div>
+  </main>
+
+  <footer class="page-wrap">
+    <div class="footer-inner">
+      <span>© <span class="copyright-year"></span> v3.0.0</span>
+      <ul class="footer-links">
+        <li><a href="https://github.com" target="_blank" rel="noopener">GitHub</a></li>
+        <li><a href="https://x.com" target="_blank" rel="noopener">Twitter/X</a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <script src="main.js"></script>
+  <script>
+    loadProjectDetail('project-detail');
+  </script>
+</body>
+</html>

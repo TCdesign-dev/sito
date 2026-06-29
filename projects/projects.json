@@ -1,0 +1,91 @@
+[
+  {
+    "id": "compact-security-camera",
+    "name": "Compact Security Camera",
+    "year": 2024,
+    "preview": "projects/images/camera-preview.webp",
+    "color": "yellow",
+    "tags": ["Design", "Figma", "Product"],
+    "description": "A personally made prototype of an extremely compact indoor security camera. Current solutions available on the market are often relatively bulky, despite the fact that there is no real need for space for electronics.",
+    "link": null,
+    "page": true,
+    "content": [
+      {
+        "type": "text",
+        "value": "This is a personally made prototype of an extremely compact indoor security camera. Current solutions available on the market are often relatively bulky, despite the fact that there is no real need for space for electronics. While analyzing a Xiaomi model, I noticed a waste of interior space."
+      },
+      {
+        "type": "image",
+        "src": "projects/images/camera-detail-1.webp",
+        "caption": "Initial concept sketch"
+      },
+      {
+        "type": "text",
+        "value": "I therefore decided to design a camera with more discreetly camouflaged shapes for the home environment."
+      },
+      {
+        "type": "image",
+        "src": "projects/images/camera-detail-2.webp",
+        "caption": "Final design render"
+      },
+      {
+        "type": "text",
+        "value": "Due to its size, it can be easily placed on shelves, bedside tables and furniture without being obtrusive. The design was created using Figma, without the aid of 3D modeling software."
+      }
+    ]
+  },
+  {
+    "id": "creative-minds-archive",
+    "name": "Creative Minds Archive",
+    "year": 2024,
+    "preview": "projects/images/cma-preview.webp",
+    "color": "green",
+    "tags": ["Web", "Development", "Archive"],
+    "description": "An archive and collection platform for creative minds, designers and developers sharing their ongoing work and inspiration.",
+    "link": "https://github.com",
+    "page": false,
+    "content": []
+  },
+  {
+    "id": "personal-website-v2",
+    "name": "Personal Website v2",
+    "year": 2024,
+    "preview": "projects/images/website-preview.webp",
+    "color": "blue",
+    "tags": ["Web", "Design", "CSS"],
+    "description": "The second iteration of my personal portfolio website, designed with extreme minimalism in mind. System fonts, justified text, and a focus on content over decoration.",
+    "link": null,
+    "page": true,
+    "content": [
+      {
+        "type": "text",
+        "value": "The second iteration of my personal portfolio. Designed with extreme minimalism — system fonts, justified text, almost no visual decoration. The constraint was to communicate everything through typography and layout alone."
+      },
+      {
+        "type": "text",
+        "value": "Built with plain HTML and CSS, deployed on GitHub Pages. No frameworks, no build tools."
+      }
+    ]
+  },
+  {
+    "id": "type-experiments",
+    "name": "Type Experiments",
+    "year": 2023,
+    "preview": "projects/images/type-preview.jpg",
+    "color": "pink",
+    "tags": ["Typography", "Design", "Exploration"],
+    "description": "A series of typographic experiments exploring the boundaries of legibility and visual rhythm through modular grid systems.",
+    "link": null,
+    "page": true,
+    "content": [
+      {
+        "type": "text",
+        "value": "A series of typographic experiments exploring the boundaries of legibility and visual rhythm. Each piece uses a strict modular grid as the underlying structure, with type as both content and texture."
+      },
+      {
+        "type": "text",
+        "value": "Tools used: Figma, Adobe Illustrator. Printed at A2 format for the physical exhibition."
+      }
+    ]
+  }
+]

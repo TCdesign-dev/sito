@@ -1,0 +1,1265 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap');
+
+/* ===========================
+   CSS RESET & BASE
+   =========================== */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  /* System font stack */
+  --font: ui-rounded, 'SF Pro Rounded', 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+
+  /* Base colors */
+  --bg: #f9f8f6;
+  --bg-secondary: #f3f1ee;
+  --text: #111;
+  --text-muted: #777;
+  --border: #e0ddd8;
+  --link: #111;
+  --link-hover: #555;
+  --accent: #111;
+
+  /* Post-it colors */
+  --postit-yellow: #fef08a;
+  --postit-green:  #bbf7d0;
+  --postit-pink:   #fecaca;
+  --postit-blue:   #bae6fd;
+
+  /* Spacing */
+  --max-width: 700px;
+  --page-pad: clamp(1.25rem, 5vw, 3rem);
+  --section-gap: 3rem;
+}
+
+
+html {
+  font-size: 15px;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  -webkit-font-smoothing: antialiased;
+}
+
+main { flex: 1; }
+
+a {
+  color: var(--link);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.15s ease;
+}
+a:hover { color: var(--link-hover); }
+
+img { max-width: 100%; display: block; }
+
+/* ===========================
+   INTRO SCREEN
+   =========================== */
+#intro-screen {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.8s;
+}
+
+.intro-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  opacity: 0;
+  animation: introReveal 2.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes introReveal {
+  0% { opacity: 0; transform: translateY(20px) scale(0.98); filter: blur(4px); }
+  25% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+  75% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+  100% { opacity: 0; transform: translateY(-20px) scale(1.02); filter: blur(4px); }
+}
+
+body.loaded #intro-screen {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* ===========================
+   LAYOUT WRAPPERS
+   =========================== */
+
+/* Shared outer padding — same on EVERY page */
+.page-wrap {
+  padding-left: var(--page-pad);
+  padding-right: var(--page-pad);
+  width: 100%;
+}
+
+/* Narrow column (home, project detail) */
+.content-narrow {
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+
+/* Wide column (projects grid) */
+.content-wide {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+/* ===========================
+   HEADER / NAV
+   =========================== */
+header {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+
+header .content-narrow,
+header .content-wide {
+  display: contents; /* nav fills directly */
+}
+
+nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+
+
+.nav-name {
+  font-size: 1rem;
+  font-weight: 500;
+  text-decoration: none;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+.nav-name:hover { color: var(--text-muted); }
+
+.nav-links {
+  display: flex;
+  gap: 1.5rem;
+  list-style: none;
+}
+.nav-links a {
+  text-decoration: none;
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  transition: color 0.15s;
+}
+.nav-links a:hover,
+.nav-links a.active { color: var(--text); }
+
+/* ===========================
+   FOOTER
+   =========================== */
+footer {
+  padding-top: 2.5rem;
+  padding-bottom: 2.5rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.footer-inner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+
+.footer-links {
+  display: flex;
+  gap: 1.5rem;
+  list-style: none;
+}
+.footer-links a {
+  text-decoration: none;
+  color: var(--text-muted);
+}
+.footer-links a:hover { color: var(--text); }
+
+/* Weather badge */
+
+/* ===========================
+   SCROLL REVEAL ANIMATIONS
+   =========================== */
+
+/* Base: elements start invisible */
+.reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.55s ease, transform 0.55s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Slide from right (project preview cards on home) */
+.reveal-right {
+  opacity: 0;
+  transform: translateX(28px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.reveal-right.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Stagger delays */
+.reveal-delay-1  { transition-delay: 0.08s; }
+.reveal-delay-2  { transition-delay: 0.16s; }
+.reveal-delay-3  { transition-delay: 0.24s; }
+
+/* ===========================
+   HOME PAGE
+   =========================== */
+.home-content {
+  padding-top: 0.5rem;
+  padding-bottom: var(--section-gap);
+}
+
+.home-bio {
+  font-size: 1rem;
+  line-height: 1.8;
+  text-align: justify;
+  hyphens: auto;
+  margin-bottom: var(--section-gap);
+  color: var(--text);
+}
+
+.home-section {
+  margin-bottom: var(--section-gap);
+}
+
+.home-section h2 {
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: 0.75rem;
+}
+
+.now-list {
+  list-style: disc;
+  padding-left: 1.25rem;
+  font-size: 0.95rem;
+  line-height: 1.9;
+}
+.now-list a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Latest projects on home — slide from right */
+.home-latest-projects {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+  margin-top: 1.25rem;
+}
+
+.home-project-card {
+  text-decoration: none;
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  transition: opacity 0.2s, transform 0.25s ease;
+}
+.home-project-card:hover {
+  opacity: 0.75;
+  transform: translateY(-2px);
+}
+
+.home-project-card img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  background: var(--border);
+  border-radius: 2px;
+}
+
+.home-project-card .card-name {
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+.home-project-card .card-year {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.home-all-link {
+  display: inline-block;
+  margin-top: 1rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.contact-section p {
+  font-size: 0.95rem;
+  line-height: 1.75;
+}
+
+/* ===========================
+   PROJECTS PAGE — POST-IT BOARD
+   =========================== */
+.projects-page-header {
+  padding: 0.75rem 0 2.5rem;
+  /* Same centering as home content */
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+
+.projects-page-header h1 {
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: 0.2rem;
+}
+
+.projects-count {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+/* Post-it grid — same left/right margin as home */
+.postit-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 2.5rem 1.75rem;
+  padding-bottom: 5rem;
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+
+/* ===========================
+   POST-IT CARD — Realistic
+   =========================== */
+.postit {
+  position: relative;
+  display: block;
+  text-decoration: none;
+  color: var(--text);
+  /* Rotation set via --r custom prop inline */
+  transform: rotate(var(--r, 0deg));
+  transform-origin: 50% 8%;   /* near top = where glue would be */
+  transition:
+    transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  will-change: transform;
+  cursor: pointer;
+}
+
+/*
+   SHADOW — simple elliptical blob below the card.
+   Sits only at the BOTTOM (where paper lifts from the wall).
+   Top stays shadow-free (adhesive strip is flat against surface).
+   No mask tricks — just a positioned ellipse, reliable across all browsers.
+*/
+.postit-shadow {
+  position: absolute;
+  /* Slightly below the bottom edge of the card */
+  bottom: -7px;
+  /* Narrower than the card so it reads as "floating" not "stuck" */
+  left: 6%;
+  right: 6%;
+  height: 20px;
+  background: rgba(0,0,0,0.22);
+  border-radius: 50%;
+  filter: blur(10px);
+  z-index: -1;
+  pointer-events: none;
+  transition: bottom 0.3s ease, opacity 0.3s ease, filter 0.3s ease, left 0.3s ease, right 0.3s ease;
+}
+
+/* Hover: card lifts, shadow moves further down and softens */
+.postit:hover {
+  transform: rotate(0deg) scale(1.05) translateY(-8px) !important;
+  z-index: 20;
+}
+.postit:hover .postit-shadow {
+  bottom: -14px;
+  left: 10%;
+  right: 10%;
+  opacity: 0.75;
+  filter: blur(16px);
+}
+
+/* Color variants */
+.postit--yellow .postit-paper { background: var(--postit-yellow); }
+.postit--green  .postit-paper { background: var(--postit-green); }
+.postit--pink   .postit-paper { background: var(--postit-pink); }
+.postit--blue   .postit-paper { background: var(--postit-blue); }
+
+/* Paper surface */
+.postit-paper {
+  position: relative;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+
+/*
+   Very subtle gradient overlay:
+   slightly darker at top (paper pressed flat against wall),
+   slightly lighter at bottom (bowing towards viewer).
+   Two-stop only — avoids any visible transparency-edge artifacts.
+*/
+.postit-paper::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.06) 0%,
+    rgba(255,255,255,0.12) 100%
+  );
+  pointer-events: none;
+  z-index: 1;
+  border-radius: inherit;
+}
+
+/* Content area */
+.postit-body {
+  padding: 0.7rem 0.8rem 1rem;
+}
+
+/* Post-it image */
+.postit-image {
+  width: 100%;
+  aspect-ratio: 4/3;
+  object-fit: cover;
+  border-radius: 1px;
+  margin-bottom: 0.65rem;
+  background: rgba(0,0,0,0.06);
+  display: block;
+}
+
+.postit-name {
+  font-size: 0.82rem;
+  font-weight: 600;
+  line-height: 1.3;
+  margin-bottom: 0.3rem;
+  letter-spacing: -0.01em;
+}
+
+.postit-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 0.4rem;
+}
+
+.postit-year {
+  font-size: 0.72rem;
+  opacity: 0.55;
+  flex-shrink: 0;
+}
+
+.postit-tags {
+  display: flex;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.postit-tag {
+  font-size: 0.62rem;
+  opacity: 0.5;
+  background: rgba(0,0,0,0.08);
+  padding: 0.08rem 0.35rem;
+  border-radius: 100px;
+}
+
+.postit-external-icon {
+  position: absolute;
+  top: 1.4rem;
+  right: 0.6rem;
+  font-size: 0.65rem;
+  opacity: 0.35;
+}
+
+/* ===========================
+   CURL EFFECT (--curled variant)
+
+   The curl is rendered by .postit-curl which sits OUTSIDE .postit-paper
+   (not subject to overflow:hidden). It creates a right-triangle in the
+   bottom-right corner that shows the page background, making it look like
+   the corner is physically peeled away from the wall.
+
+   The ::after on .postit-paper draws the shadow cast by the lifted flap
+   onto the paper surface below it.
+   =========================== */
+
+/* Flat bottom-right corner for curled variant (no border-radius there) */
+.postit--curled .postit-paper {
+  border-radius: 2px 2px 0 2px;
+}
+
+/*
+   Shadow on paper from the lifted flap.
+   Goes from dark (at corner) to transparent (spreading into paper).
+   Uses ::after on the paper so it's clipped by overflow:hidden (correct).
+*/
+.postit--curled .postit-paper::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 50px;
+  height: 50px;
+  /*
+    135deg goes top-left → bottom-right.
+    Bottom-right triangle = dark (shadow under curl).
+    Top-left triangle = transparent.
+  */
+  background: linear-gradient(
+    135deg,
+    transparent  50%,
+    rgba(0,0,0,0.16) 50%,
+    rgba(0,0,0,0.04) 75%,
+    transparent  90%
+  );
+  pointer-events: none;
+  z-index: 2;
+}
+
+/*
+   The "lifted flap" curl triangle.
+   Sits OUTSIDE .postit-paper (no overflow clipping).
+   Shows page background in bottom-right triangle.
+
+   drop-shadow casts a shadow from the flap onto the paper:
+   direction: upper-left (−x, −y) = shadow falls toward top-left of curl.
+*/
+.postit-curl {
+  display: none;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 50px;
+  height: 50px;
+  z-index: 5;
+  pointer-events: none;
+}
+.postit--curled .postit-curl { display: block; }
+
+.postit-curl::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  /*
+    135deg: top-left half = transparent (paper shows through),
+            bottom-right half = page background (the "revealed" curl).
+  */
+  background: linear-gradient(
+    135deg,
+    transparent 50%,
+    var(--bg)   50%
+  );
+  filter: drop-shadow(-2px -2px 5px rgba(0,0,0,0.28));
+}
+
+/* Post-it scroll reveal */
+.postit {
+  opacity: 0;
+  transform: rotate(var(--r, 0deg)) translateY(12px) scale(0.97);
+  transition:
+    opacity 0.45s ease,
+    transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.postit.visible {
+  opacity: 1;
+  transform: rotate(var(--r, 0deg)) translateY(0) scale(1);
+}
+.postit:hover {
+  opacity: 1;
+  transform: rotate(0deg) scale(1.05) translateY(-8px) !important;
+}
+
+/* ===========================
+   EXPLORATIONS (esplorazioni.html)
+   =========================== */
+.explorations-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+  padding-bottom: 4rem;
+}
+
+.exploration-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  overflow: hidden;
+  text-decoration: none;
+  color: var(--text);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s;
+  display: flex;
+  flex-direction: column;
+}
+
+.exploration-card:hover {
+  transform: translateY(-5px);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.exploration-img {
+  width: 100%;
+  aspect-ratio: 16/10;
+  object-fit: cover;
+  background: #111;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.exploration-content {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.exploration-title {
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+.exploration-desc {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+  margin: 0;
+}
+
+.exploration-date {
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.4);
+  margin-top: 0.5rem;
+}
+
+
+/* ===========================
+   PROJECT DETAIL PAGE
+   =========================== */
+.project-detail {
+  padding-top: 1rem;
+  padding-bottom: 4rem;
+}
+
+.project-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  text-decoration: none;
+  margin-bottom: 2.5rem;
+  transition: color 0.15s;
+}
+.project-back:hover { color: var(--text); }
+.project-back::before { content: '←'; }
+
+.project-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin-bottom: 0.5rem;
+}
+
+.project-header-meta {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 2.5rem;
+  flex-wrap: wrap;
+}
+
+.project-year-badge {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.project-tag-list {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  list-style: none;
+}
+.project-tag-list li {
+  font-size: 0.75rem;
+  background: var(--border);
+  border-radius: 100px;
+  padding: 0.2rem 0.65rem;
+  color: var(--text-muted);
+}
+
+.project-link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  padding: 0.4rem 0.9rem;
+  background: var(--text);
+  color: #fff;
+  border-radius: 100px;
+  text-decoration: none;
+  margin-left: auto;
+  transition: background 0.15s;
+}
+.project-link-btn:hover { background: #333; color: #fff; }
+
+.project-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+.content-text {
+  font-size: 0.975rem;
+  line-height: 1.8;
+  text-align: justify;
+  hyphens: auto;
+}
+
+.content-image {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.content-image img {
+  width: 100%;
+  background: var(--border);
+  border-radius: 3px;
+  max-height: 480px;
+  object-fit: cover;
+}
+.content-image figcaption {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* ===========================
+   RESPONSIVE
+   =========================== */
+@media (max-width: 768px) {
+  :root {
+    --page-pad: 1.25rem;
+    --section-gap: 2.25rem;
+  }
+  .home-latest-projects {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .postit-grid {
+    grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+    gap: 2rem 1.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  :root { --page-pad: 1rem; }
+
+  .home-latest-projects {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+  .postit-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.75rem 1rem;
+  }
+  .project-title { font-size: 1.25rem; }
+  .project-header-meta {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .project-link-btn { margin-left: 0; }
+  .footer-inner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* ===========================
+   UTILITY
+   =========================== */
+.visually-hidden {
+  position: absolute;
+  width: 1px; height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ===========================
+   SPACE THEME (Projects Page)
+   =========================== */
+.space-page {
+  background: #050505;
+  color: #fff;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.space-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background: radial-gradient(circle at center, #111 0%, #000 100%);
+  pointer-events: none;
+}
+
+.space-bg::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; width: 200vw; height: 200vh;
+  background-image: 
+    radial-gradient(1.5px 1.5px at 20px 30px, #fff, rgba(0,0,0,0)),
+    radial-gradient(1.5px 1.5px at 40px 70px, #fff, rgba(0,0,0,0)),
+    radial-gradient(2px 2px at 90px 40px, #fff, rgba(0,0,0,0)),
+    radial-gradient(2.5px 2.5px at 160px 120px, rgba(255,255,255,0.8), rgba(0,0,0,0));
+  background-repeat: repeat;
+  background-size: 200px 200px;
+  animation: starsMove 150s linear infinite;
+  opacity: 0.6;
+}
+
+@keyframes starsMove {
+  from { transform: translate(0, 0); }
+  to { transform: translate(-200px, -200px); }
+}
+
+/* Specific nav/footer colors on space page */
+.space-header .nav-name,
+.space-header .nav-links a {
+  color: #ccc;
+}
+.space-header .nav-name:hover,
+.space-header .nav-links a:hover,
+.space-header .nav-links a.active {
+  color: #fff;
+}
+.space-footer, .space-footer a {
+  color: #888;
+  border-color: rgba(255,255,255,0.1);
+}
+.space-footer a:hover {
+  color: #ccc;
+}
+
+.space-main {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  height: calc(100svh - 160px);
+  min-height: calc(100svh - 160px);
+  padding: 2rem 0;
+  overflow: hidden;
+}
+
+/* Back button */
+.galaxy-back-btn {
+  position: absolute;
+  bottom: 3rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.2);
+  padding: 0.6rem 1.4rem;
+  border-radius: 100px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  cursor: pointer;
+  backdrop-filter: blur(5px);
+  transition: all 0.2s;
+  z-index: 100;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.galaxy-back-btn.visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
+}
+
+.galaxy-back-btn:hover {
+  background: rgba(255,255,255,0.2);
+  transform: translateX(-50%) scale(1.05);
+}
+
+.space-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 100;
+  padding-top: 2rem;
+}
+
+.space-header.initially-hidden nav,
+.space-header.initially-hidden .hero-bio-wrap {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-20px);
+}
+.space-header.reveal-header nav,
+.space-header.reveal-header .hero-bio-wrap {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+.space-header.reveal-header nav {
+  transition: opacity 1.2s ease, transform 1.2s ease;
+}
+.space-header.reveal-header .hero-bio-wrap {
+  transition: opacity 1.2s ease 0.6s, transform 1.2s ease 0.6s;
+}
+
+.hero-bio-wrap {
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+
+.hero-bio {
+  max-width: 500px;
+  color: #ffffff;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin-top: 2rem;
+  opacity: 0;
+  animation: heroBioReveal 1s ease 2.2s forwards;
+}
+
+@keyframes heroBioReveal {
+  0% { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.solar-system {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transition: opacity 0.5s ease;
+}
+
+/* Transition states */
+.solar-system.fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Solar Instructions */
+.solar-instructions {
+  position: absolute;
+  bottom: 12%;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #fff;
+  z-index: 1000;
+  text-align: center;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+.solar-instructions p {
+  font-size: 1.25rem;
+  max-width: 400px;
+  line-height: 1.5;
+  margin: 0;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+}
+.solar-instructions.visible {
+  opacity: 1;
+}
+
+/* WebGL 3D Container */
+#webgl-canvas {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  outline: none;
+}
+
+/* HTML Overlay for labels */
+#labels-container {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.webgl-label {
+  position: absolute;
+  top: 0; left: 0;
+  transform: translate(-50%, -50%);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+  pointer-events: auto;
+  cursor: pointer;
+  background: rgba(0,0,0,0.4);
+  padding: 0.3rem 0.6rem;
+  border-radius: 20px;
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255,255,255,0.15);
+  transition: transform 0.2s, background 0.2s;
+  white-space: nowrap;
+  display: none; /* hidden by default until positioned */
+}
+
+.webgl-label.visible {
+  display: block;
+}
+
+.webgl-label:hover {
+  transform: translate(-50%, -50%) scale(1.1);
+  background: rgba(0,0,0,0.7);
+}
+
+.webgl-label--moon {
+  font-size: 0.75rem;
+  background: rgba(0,0,0,0.6);
+  padding: 0.2rem 0.5rem;
+}
+
+
+
+/* Moon Popup */
+.moon-popup {
+  position: absolute;
+  background: #F2F1EF;
+  border-radius: 20px;
+  padding: 9px;
+  width: 280px;
+  pointer-events: none; 
+  transform: translate(-50%, -100%) translateY(10px); 
+  opacity: 0;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 100;
+  box-shadow: 0 12px 36px rgba(0,0,0,0.12);
+  color: #111;
+  left: -9999px; /* hidden out of screen */
+}
+
+.moon-popup.visible {
+  opacity: 1;
+  transform: translate(-50%, -100%) translateY(-20px);
+}
+
+.moon-popup img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  background: #fff;
+}
+
+.moon-popup-content {
+  padding: 0 4px 6px 4px;
+}
+
+.moon-popup-content h3 {
+  font-size: 1.25rem;
+  font-weight: 500;
+  margin: 0 0 4px 0;
+  color: #111;
+  letter-spacing: -0.01em;
+}
+
+.moon-popup-content p {
+  font-size: 0.95rem;
+  color: #616161;
+  margin: 0;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Mobile Category Title */
+.mobile-category-title {
+  position: absolute;
+  top: 6rem;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #fff;
+  font-size: 1.8rem;
+  font-weight: 500;
+  z-index: 99;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+.mobile-category-title.visible {
+  opacity: 1;
+}
+
+/* Mobile Bottom Sheet */
+.mobile-moon-popup {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: #F2F1EF;
+  border-radius: 24px 24px 0 0;
+  padding: 1.5rem;
+  z-index: 1000;
+  transform: translateY(100%);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 -10px 40px rgba(0,0,0,0.3);
+  color: #111;
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  pointer-events: none;
+}
+.mobile-moon-popup.visible {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+.mobile-close-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0,0,0,0.1);
+  color: #000;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.mobile-moon-popup-content {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+#mobile-moon-img {
+  width: 100%;
+  height: 240px;
+  object-fit: cover;
+  border-radius: 12px;
+  background: #fff;
+  margin-bottom: 1rem;
+}
+#mobile-moon-title {
+  font-size: 1.5rem;
+  font-weight: 500;
+  margin: 0 0 0.5rem 0;
+}
+#mobile-moon-desc {
+  font-size: 0.95rem;
+  color: #616161;
+  margin: 0 0 1.5rem 0;
+  line-height: 1.5;
+}
+.mobile-explore-btn {
+  background: #111;
+  color: #fff;
+  text-align: center;
+  padding: 1rem;
+  border-radius: 100px;
+  text-decoration: none;
+  font-weight: 500;
+  display: block;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .space-main {
+    height: 100svh;
+    min-height: 100svh;
+    padding: 0;
+  }
+  .solar-system {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  /* Hide desktop hover popup on mobile */
+  .moon-popup {
+    display: none !important;
+  }
+  /* Hide 2D card list — keep only 3D interaction */
+  #mobile-planet-list {
+    display: none !important;
+  }
+  /* Adjust header for mobile overlay */
+  .space-header {
+    padding-top: 1rem;
+  }
+  .space-header nav {
+    padding: 0 1rem;
+  }
+  .hero-bio-wrap {
+    padding: 0 1rem;
+  }
+  /* Galaxy back button higher on mobile */
+  .galaxy-back-btn {
+    bottom: 5rem;
+  }
+  /* Footer hidden on mobile */
+  .space-footer {
+    display: none;
+  }
+  /* Add © to nav name on mobile */
+  .nav-name.nav--light::before {
+    content: '© ';
+  }
+  /* Labels slightly smaller on mobile */
+  .webgl-label {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+  }
+  .webgl-label--moon {
+    font-size: 0.65rem;
+    padding: 0.2rem 0.4rem;
+  }
+}
+@media (min-width: 769px) {
+  #mobile-planet-list {
+    display: none;
+  }
+}
+
