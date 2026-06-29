@@ -565,7 +565,10 @@ function initThreeJS(container, backBtn) {
       
       const popup = document.getElementById('mobile-moon-popup');
       const catTitle = document.getElementById('mobile-category-title');
-      if (popup) popup.classList.remove('visible');
+      if (popup) {
+        popup.classList.remove('visible');
+        popup.setAttribute('aria-hidden', 'true');
+      }
       if (catTitle) catTitle.classList.remove('visible');
       
       window.hoveredMoon = null; // Unfreeze orbit
@@ -599,6 +602,8 @@ function initThreeJS(container, backBtn) {
         .to({ x: 0, y: 0, z: 0 }, 800)
         .easing(TWEEN.Easing.Cubic.Out)
         .start();
+        
+      updateScreenReaderA11y();
     });
   }
 
@@ -636,7 +641,10 @@ function initThreeJS(container, backBtn) {
   canvas.addEventListener('mousemove', (e) => {
     if (isMobile) {
       const popup = document.getElementById('moon-popup');
-      if (popup) popup.classList.remove('visible');
+      if (popup) {
+        popup.classList.remove('visible');
+        popup.setAttribute('aria-hidden', 'true');
+      }
       return;
     }
     const rect = renderer.domElement.getBoundingClientRect();
@@ -699,6 +707,8 @@ function handleObjectClick(obj) {
     const bioWrap = document.querySelector('.hero-bio-wrap');
     if (bioWrap) bioWrap.style.display = 'none';
 
+    updateScreenReaderA11y();
+
     const cat = obj.userData.category;
     currentView = cat;
     document.getElementById('galaxy-back-btn').classList.add('visible');
@@ -759,6 +769,7 @@ function handleObjectClick(obj) {
           }
         });
         window.isTransitioning = false;
+        updateScreenReaderA11y();
       })
       .start();
   } else if (obj.userData.isMoon) {
@@ -834,8 +845,12 @@ function handleObjectClick(obj) {
         .to({ x: obj.position.x, y: obj.position.y - 60, z: obj.position.z }, 800)
         .easing(TWEEN.Easing.Cubic.Out)
         .onComplete(() => {
-          if (popup) popup.classList.add('visible');
+          if (popup) {
+            popup.classList.add('visible');
+            popup.setAttribute('aria-hidden', 'false');
+          }
           window.isTransitioning = false;
+          updateScreenReaderA11y();
         })
         .start();
 
@@ -866,8 +881,40 @@ function createLabel(text, isMoon) {
   const div = document.createElement('div');
   div.className = `webgl-label ${isMoon ? 'webgl-label--moon' : ''}`;
   div.textContent = text;
+  div.setAttribute('aria-hidden', 'true');
   document.getElementById('labels-container').appendChild(div);
   return div;
+}
+
+function updateScreenReaderA11y() {
+  const srList = document.getElementById('sr-planet-list');
+  if (!srList) return;
+  srList.innerHTML = '';
+
+  if (currentView !== 'galaxy') {
+    const backBtn = document.createElement('button');
+    backBtn.textContent = 'Back to Galaxy';
+    backBtn.addEventListener('click', () => {
+      const btn = document.getElementById('galaxy-back-btn');
+      if (btn) btn.click();
+    });
+    srList.appendChild(backBtn);
+  }
+
+  planetsData.forEach(p => {
+    if (p.isHidden || p._hiddenByMobilePopup) return;
+    
+    let label = '';
+    if (p.mesh.userData.isCategory) label = `Category: ${p.mesh.userData.category}`;
+    else if (p.mesh.userData.isMoon) label = `Project: ${p.mesh.userData.project.name}`;
+    else if (p.mesh.userData.isVoyager) label = `Category: Explorations`;
+    else return;
+
+    const btn = document.createElement('button');
+    btn.textContent = label;
+    btn.addEventListener('click', () => handleObjectClick(p.mesh));
+    srList.appendChild(btn);
+  });
 }
 
 function createOrbitLine(radius) {
@@ -967,6 +1014,8 @@ function renderGalaxy3D() {
       angle: globalPlanetState['esplorazioni'].angle,
       catRef: globalPlanetState['esplorazioni']
     });
+    
+    updateScreenReaderA11y();
   };
 
   if (!voyagerModel) {
@@ -996,6 +1045,8 @@ function renderGalaxy3D() {
   } else {
     setupVoyager(voyagerModel);
   }
+  
+  updateScreenReaderA11y();
 }
 
 function renderSystem3D(category) {
@@ -1056,6 +1107,8 @@ function renderSystem3D(category) {
       mesh, orbitLine, labelEl, radius, speed, angle: Math.random() * Math.PI * 2
     });
   });
+  
+  updateScreenReaderA11y();
 }
 
 function transitionCamera(tx, ty, tz, onComplete) {
@@ -1077,7 +1130,10 @@ function animate() {
   const isHoveringMoon = !!window.hoveredMoon;
   const popup = document.getElementById('moon-popup');
   if (!isHoveringMoon || window.isTransitioning) {
-    if (popup) popup.classList.remove('visible');
+    if (popup) {
+      popup.classList.remove('visible');
+      popup.setAttribute('aria-hidden', 'true');
+    }
   }
 
   planetsData.forEach(p => {

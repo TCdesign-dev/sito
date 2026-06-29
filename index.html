@@ -24,7 +24,7 @@
 
   <!-- Nav — transparent, floating over space -->
   <header id="space-header" class="space-header page-wrap initially-hidden">
-    <nav>
+    <nav aria-label="Main navigation">
       <a href="index.html" class="nav-name nav--light">Tommaso Costanza</a>
       <ul class="nav-links nav-links--light">
         <li><a href="#" class="contact-btn">Contact me</a></li>
@@ -46,7 +46,7 @@
   </div>
 
   <!-- Solar system -->
-  <main class="space-main">
+  <main class="space-main" role="main">
     
     <!-- Controls (Hidden initially) -->
     <button id="galaxy-back-btn" class="galaxy-back-btn" aria-label="Back to Galaxy">
@@ -55,14 +55,17 @@
     
     <div id="mobile-category-title" class="mobile-category-title"></div>
 
-    <div class="solar-system" id="solar-system">
+    <div class="solar-system" id="solar-system" aria-hidden="true">
       <!-- ThreeJS renders here -->
     </div>
+    
+    <!-- Screen Reader access to 3D Solar System -->
+    <div id="sr-planet-list" class="sr-only" aria-live="polite"></div>
 
     <div id="mobile-planet-list" class="mobile-planet-list"></div>
 
     <!-- Mobile Bottom Sheet Popup -->
-    <div id="mobile-moon-popup" class="mobile-moon-popup">
+    <div id="mobile-moon-popup" class="mobile-moon-popup" role="dialog" aria-modal="true" aria-labelledby="mobile-moon-title" aria-hidden="true">
       <button id="mobile-close-btn" class="mobile-close-btn" aria-label="Close">✕</button>
       <div class="mobile-moon-popup-content">
         <img id="mobile-moon-img" src="" alt="preview" />
@@ -77,7 +80,7 @@
   </main>
 
   <!-- Footer -->
-  <footer class="space-footer page-wrap">
+  <footer class="space-footer page-wrap" role="contentinfo">
     <div class="footer-inner footer-inner--light">
       <span>© <span class="copyright-year"></span></span>
       <ul class="footer-links footer-links--light">

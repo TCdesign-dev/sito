@@ -289,7 +289,7 @@
 <body>
 
 <!-- MODAL: Setup Token -->
-<div class="modal-overlay hidden" id="setupModal">
+<div class="modal-overlay hidden" id="setupModal" role="dialog" aria-modal="true" aria-labelledby="setupModalTitle">
   <div class="modal">
     <h3>🔑 Connect GitHub</h3>
     <p>To save projects directly to GitHub, you need a <strong>Personal Access Token</strong>.<br><br>
@@ -299,11 +299,11 @@
       4. Click <strong>Generate token</strong> and paste it below.
     </p>
     <div class="form-group">
-      <label>GitHub Personal Access Token</label>
+      <label for="tokenInput">GitHub Personal Access Token</label>
       <input type="text" id="tokenInput" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" />
     </div>
     <div class="form-group" style="margin-top:1rem">
-      <label>Repository (e.g. TCdesign-dev/sito)</label>
+      <label for="repoInput">Repository (e.g. TCdesign-dev/sito)</label>
       <input type="text" id="repoInput" placeholder="username/repository" value="TCdesign-dev/sito" />
     </div>
     <div class="modal-actions">
@@ -313,14 +313,14 @@
 </div>
 
 <!-- MODAL: Manage Categories -->
-<div class="modal-overlay hidden" id="categoriesModal">
+<div class="modal-overlay hidden" id="categoriesModal" role="dialog" aria-modal="true" aria-labelledby="catModalTitle">
   <div class="modal">
-    <button class="modal-close" onclick="closeCategoriesModal()">✕</button>
-    <h3>Manage Categories</h3>
+    <button class="modal-close" onclick="closeCategoriesModal()" aria-label="Close">✕</button>
+    <h3 id="catModalTitle">Manage Categories</h3>
     <p>Edit, delete or add new categories. Changes will reflect on all assigned projects.</p>
     
     <div style="display:flex;gap:0.5rem;margin-bottom:1rem">
-      <input type="text" id="newCatInput" placeholder="New category..." style="flex:1" onkeydown="if(event.key==='Enter')createNewCategory()" />
+      <input type="text" id="newCatInput" aria-label="New category name" placeholder="New category..." style="flex:1" onkeydown="if(event.key==='Enter')createNewCategory()" />
       <button class="btn btn-primary" onclick="createNewCategory()">Add</button>
     </div>
 
@@ -341,7 +341,7 @@
     <button class="btn btn-primary" id="saveBtn" onclick="saveToGitHub()" disabled>
       ↑ Publish to GitHub
     </button>
-    <button class="btn btn-ghost btn-sm" onclick="toggleSettings()">⚙</button>
+    <button class="btn btn-ghost btn-sm" onclick="toggleSettings()" aria-label="Settings">⚙</button>
   </div>
 </header>
 
