@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>404 — Tommaso Costanza</title>
+  <meta name="description" content="Hai esplorato troppo oltre i confini dell'universo..." />
+  
+  <link rel="stylesheet" href="style.css" />
+  
+  <!-- Vercel Web Analytics -->
+  <script>
+    window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+  </script>
+  <script defer src="/_vercel/insights/script.js"></script>
+</head>
+<body class="space-page" style="overflow: hidden;">
+
+  <!-- Star field background -->
+  <div class="space-bg"></div>
+
+  <!-- Nav -->
+  <header id="space-header" class="space-header page-wrap">
+    <nav aria-label="Main navigation">
+      <a href="index.html" class="nav-name nav--light">Tommaso Costanza</a>
+      <ul class="nav-links nav-links--light">
+        <li><a href="index.html" class="contact-btn">Back home</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- 404 Content -->
+  <main class="space-main" role="main" style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; text-align:center; position:relative; z-index:10; padding: 0 1.5rem;">
+    
+    <div id="solar-system" style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:-1;"></div>
+    
+    <h1 style="color:#fff; font-size:clamp(4rem, 10vw, 8rem); margin-bottom:1rem; text-shadow: 0 4px 30px rgba(0,0,0,0.8); font-weight:800; letter-spacing:-0.05em;">404</h1>
+    <p style="color:#ccc; font-size:1.2rem; max-width:500px; margin:0 auto; line-height:1.6; text-shadow: 0 2px 10px rgba(0,0,0,0.8);">
+      Sembra che tu abbia esplorato troppo, oltre i confini dell'ecosistema orbitale conosciuto...<br><br>
+      Tranquillo, puoi sempre <a href="index.html" style="color:var(--accent); text-decoration:underline;">tornare alla galassia principale</a>.
+    </p>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+  <script src="main.js"></script>
+  <script>
+    load404Scene('solar-system');
+  </script>
+</body>
+</html>

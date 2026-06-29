@@ -1205,6 +1205,69 @@ function animate() {
 }
 
 /* ===========================
+   404 SCENE
+   =========================== */
+function load404Scene(canvasId) {
+  const container = document.getElementById(canvasId);
+  if (!container) return;
+  
+  scene = new THREE.Scene();
+  camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 10000);
+  camera.position.set(0, 0, 800);
+
+  renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  container.appendChild(renderer.domElement);
+
+  const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+  scene.add(ambientLight);
+  const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
+  dirLight.position.set(200, 300, 400);
+  scene.add(dirLight);
+
+  let voyager;
+  const gltfLoader = new THREE.GLTFLoader();
+  gltfLoader.load('assets/Voyager.glb', (gltf) => {
+    voyager = gltf.scene;
+    voyager.scale.set(6, 6, 6);
+    
+    voyager.traverse((child) => {
+      if (child.isMesh) {
+        child.material.side = THREE.DoubleSide;
+        if (child.material) {
+          child.material.emissive = new THREE.Color(0xffffff);
+          child.material.emissiveIntensity = 0.15;
+          child.material.needsUpdate = true;
+        }
+      }
+    });
+    
+    // Tilt to look cool
+    voyager.rotation.x = Math.PI / 4;
+    voyager.rotation.z = Math.PI / 6;
+    
+    scene.add(voyager);
+  }, undefined, (err) => console.error(err));
+
+  function animate404() {
+    requestAnimationFrame(animate404);
+    if (voyager) {
+      voyager.rotation.y += 0.002;
+      voyager.position.y = Math.sin(Date.now() * 0.001) * 10;
+    }
+    renderer.render(scene, camera);
+  }
+  animate404();
+
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+}
+
+/* ===========================
    INIT (runs on every page)
    =========================== */
 document.addEventListener('DOMContentLoaded', () => {
