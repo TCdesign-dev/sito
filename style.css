@@ -938,7 +938,7 @@ footer {
 }
 
 .space-bg.travel-mode::after {
-  animation: starsTravel 15s linear infinite;
+  animation: starsTravel 8s linear infinite;
 }
 
 @keyframes starsTravel {
