@@ -666,7 +666,6 @@ footer {
    PROJECT DETAIL PAGE
    =========================== */
 .project-detail {
-  padding-top: 1rem;
   padding-bottom: 4rem;
 }
 
@@ -682,6 +681,27 @@ footer {
 }
 .project-back:hover { color: var(--text); }
 .project-back::before { content: '←'; }
+
+@media (max-width: 768px) {
+  .project-back {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 0.6rem 1.4rem;
+    border-radius: 100px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    z-index: 999;
+    margin-bottom: 0;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  }
+}
 
 .project-title {
   font-size: 1.5rem;
