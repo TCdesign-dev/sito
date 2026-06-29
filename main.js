@@ -434,7 +434,10 @@ function initThreeJS(container, backBtn) {
     <div id="moon-popup" class="moon-popup">
       <img id="moon-popup-img" src="" alt="preview" />
       <div class="moon-popup-content">
-        <h3 id="moon-popup-title"></h3>
+        <div class="moon-popup-header">
+          <h3 id="moon-popup-title"></h3>
+          <span id="moon-popup-year" class="moon-popup-year"></span>
+        </div>
         <p id="moon-popup-desc"></p>
       </div>
     </div>
@@ -445,7 +448,7 @@ function initThreeJS(container, backBtn) {
   scene.add(new THREE.AmbientLight(0xffffff, 0.6)); 
 
   camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 1, 3000);
-  camera.position.set(0, 200, isMobile ? 600 : 400);
+  camera.position.set(0, 200, isMobile ? 780 : 400);
 
   renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
   renderer.setSize(container.clientWidth, container.clientHeight);
@@ -657,6 +660,8 @@ function initThreeJS(container, backBtn) {
         const p = hoveredMoon.userData.project;
         document.getElementById('moon-popup-title').textContent = p.name || '';
         document.getElementById('moon-popup-desc').textContent = p.description || '';
+        const yearEl = document.getElementById('moon-popup-year');
+        if (yearEl) yearEl.textContent = p.year ? String(p.year) : '';
         const img = document.getElementById('moon-popup-img');
         if (p.preview) {
           img.src = p.preview;
@@ -765,6 +770,8 @@ function handleObjectClick(obj) {
       
       if (titleEl) titleEl.textContent = p.name || '';
       if (descEl) descEl.textContent = p.description || p.category || '';
+      const yearMobileEl = document.getElementById('mobile-moon-year');
+      if (yearMobileEl) yearMobileEl.textContent = p.year ? String(p.year) : '';
       if (imgEl) {
         imgEl.src = p.preview || '';
         imgEl.style.display = p.preview ? 'block' : 'none';

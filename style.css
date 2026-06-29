@@ -1111,6 +1111,22 @@ footer {
   overflow: hidden;
 }
 
+.moon-popup-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 4px;
+}
+
+.moon-popup-year {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: #999;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
 /* Mobile Category Title */
 .mobile-category-title {
   position: absolute;
@@ -1185,7 +1201,23 @@ footer {
 #mobile-moon-title {
   font-size: 1.5rem;
   font-weight: 500;
-  margin: 0 0 0.5rem 0;
+  margin: 0;
+}
+
+.mobile-moon-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.mobile-moon-year {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: rgba(255,255,255,0.4);
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 #mobile-moon-desc {
   font-size: 0.95rem;
