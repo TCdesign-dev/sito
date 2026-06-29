@@ -972,6 +972,11 @@ function renderGalaxy3D() {
       voyagerModel.traverse((child) => {
         if (child.isMesh) {
           child.material.side = THREE.DoubleSide;
+          if (child.material) {
+            child.material.emissive = new THREE.Color(0xffffff);
+            child.material.emissiveIntensity = 0.15;
+            child.material.needsUpdate = true;
+          }
         }
       });
       
