@@ -169,6 +169,24 @@ nav {
 .nav-links a:hover,
 .nav-links a.active { color: var(--text); }
 
+.contact-btn {
+  background: linear-gradient(90deg, #999 0%, #4a90e2 50%, #999 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent !important;
+  animation: gradientShift 4s linear infinite;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+@keyframes gradientShift {
+  to {
+    background-position: 200% center;
+  }
+}
+
 /* ===========================
    FOOTER
    =========================== */
