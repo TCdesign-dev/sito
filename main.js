@@ -280,6 +280,7 @@ async function loadProjectDetail(containerId) {
 
   container.innerHTML = `
     <a href="${backHref}" class="project-back">${backText}</a>
+    ${project.preview ? `<img src="${esc(project.preview)}" class="project-detail-hero" alt="Anteprima progetto" />` : ''}
     <h1 class="project-title">${esc(project.name)}</h1>
     <div class="project-header-meta">
       <span class="project-year-badge">${esc(String(project.year))}</span>
