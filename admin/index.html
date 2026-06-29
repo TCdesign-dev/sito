@@ -291,23 +291,23 @@
 <!-- MODAL: Setup Token -->
 <div class="modal-overlay hidden" id="setupModal">
   <div class="modal">
-    <h3>🔑 Connetti GitHub</h3>
-    <p>Per salvare i progetti direttamente su GitHub, hai bisogno di un <strong>Personal Access Token</strong>.<br><br>
-      1. Vai su <a href="https://github.com/settings/tokens/new" target="_blank">github.com/settings/tokens/new</a><br>
-      2. Scegli <strong>"Tokens (classic)"</strong><br>
-      3. Spunta il permesso <strong><code>repo</code></strong><br>
-      4. Clicca <strong>Generate token</strong> e incollalo qui sotto.
+    <h3>🔑 Connect GitHub</h3>
+    <p>To save projects directly to GitHub, you need a <strong>Personal Access Token</strong>.<br><br>
+      1. Go to <a href="https://github.com/settings/tokens/new" target="_blank">github.com/settings/tokens/new</a><br>
+      2. Choose <strong>"Tokens (classic)"</strong><br>
+      3. Check the <strong><code>repo</code></strong> permission<br>
+      4. Click <strong>Generate token</strong> and paste it below.
     </p>
     <div class="form-group">
       <label>GitHub Personal Access Token</label>
       <input type="text" id="tokenInput" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" />
     </div>
     <div class="form-group" style="margin-top:1rem">
-      <label>Repository (es. TCdesign-dev/sito)</label>
+      <label>Repository (e.g. TCdesign-dev/sito)</label>
       <input type="text" id="repoInput" placeholder="username/repository" value="TCdesign-dev/sito" />
     </div>
     <div class="modal-actions">
-      <button class="btn btn-primary" onclick="saveSettings()">Connetti ✓</button>
+      <button class="btn btn-primary" onclick="saveSettings()">Connect ✓</button>
     </div>
   </div>
 </div>
@@ -316,12 +316,12 @@
 <div class="modal-overlay hidden" id="categoriesModal">
   <div class="modal">
     <button class="modal-close" onclick="closeCategoriesModal()">✕</button>
-    <h3>Gestione Categorie</h3>
-    <p>Modifica, elimina o aggiungi nuove categorie. Le modifiche si rifletteranno su tutti i progetti assegnati.</p>
+    <h3>Manage Categories</h3>
+    <p>Edit, delete or add new categories. Changes will reflect on all assigned projects.</p>
     
     <div style="display:flex;gap:0.5rem;margin-bottom:1rem">
-      <input type="text" id="newCatInput" placeholder="Nuova categoria..." style="flex:1" onkeydown="if(event.key==='Enter')createNewCategory()" />
-      <button class="btn btn-primary" onclick="createNewCategory()">Aggiungi</button>
+      <input type="text" id="newCatInput" placeholder="New category..." style="flex:1" onkeydown="if(event.key==='Enter')createNewCategory()" />
+      <button class="btn btn-primary" onclick="createNewCategory()">Add</button>
     </div>
 
     <div class="cat-manager-list" id="catManagerList">
@@ -335,11 +335,11 @@
   <div class="logo">✦ Portfolio <span>/ Admin</span></div>
   <div class="header-actions">
     <span id="savingIndicator" style="display:none;align-items:center;gap:0.4rem;font-size:0.78rem;color:var(--text-muted)">
-      <span class="saving-dot"></span> Salvataggio...
+      <span class="saving-dot"></span> Saving...
     </span>
-    <button class="btn btn-ghost" onclick="openCategoriesModal()">🏷 Gestione Categorie</button>
+    <button class="btn btn-ghost" onclick="openCategoriesModal()">🏷 Manage Categories</button>
     <button class="btn btn-primary" id="saveBtn" onclick="saveToGitHub()" disabled>
-      ↑ Pubblica su GitHub
+      ↑ Publish to GitHub
     </button>
     <button class="btn btn-ghost btn-sm" onclick="toggleSettings()">⚙</button>
   </div>
@@ -351,10 +351,10 @@
   <!-- SIDEBAR -->
   <aside>
     <div class="sidebar-section">
-      <div class="sidebar-label">Progetti</div>
+      <div class="sidebar-label">Projects</div>
       <div id="projectList"></div>
     </div>
-    <button class="add-btn" onclick="addProject()">+ Nuovo progetto</button>
+    <button class="add-btn" onclick="addProject()">+ New project</button>
   </aside>
 
   <!-- MAIN -->
@@ -363,8 +363,8 @@
       <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
         <circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/>
       </svg>
-      <h2>Seleziona un progetto</h2>
-      <p>Scegli un progetto dalla lista a sinistra, oppure creane uno nuovo.</p>
+      <h2>Select a project</h2>
+      <p>Choose a project from the list on the left, or create a new one.</p>
     </div>
   </main>
 </div>
@@ -375,7 +375,7 @@
 <!-- SETTINGS PANEL -->
 <div class="settings-wrap" id="settingsPanel">
   <div style="display:flex;align-items:center;justify-content:space-between">
-    <div class="settings-title">⚙ Impostazioni</div>
+    <div class="settings-title">⚙ Settings</div>
     <button class="settings-close" onclick="toggleSettings()">✕</button>
   </div>
   <div class="form-group">
@@ -386,11 +386,11 @@
     <label>Repository</label>
     <input type="text" id="settingsRepo" placeholder="username/repository" />
   </div>
-  <button class="btn btn-primary" onclick="saveSettingsFromPanel()">Salva impostazioni</button>
+  <button class="btn btn-primary" onclick="saveSettingsFromPanel()">Save settings</button>
   <hr/>
-  <button class="btn btn-ghost" onclick="exportJSON()" style="justify-content:center">⬇ Scarica projects.json</button>
+  <button class="btn btn-ghost" onclick="exportJSON()" style="justify-content:center">⬇ Download projects.json</button>
   <p style="font-size:0.75rem;color:var(--text-muted);line-height:1.6">
-    Se non hai GitHub configurato, puoi scaricare il JSON manualmente e caricarlo nella cartella <code>projects/</code> del tuo progetto.
+    If you don't have GitHub configured, you can download the JSON manually and upload it to the <code>projects/</code> folder of your repository.
   </p>
 </div>
 
@@ -428,13 +428,13 @@ window.addEventListener('DOMContentLoaded', async () => {
 function saveSettings() {
   const t = document.getElementById('tokenInput').value.trim();
   const r = document.getElementById('repoInput').value.trim();
-  if (!t || !r) { toast('Compila tutti i campi', 'error'); return; }
+  if (!t || !r) { toast('Please fill all fields', 'error'); return; }
   githubToken = t; githubRepo = r;
   localStorage.setItem('gh_token', t);
   localStorage.setItem('gh_repo', r);
   document.getElementById('setupModal').classList.add('hidden');
   document.getElementById('saveBtn').disabled = false;
-  toast('Connesso a GitHub!', 'success');
+  toast('Connected to GitHub!', 'success');
   loadProjects();
 }
 
@@ -450,20 +450,20 @@ function toggleSettings() {
 function saveSettingsFromPanel() {
   const t = document.getElementById('settingsToken').value.trim();
   const r = document.getElementById('settingsRepo').value.trim();
-  if (!t || !r) { toast('Compila tutti i campi', 'error'); return; }
+  if (!t || !r) { toast('Please fill all fields', 'error'); return; }
   githubToken = t; githubRepo = r;
   localStorage.setItem('gh_token', t);
   localStorage.setItem('gh_repo', r);
   document.getElementById('saveBtn').disabled = false;
   toggleSettings();
-  toast('Impostazioni salvate', 'success');
+  toast('Settings saved', 'success');
   loadProjects();
 }
 
 /* ===== LOAD FROM GITHUB ===== */
 async function loadProjects() {
   try {
-    toast('Caricamento progetti...', 'info');
+    toast('Loading projects...', 'info');
     const url = `https://api.github.com/repos/${githubRepo}/contents/projects/projects.json`;
     const res = await fetch(url, { headers: { Authorization: `token ${githubToken}` } });
     if (!res.ok) throw new Error(res.status);
@@ -476,9 +476,9 @@ async function loadProjects() {
     extractCategories();
     
     renderSidebar();
-    toast(`${projects.length} progetti caricati`, 'success');
+    toast(`${projects.length} projects loaded`, 'success');
   } catch(e) {
-    toast('Errore nel caricamento. Controlla il token e il repo.', 'error');
+    toast('Error loading. Check your token and repo.', 'error');
     console.error(e);
     projects = [];
     globalCategories = [];
@@ -488,7 +488,7 @@ async function loadProjects() {
 
 /* ===== SAVE TO GITHUB ===== */
 async function saveToGitHub() {
-  if (!githubToken) { toast('Configura GitHub prima', 'error'); return; }
+  if (!githubToken) { toast('Configure GitHub first', 'error'); return; }
   const btn = document.getElementById('saveBtn');
   const ind = document.getElementById('savingIndicator');
   btn.disabled = true;
@@ -506,9 +506,9 @@ async function saveToGitHub() {
     if (!res.ok) throw new Error(await res.text());
     const data = await res.json();
     window._fileSha = data.content.sha;
-    toast('✓ Pubblicato su GitHub! Il sito si aggiorna in ~30 secondi.', 'success');
+    toast('✓ Published to GitHub! The site updates in ~30 seconds.', 'success');
   } catch(e) {
-    toast('Errore nel salvataggio: ' + e.message, 'error');
+    toast('Save error: ' + e.message, 'error');
     console.error(e);
   } finally {
     btn.disabled = false;
@@ -551,13 +551,13 @@ function closeCategoriesModal() {
 function renderCategoriesManager() {
   const list = document.getElementById('catManagerList');
   if (globalCategories.length === 0) {
-    list.innerHTML = '<p style="color:var(--text-muted);font-size:0.85rem">Nessuna categoria esistente.</p>';
+    list.innerHTML = '<p style="color:var(--text-muted);font-size:0.85rem">No categories exist.</p>';
     return;
   }
   list.innerHTML = globalCategories.map((c, idx) => `
     <div class="cat-manager-item">
       <input type="text" value="${esc(c)}" onchange="renameCategory(${idx}, this.value)" />
-      <button class="btn btn-danger btn-sm" onclick="deleteCategory(${idx})">Elimina</button>
+      <button class="btn btn-danger btn-sm" onclick="deleteCategory(${idx})">Delete</button>
     </div>
   `).join('');
 }
@@ -569,7 +569,7 @@ function createNewCategory() {
   if (!globalCategories.includes(val)) {
     globalCategories.push(val);
     globalCategories.sort();
-    toast(`Categoria "${val}" creata`, 'success');
+    toast(`Category "${val}" created`, 'success');
   }
   input.value = '';
   renderCategoriesManager();
@@ -588,7 +588,7 @@ function renameCategory(idx, newName) {
     if (p.category === oldName) p.category = newName;
   });
   
-  toast(`Categoria rinominata in "${newName}"`, 'success');
+  toast(`Category renamed to "${newName}"`, 'success');
   globalCategories.sort();
   renderCategoriesManager();
   if (currentId) selectProject(currentId);
@@ -596,7 +596,7 @@ function renameCategory(idx, newName) {
 
 function deleteCategory(idx) {
   const cat = globalCategories[idx];
-  if (!confirm(`Sei sicuro di voler eliminare la categoria "${cat}"? I progetti verranno lasciati "Senza Categoria".`)) return;
+  if (!confirm(`Are you sure you want to delete category "${cat}"? Projects will be left without a category.`)) return;
   
   globalCategories.splice(idx, 1);
   // Update all projects
@@ -604,7 +604,7 @@ function deleteCategory(idx) {
     if (p.category === cat) p.category = '';
   });
   
-  toast(`Categoria eliminata`, 'info');
+  toast(`Category deleted`, 'info');
   renderCategoriesManager();
   if (currentId) selectProject(currentId);
 }
@@ -619,7 +619,7 @@ function renderSidebar() {
     div.onclick = () => selectProject(p.id);
     div.innerHTML = `
       <span class="project-dot" style="background:${COLORS[p.color] || '#aaa'}"></span>
-      <span class="project-item-name">${esc(p.name || 'Senza nome')}</span>
+      <span class="project-item-name">${esc(p.name || 'Untitled')}</span>
       <span class="project-item-year">${p.year || ''}</span>
     `;
     list.appendChild(div);
@@ -638,7 +638,7 @@ function selectProject(id) {
 function addProject() {
   const id = 'project-' + Date.now();
   const p = {
-    id, name: 'Nuovo Progetto', year: new Date().getFullYear(),
+    id, name: 'New Project', year: new Date().getFullYear(),
     preview: '', color: 'blue', category: '', description: '',
     link: null, page: false, content: []
   };
@@ -650,7 +650,7 @@ function addProject() {
 /* ===== DELETE PROJECT ===== */
 function deleteProject() {
   if (!currentId) return;
-  if (!confirm('Sei sicuro di voler eliminare questo progetto?')) return;
+  if (!confirm('Are you sure you want to delete this project?')) return;
   projects = projects.filter(p => p.id !== currentId);
   currentId = null;
   renderSidebar();
@@ -659,11 +659,11 @@ function deleteProject() {
       <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
         <circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/>
       </svg>
-      <h2>Seleziona un progetto</h2>
-      <p>Scegli un progetto dalla lista a sinistra, oppure creane uno nuovo.</p>
+      <h2>Select a project</h2>
+      <p>Choose a project from the left list, or create a new one.</p>
     </div>
   `;
-  toast('Progetto eliminato', 'info');
+  toast('Project deleted', 'info');
 }
 
 /* ===== FIELD UPDATE ===== */
@@ -715,28 +715,28 @@ function renderBlocks() {
     if (b.type === 'text') return `
       <div class="content-block">
         <div class="content-block-header">
-          <span class="block-type-badge text">Testo</span>
+          <span class="block-type-badge text">Text</span>
           <button class="btn btn-ghost btn-sm" onclick="moveBlock(${i},-1)">↑</button>
           <button class="btn btn-ghost btn-sm" onclick="moveBlock(${i},1)">↓</button>
           <button class="block-remove" onclick="removeBlock(${i})">✕</button>
         </div>
-        <textarea rows="4" placeholder="Testo del paragrafo..." oninput="updateBlock(${i},'value',this.value)">${b.value || ''}</textarea>
+        <textarea rows="4" placeholder="Paragraph text..." oninput="updateBlock(${i},'value',this.value)">${b.value || ''}</textarea>
       </div>`;
     if (b.type === 'image') return `
       <div class="content-block">
         <div class="content-block-header">
-          <span class="block-type-badge image">Immagine</span>
+          <span class="block-type-badge image">Image</span>
           <button class="btn btn-ghost btn-sm" onclick="moveBlock(${i},-1)">↑</button>
           <button class="btn btn-ghost btn-sm" onclick="moveBlock(${i},1)">↓</button>
           <button class="block-remove" onclick="removeBlock(${i})">✕</button>
         </div>
         <div class="form-group">
-          <label>URL immagine</label>
-          <input type="text" value="${b.src||''}" placeholder="projects/images/nome.webp" oninput="updateBlock(${i},'src',this.value)" />
+          <label>Image URL</label>
+          <input type="text" value="${b.src||''}" placeholder="projects/images/name.webp" oninput="updateBlock(${i},'src',this.value)" />
         </div>
         <div class="form-group" style="margin-top:0.5rem">
-          <label>Didascalia (opzionale)</label>
-          <input type="text" value="${b.caption||''}" placeholder="Es. Vista frontale del prodotto" oninput="updateBlock(${i},'caption',this.value)" />
+          <label>Caption (optional)</label>
+          <input type="text" value="${b.caption||''}" placeholder="e.g. Front view of the product" oninput="updateBlock(${i},'caption',this.value)" />
         </div>
       </div>`;
     return '';
@@ -754,41 +754,41 @@ function renderEditor(p) {
 
   main.innerHTML = `
     <div class="editor-header">
-      <h2>${esc(p.name) || 'Progetto'}</h2>
+      <h2>${esc(p.name) || 'Project'}</h2>
       <div class="editor-header-actions">
-        <button class="btn btn-danger btn-sm" onclick="deleteProject()">✕ Elimina</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteProject()">✕ Delete</button>
       </div>
     </div>
 
     <!-- INFORMAZIONI BASE -->
     <div class="form-card">
-      <div class="form-card-title">Informazioni base</div>
+      <div class="form-card-title">Basic Info</div>
       <div class="form-row">
         <div class="form-group">
-          <label>Nome progetto *</label>
-          <input type="text" value="${esc(p.name)}" oninput="updateField('name',this.value);this.closest('.app').querySelector('h2').textContent=this.value||'Progetto'" />
+          <label>Project name *</label>
+          <input type="text" value="${esc(p.name)}" oninput="updateField('name',this.value);this.closest('.app').querySelector('h2').textContent=this.value||'Project'" />
         </div>
         <div class="form-group">
-          <label>Anno *</label>
+          <label>Year *</label>
           <input type="number" value="${p.year}" min="2000" max="2099" oninput="updateField('year',+this.value)" />
         </div>
       </div>
       <div class="form-row cols-1" style="margin-top:1rem">
         <div class="form-group">
-          <label>Descrizione breve *</label>
+          <label>Short description *</label>
           <textarea oninput="updateField('description',this.value)">${esc(p.description||'')}</textarea>
         </div>
       </div>
       <div class="form-row" style="margin-top:1rem">
         <div class="form-group">
-          <label>Categoria</label>
+          <label>Category</label>
           <select onchange="updateField('category', this.value)">
-            <option value="">-- Seleziona o lascia vuoto --</option>
+            <option value="">-- Select or leave empty --</option>
             ${catOptions}
           </select>
         </div>
         <div class="form-group">
-          <label>URL preview immagine</label>
+          <label>Preview Image URL</label>
           <input type="text" value="${esc(p.preview||'')}" placeholder="projects/images/preview.webp" oninput="updateField('preview',this.value)" />
         </div>
       </div>
@@ -796,9 +796,9 @@ function renderEditor(p) {
 
     <!-- COLORE -->
     <div class="form-card">
-      <div class="form-card-title">Stile Pianeta</div>
+      <div class="form-card-title">Planet Style</div>
       <div class="form-group">
-        <label>Colore nel sistema solare</label>
+        <label>Color in the solar system</label>
         <div class="color-picker" id="colorPicker">
           ${Object.entries(COLORS).map(([name, hex]) =>
             `<div class="color-option${p.color===name?' selected':''}" style="background:${hex}" onclick="selectColor('${name}')" title="${name}"></div>`
@@ -809,20 +809,20 @@ function renderEditor(p) {
 
     <!-- LINK & PAGINA -->
     <div class="form-card">
-      <div class="form-card-title">Link & Pagina dettaglio</div>
+      <div class="form-card-title">Link & Detail Page</div>
       <div class="form-row">
         <div class="form-group">
-          <label>Link esterno (URL)</label>
+          <label>External link (URL)</label>
           <input type="url" value="${esc(p.link||'')}" placeholder="https://..." oninput="updateField('link',this.value)" />
         </div>
         <div class="form-group">
-          <label>Ha una pagina dettaglio?</label>
+          <label>Has a detail page?</label>
           <div class="toggle-wrap" style="margin-top:0.3rem">
             <label class="toggle">
               <input type="checkbox" ${p.page?'checked':''} onchange="updateField('page',this.checked)" />
               <span class="toggle-slider"></span>
             </label>
-            <span class="toggle-label">${p.page ? 'Sì — ha una pagina dedicata' : 'No — solo link esterno'}</span>
+            <span class="toggle-label">${p.page ? 'Yes — has a dedicated page' : 'No — just external link'}</span>
           </div>
         </div>
       </div>
@@ -830,14 +830,14 @@ function renderEditor(p) {
 
     <!-- CONTENUTO PAGINA -->
     <div class="form-card">
-      <div class="form-card-title">Contenuto pagina dettaglio</div>
+      <div class="form-card-title">Detail Page Content</div>
       <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:1rem;line-height:1.6">
-        Aggiungi blocchi di testo e immagini che compongono la pagina del progetto.
+        Add text and image blocks that make up the project page.
       </p>
       <div id="blocksWrap" style="display:flex;flex-direction:column;gap:0.75rem"></div>
       <div class="add-block-btns">
-        <button class="btn btn-ghost btn-sm" onclick="addBlock('text')">+ Testo</button>
-        <button class="btn btn-ghost btn-sm" onclick="addBlock('image')">+ Immagine</button>
+        <button class="btn btn-ghost btn-sm" onclick="addBlock('text')">+ Text</button>
+        <button class="btn btn-ghost btn-sm" onclick="addBlock('image')">+ Image</button>
       </div>
     </div>
   `;

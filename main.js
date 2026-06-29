@@ -197,18 +197,18 @@ async function loadLatestProjects(containerId, count = 3) {
 }
 
 /* ===========================
-   EXPLORATIONS (esplorazioni.html)
+   EXPLORATIONS (explorations.html)
    =========================== */
 async function loadExplorations(containerId) {
   const container = document.getElementById(containerId);
   if (!container) return;
 
   const projects = await fetchProjects();
-  // Filter for explorations (you can use category or a specific flag. Assuming category 'esplorazioni')
-  const explorations = projects.filter(p => p.category && p.category.toLowerCase() === 'esplorazioni');
+  // Filter for explorations (you can use category or a specific flag. Assuming category 'explorations')
+  const explorations = projects.filter(p => p.category && p.category.toLowerCase() === 'explorations');
 
   if (explorations.length === 0) {
-    container.innerHTML = `<p style="color:var(--text-muted);">Nessuna esplorazione trovata al momento.</p>`;
+    container.innerHTML = `<p style="color:var(--text-muted);">No explorations found at the moment.</p>`;
     return;
   }
 
@@ -392,7 +392,7 @@ async function loadSolarSystem(systemId, bgId, mobileListId) {
 
   orbitsMap = {};
   projects.forEach(p => {
-    const category = p.category || (p.tags && p.tags.length ? p.tags[0] : 'Altro');
+    const category = p.category || (p.tags && p.tags.length ? p.tags[0] : 'Other');
     if (!orbitsMap[category]) orbitsMap[category] = [];
     orbitsMap[category].push(p);
   });
@@ -945,7 +945,7 @@ function renderGalaxy3D() {
     scene.add(orbitLine);
 
     const mesh = model.clone();
-    mesh.userData = { isVoyager: true, link: 'esplorazioni.html' };
+    mesh.userData = { isVoyager: true, link: 'explorations.html' };
     
     // Slight tilt to the model itself
     mesh.rotation.x = Math.PI / 4;
@@ -1008,7 +1008,7 @@ function renderSystem3D(category) {
   scene.add(light);
 
   const orbits = globalPlanetState[category] ? globalPlanetState[category].totalOrbits : 0;
-  const centerLabel = createLabel(`${category} (Orbite: ${orbits})`, false);
+  const centerLabel = createLabel(`${category} (Orbits: ${orbits})`, false);
   planetsData.push({ mesh: centerMesh, labelEl: centerLabel, radius: 0, speed: 0, angle: 0 });
 
   const projects = orbitsMap[category];
