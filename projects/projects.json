@@ -5,13 +5,10 @@
     "year": 2026,
     "preview": "",
     "color": "orange",
-    "tags": [
-      "web"
-    ],
     "description": "hgdfbdfgfd",
     "link": null,
     "page": false,
-    "category": "",
+    "category": "Design",
     "content": [
       {
         "type": "text",
@@ -25,11 +22,6 @@
     "year": 2024,
     "preview": "projects/images/camera-preview.webp",
     "color": "yellow",
-    "tags": [
-      "Design",
-      "Figma",
-      "Product"
-    ],
     "description": "A personally made prototype of an extremely compact indoor security camera. Current solutions available on the market are often relatively bulky, despite the fact that there is no real need for space for electronics.",
     "link": null,
     "page": true,
@@ -56,7 +48,8 @@
         "type": "text",
         "value": "Due to its size, it can be easily placed on shelves, bedside tables and furniture without being obtrusive. The design was created using Figma, without the aid of 3D modeling software."
       }
-    ]
+    ],
+    "category": "Design"
   },
   {
     "id": "creative-minds-archive",
@@ -64,15 +57,11 @@
     "year": 2024,
     "preview": "projects/images/cma-preview.webp",
     "color": "green",
-    "tags": [
-      "Web",
-      "Development",
-      "Archive"
-    ],
     "description": "An archive and collection platform for creative minds, designers and developers sharing their ongoing work and inspiration.",
     "link": "https://github.com",
     "page": false,
-    "content": []
+    "content": [],
+    "category": "Web"
   },
   {
     "id": "personal-website-v2",
@@ -80,24 +69,20 @@
     "year": 2024,
     "preview": "projects/images/website-preview.webp",
     "color": "blue",
-    "tags": [
-      "Web",
-      "Design",
-      "CSS"
-    ],
     "description": "The second iteration of my personal portfolio website, designed with extreme minimalism in mind. System fonts, justified text, and a focus on content over decoration.",
     "link": null,
     "page": true,
     "content": [
       {
         "type": "text",
-        "value": "The second iteration of my personal portfolio. Designed with extreme minimalism â system fonts, justified text, almost no visual decoration. The constraint was to communicate everything through typography and layout alone."
+        "value": "The second iteration of my personal portfolio. Designed with extreme minimalism Ã¢ÂÂ system fonts, justified text, almost no visual decoration. The constraint was to communicate everything through typography and layout alone."
       },
       {
         "type": "text",
         "value": "Built with plain HTML and CSS, deployed on GitHub Pages. No frameworks, no build tools."
       }
-    ]
+    ],
+    "category": "Web"
   },
   {
     "id": "type-experiments",
@@ -105,11 +90,6 @@
     "year": 2023,
     "preview": "projects/images/type-preview.jpg",
     "color": "pink",
-    "tags": [
-      "Typography",
-      "Design",
-      "Exploration"
-    ],
     "description": "A series of typographic experiments exploring the boundaries of legibility and visual rhythm through modular grid systems.",
     "link": null,
     "page": true,
@@ -122,6 +102,7 @@
         "type": "text",
         "value": "Tools used: Figma, Adobe Illustrator. Printed at A2 format for the physical exhibition."
       }
-    ]
+    ],
+    "category": "Typography"
   }
 ]
