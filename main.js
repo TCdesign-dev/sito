@@ -1069,10 +1069,67 @@ function transitionCamera(tx, ty, tz, onComplete) {
     .start();
 }
 
+let shootingStars = [];
+function spawnShootingStar() {
+  if (!scene) return;
+  
+  // A glowing white streak
+  const material = new THREE.MeshBasicMaterial({ 
+    color: 0xffffff, 
+    transparent: true, 
+    opacity: 0.6,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false
+  });
+  // Very long and thin
+  const geometry = new THREE.CylinderGeometry(0.05, 0.2, 40, 4);
+  geometry.rotateX(Math.PI / 2); // align with Z
+  
+  const star = new THREE.Mesh(geometry, material);
+  
+  // Start randomly far away
+  const angle = Math.random() * Math.PI * 2;
+  const heightAngle = (Math.random() - 0.2) * Math.PI;
+  const distance = 300 + Math.random() * 200;
+  
+  star.position.x = Math.cos(angle) * Math.cos(heightAngle) * distance;
+  star.position.y = Math.sin(heightAngle) * distance;
+  star.position.z = Math.sin(angle) * Math.cos(heightAngle) * distance;
+  
+  // Target somewhere near the center
+  const targetX = (Math.random() - 0.5) * 100;
+  const targetY = (Math.random() - 0.5) * 100;
+  const targetZ = (Math.random() - 0.5) * 100;
+  
+  const velocity = new THREE.Vector3(targetX - star.position.x, targetY - star.position.y, targetZ - star.position.z);
+  velocity.normalize().multiplyScalar(5 + Math.random() * 5); // very fast
+  
+  star.lookAt(star.position.clone().add(velocity));
+  
+  scene.add(star);
+  shootingStars.push({ mesh: star, velocity: velocity, life: 150 });
+}
+
 function animate() {
   requestAnimationFrame(animate);
   TWEEN.update();
   controls.update();
+
+  // Shooting stars
+  if (Math.random() < 0.003) { // Occasional comet
+    spawnShootingStar();
+  }
+  for (let i = shootingStars.length - 1; i >= 0; i--) {
+    const star = shootingStars[i];
+    star.mesh.position.add(star.velocity);
+    star.life--;
+    if (star.life <= 0) {
+      scene.remove(star.mesh);
+      star.mesh.geometry.dispose();
+      star.mesh.material.dispose();
+      shootingStars.splice(i, 1);
+    }
+  }
 
   const isHoveringMoon = !!window.hoveredMoon;
   const popup = document.getElementById('moon-popup');
