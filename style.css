@@ -170,7 +170,7 @@ nav {
 .nav-links a.active { color: var(--text); }
 
 .contact-btn {
-  background: linear-gradient(110deg, #999 30%, #3a86ff 50%, #999 70%);
+  background: linear-gradient(110deg, #999 30%, #111 50%, #999 70%);
   background-size: 200% auto;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -184,6 +184,11 @@ nav {
 @keyframes gradientShift {
   0% { background-position: 200% center; }
   100% { background-position: -200% center; }
+}
+
+.nav-links--light .contact-btn {
+  background: linear-gradient(110deg, #999 30%, #fff 50%, #999 70%);
+  background-size: 200% auto;
 }
 
 /* ===========================
