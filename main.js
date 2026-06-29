@@ -988,14 +988,14 @@ function renderGalaxy3D() {
     });
   });
 
-  // Setup Voyager for "esplorazioni"
+  // Setup Voyager for "Explorations"
   const setupVoyager = (model) => {
     if (currentView !== 'galaxy') return; // Don't add if we already navigated away
     const radius = 320; // Furthest orbit
     const speed = -0.0008; // Retrograde orbit to stand out
 
-    if (!globalPlanetState['esplorazioni']) {
-      globalPlanetState['esplorazioni'] = { angle: Math.random() * Math.PI * 2, startAngle: 0, totalOrbits: 0 };
+    if (!globalPlanetState['explorations']) {
+      globalPlanetState['explorations'] = { angle: Math.random() * Math.PI * 2, startAngle: 0, totalOrbits: 0 };
     }
 
     const orbitLine = createOrbitLine(radius);
@@ -1008,12 +1008,12 @@ function renderGalaxy3D() {
     mesh.rotation.x = Math.PI / 4;
     scene.add(mesh);
 
-    const labelEl = createLabel('Esplorazioni', false);
+    const labelEl = createLabel('Explorations', false);
 
     planetsData.push({
       mesh, orbitLine, labelEl, radius, speed,
-      angle: globalPlanetState['esplorazioni'].angle,
-      catRef: globalPlanetState['esplorazioni']
+      angle: globalPlanetState['explorations'].angle,
+      catRef: globalPlanetState['explorations']
     });
     
     updateScreenReaderA11y();
