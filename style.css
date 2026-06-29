@@ -1292,11 +1292,11 @@ footer {
     bottom: 5rem;
   }
   /* Footer hidden on mobile */
-  .space-footer {
+  footer {
     display: none;
   }
   /* Add © to nav name on mobile */
-  .nav-name.nav--light::before {
+  .nav-name::before {
     content: '© ';
   }
   /* Labels slightly smaller on mobile */
