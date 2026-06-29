@@ -1073,7 +1073,7 @@ let shootingStars = [];
 function spawnShootingStar() {
   if (!scene) return;
   
-  // A glowing white streak
+  // A glowing white/blue streak
   const material = new THREE.MeshBasicMaterial({ 
     color: 0xffffff, 
     transparent: true, 
@@ -1081,8 +1081,8 @@ function spawnShootingStar() {
     blending: THREE.AdditiveBlending,
     depthWrite: false
   });
-  // Very long and thin
-  const geometry = new THREE.CylinderGeometry(0.05, 0.2, 40, 4);
+  // Thick head in front (top), thin tail in back (bottom)
+  const geometry = new THREE.CylinderGeometry(0.15, 0.005, 40, 4);
   geometry.rotateX(Math.PI / 2); // align with Z
   
   const star = new THREE.Mesh(geometry, material);
