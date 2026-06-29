@@ -395,12 +395,82 @@
 </div>
 
 <script>
-/* ===== STATE ===== */
+/* ===== IMAGE UPLOAD ===== */
+async function processImageFile(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+        // Max width 1920 for performance
+        if (width > 1920) {
+          height = Math.round(height * (1920 / width));
+          width = 1920;
+        }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        
+        // Convert to WebP Base64 (0.85 quality)
+        const dataUrl = canvas.toDataURL('image/webp', 0.85);
+        // dataUrl is "data:image/webp;base64,...."
+        const base64 = dataUrl.split(',')[1];
+        resolve(base64);
+      };
+      img.onerror = reject;
+      img.src = e.target.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+async function handleImageUpload(inputEl, isPreview, blockIdx) {
+  const file = inputEl.files[0];
+  if (!file) return;
+  
+  toast('Processing image...', 'info');
+  try {
+    const base64 = await processImageFile(file);
+    const timestamp = Date.now();
+    const cleanName = file.name.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
+    const filename = `${timestamp}_${cleanName}.webp`;
+    const finalPath = `projects/images/${filename}`;
+    
+    pendingUploads.push({
+      path: finalPath,
+      content: base64
+    });
+    
+    // Update state and UI
+    if (isPreview) {
+      updateField('preview', finalPath);
+      const urlInput = document.getElementById('previewUrlInput');
+      if (urlInput) urlInput.value = finalPath;
+    } else {
+      updateBlock(blockIdx, 'src', finalPath);
+      const urlInput = document.getElementById(`blockImgUrl_${blockIdx}`);
+      if (urlInput) urlInput.value = finalPath;
+    }
+    
+    toast('Image converted to WebP and queued for upload!', 'success');
+  } catch (err) {
+    console.error(err);
+    toast('Error processing image', 'error');
+  }
+}
+
+/* ===== GITHUB SAVE ===== */
 let projects = [];
 let globalCategories = [];
 let currentId = null;
 let githubToken = '';
 let githubRepo = '';
+let pendingUploads = []; // Store base64 images ready to be uploaded
 
 const COLORS = {
   yellow: '#f5c842',
@@ -495,6 +565,30 @@ async function saveToGitHub() {
   ind.style.display = 'flex';
 
   try {
+    // 1. Upload any pending images
+    if (pendingUploads.length > 0) {
+      toast(`Uploading ${pendingUploads.length} images to GitHub...`, 'info');
+      for (const upload of pendingUploads) {
+        const imgUrl = `https://api.github.com/repos/${githubRepo}/contents/${upload.path}`;
+        const imgBody = {
+          message: `Upload image ${upload.path}`,
+          content: upload.content
+        };
+        const imgRes = await fetch(imgUrl, {
+          method: 'PUT',
+          headers: { Authorization: `token ${githubToken}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify(imgBody)
+        });
+        if (!imgRes.ok) {
+          throw new Error(`Failed to upload ${upload.path}: ` + await imgRes.text());
+        }
+      }
+      pendingUploads = []; // Clear queue on success
+      toast('Images uploaded successfully.', 'success');
+    }
+
+    // 2. Save JSON
+    toast('Saving projects.json...', 'info');
     const url = `https://api.github.com/repos/${githubRepo}/contents/projects/projects.json`;
     const content = btoa(unescape(encodeURIComponent(JSON.stringify(projects, null, 2))));
     const body = { message: 'Update projects via admin panel', content, sha: window._fileSha };
@@ -732,7 +826,11 @@ function renderBlocks() {
         </div>
         <div class="form-group">
           <label>Image URL</label>
-          <input type="text" value="${b.src||''}" placeholder="projects/images/name.webp" oninput="updateBlock(${i},'src',this.value)" />
+          <div style="display:flex;gap:0.5rem">
+            <input type="text" id="blockImgUrl_${i}" value="${b.src||''}" placeholder="projects/images/name.webp" oninput="updateBlock(${i},'src',this.value)" style="flex:1" />
+            <input type="file" id="blockUpload_${i}" accept="image/*" style="display:none" onchange="handleImageUpload(this, false, ${i})" />
+            <button class="btn btn-ghost" onclick="document.getElementById('blockUpload_${i}').click()">Upload WebP</button>
+          </div>
         </div>
         <div class="form-group" style="margin-top:0.5rem">
           <label>Caption (optional)</label>
@@ -789,7 +887,11 @@ function renderEditor(p) {
         </div>
         <div class="form-group">
           <label>Preview Image URL</label>
-          <input type="text" value="${esc(p.preview||'')}" placeholder="projects/images/preview.webp" oninput="updateField('preview',this.value)" />
+          <div style="display:flex;gap:0.5rem">
+            <input type="text" id="previewUrlInput" value="${esc(p.preview||'')}" placeholder="projects/images/preview.webp" oninput="updateField('preview',this.value)" style="flex:1" />
+            <input type="file" id="previewUpload" accept="image/*" style="display:none" onchange="handleImageUpload(this, true)" />
+            <button class="btn btn-ghost" onclick="document.getElementById('previewUpload').click()">Upload WebP</button>
+          </div>
         </div>
       </div>
     </div>
