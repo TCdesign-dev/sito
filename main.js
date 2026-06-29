@@ -215,8 +215,10 @@ async function loadExplorations(containerId) {
   explorations.forEach(p => {
     const a = document.createElement('a');
     a.className = 'exploration-card reveal';
-    a.href = p.page ? `project.html?id=${encodeURIComponent(p.id)}` : (p.link || '#');
-    if (!p.page && p.link) a.target = '_blank';
+    // Seleziona project.html se 'page' è true, O se non c'è un link esterno
+    const hasPage = p.page || (!p.page && !p.link);
+    a.href = hasPage ? `project.html?id=${encodeURIComponent(p.id)}` : p.link;
+    if (!hasPage && p.link) a.target = '_blank';
 
     a.innerHTML = `
       <img src="${esc(p.preview || '')}" alt="${esc(p.name)}" class="exploration-img" loading="lazy" />
@@ -392,7 +394,10 @@ async function loadSolarSystem(systemId, bgId, mobileListId) {
 
   orbitsMap = {};
   projects.forEach(p => {
-    const category = p.category || (p.tags && p.tags.length ? p.tags[0] : 'Other');
+    let category = p.category || (p.tags && p.tags.length ? p.tags[0] : 'Other');
+    if (category.toLowerCase() === 'explorations' || category.toLowerCase() === 'esplorazioni') {
+      return; // Skip adding a dedicated planet for this category (Voyager handles it)
+    }
     if (!orbitsMap[category]) orbitsMap[category] = [];
     orbitsMap[category].push(p);
   });

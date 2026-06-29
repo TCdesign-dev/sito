@@ -640,7 +640,7 @@ function addProject() {
   const p = {
     id, name: 'New Project', year: new Date().getFullYear(),
     preview: '', color: 'blue', category: '', description: '',
-    link: null, page: false, content: []
+    link: null, page: true, content: []
   };
   projects.unshift(p);
   renderSidebar();
