@@ -392,7 +392,7 @@ async function loadSolarSystem(systemId, bgId, mobileListId) {
 
   orbitsMap = {};
   projects.forEach(p => {
-    const category = p.tags && p.tags.length ? p.tags[0] : 'Other';
+    const category = p.category || (p.tags && p.tags.length ? p.tags[0] : 'Altro');
     if (!orbitsMap[category]) orbitsMap[category] = [];
     orbitsMap[category].push(p);
   });

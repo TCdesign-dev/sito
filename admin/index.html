@@ -65,7 +65,7 @@
     .btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
     /* ---- LAYOUT ---- */
-    .app { display: flex; flex: 1; }
+    .app { display: flex; flex: 1; overflow: hidden; }
 
     /* ---- SIDEBAR ---- */
     aside {
@@ -148,7 +148,7 @@
       border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow);
     }
     textarea { resize: vertical; min-height: 80px; line-height: 1.6; }
-    select option { background: var(--surface); }
+    select option { background: var(--surface); color: var(--text); }
 
     /* Toggle */
     .toggle-wrap { display: flex; align-items: center; gap: 0.75rem; margin-top: 0.2rem; }
@@ -173,21 +173,21 @@
     .toggle input:checked + .toggle-slider::before { transform: translateX(18px); background: #fff; }
     .toggle-label { font-size: 0.82rem; color: var(--text); }
 
-    /* Tags */
-    .tags-wrap { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.4rem; }
-    .tag-chip {
-      display: inline-flex; align-items: center; gap: 0.3rem;
-      background: rgba(124,106,247,0.12); border: 1px solid rgba(124,106,247,0.25);
-      color: var(--accent); border-radius: 20px; padding: 0.25rem 0.65rem;
-      font-size: 0.76rem; font-weight: 500;
+    /* Categories Manager items */
+    .cat-manager-list {
+      display: flex; flex-direction: column; gap: 0.5rem; margin-top: 1rem;
+      max-height: 300px; overflow-y: auto; padding-right: 0.5rem;
     }
-    .tag-chip button {
-      background: none; border: none; color: inherit; cursor: pointer;
-      font-size: 0.85rem; line-height: 1; opacity: 0.7; padding: 0;
+    .cat-manager-item {
+      display: flex; align-items: center; gap: 0.5rem;
+      background: var(--bg); padding: 0.5rem 0.75rem; border-radius: 8px;
+      border: 1px solid var(--border);
     }
-    .tag-chip button:hover { opacity: 1; }
-    .tag-input-wrap { display: flex; gap: 0.5rem; }
-    .tag-input-wrap input { flex: 1; }
+    .cat-manager-item input {
+      flex: 1; background: transparent; border: none; color: var(--text);
+      font-size: 0.85rem; outline: none; padding: 0;
+    }
+    .cat-manager-item input:focus { box-shadow: none; border: none; }
 
     /* Content blocks */
     .content-block {
@@ -245,11 +245,18 @@
     .modal {
       background: var(--surface); border: 1px solid var(--border);
       border-radius: 16px; padding: 2rem; width: 90%; max-width: 440px;
+      position: relative;
     }
-    .modal h3 { font-size: 1rem; margin-bottom: 0.5rem; }
+    .modal h3 { font-size: 1.1rem; margin-bottom: 0.5rem; font-weight: 600; }
     .modal p { font-size: 0.83rem; color: var(--text-muted); margin-bottom: 1.25rem; line-height: 1.6; }
     .modal-actions { display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.5rem; }
     .modal a { color: var(--accent); }
+    .modal-close {
+      position: absolute; top: 1.5rem; right: 1.5rem;
+      background: none; border: none; color: var(--text-muted); cursor: pointer;
+      font-size: 1.2rem; line-height: 1;
+    }
+    .modal-close:hover { color: var(--text); }
 
     /* ---- SETTINGS PANEL ---- */
     .settings-wrap {
@@ -282,7 +289,7 @@
 <body>
 
 <!-- MODAL: Setup Token -->
-<div class="modal-overlay" id="setupModal">
+<div class="modal-overlay hidden" id="setupModal">
   <div class="modal">
     <h3>🔑 Connetti GitHub</h3>
     <p>Per salvare i progetti direttamente su GitHub, hai bisogno di un <strong>Personal Access Token</strong>.<br><br>
@@ -305,6 +312,24 @@
   </div>
 </div>
 
+<!-- MODAL: Manage Categories -->
+<div class="modal-overlay hidden" id="categoriesModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeCategoriesModal()">✕</button>
+    <h3>Gestione Categorie</h3>
+    <p>Modifica, elimina o aggiungi nuove categorie. Le modifiche si rifletteranno su tutti i progetti assegnati.</p>
+    
+    <div style="display:flex;gap:0.5rem;margin-bottom:1rem">
+      <input type="text" id="newCatInput" placeholder="Nuova categoria..." style="flex:1" onkeydown="if(event.key==='Enter')createNewCategory()" />
+      <button class="btn btn-primary" onclick="createNewCategory()">Aggiungi</button>
+    </div>
+
+    <div class="cat-manager-list" id="catManagerList">
+      <!-- Injected by JS -->
+    </div>
+  </div>
+</div>
+
 <!-- HEADER -->
 <header>
   <div class="logo">✦ Portfolio <span>/ Admin</span></div>
@@ -312,10 +337,11 @@
     <span id="savingIndicator" style="display:none;align-items:center;gap:0.4rem;font-size:0.78rem;color:var(--text-muted)">
       <span class="saving-dot"></span> Salvataggio...
     </span>
+    <button class="btn btn-ghost" onclick="openCategoriesModal()">🏷 Gestione Categorie</button>
     <button class="btn btn-primary" id="saveBtn" onclick="saveToGitHub()" disabled>
       ↑ Pubblica su GitHub
     </button>
-    <button class="btn btn-ghost btn-sm" onclick="toggleSettings()">⚙ Impostazioni</button>
+    <button class="btn btn-ghost btn-sm" onclick="toggleSettings()">⚙</button>
   </div>
 </header>
 
@@ -371,6 +397,7 @@
 <script>
 /* ===== STATE ===== */
 let projects = [];
+let globalCategories = [];
 let currentId = null;
 let githubToken = '';
 let githubRepo = '';
@@ -392,7 +419,6 @@ window.addEventListener('DOMContentLoaded', async () => {
   if (!githubToken) {
     document.getElementById('setupModal').classList.remove('hidden');
   } else {
-    document.getElementById('setupModal').classList.add('hidden');
     document.getElementById('saveBtn').disabled = false;
     await loadProjects();
   }
@@ -445,12 +471,17 @@ async function loadProjects() {
     const content = atob(data.content.replace(/\n/g, ''));
     projects = JSON.parse(content);
     window._fileSha = data.sha; // needed to update the file
+    
+    // Extract unique categories, migrating legacy tags if needed
+    extractCategories();
+    
     renderSidebar();
     toast(`${projects.length} progetti caricati`, 'success');
   } catch(e) {
     toast('Errore nel caricamento. Controlla il token e il repo.', 'error');
     console.error(e);
     projects = [];
+    globalCategories = [];
     renderSidebar();
   }
 }
@@ -492,6 +523,92 @@ function exportJSON() {
   a.download = 'projects.json'; a.click();
 }
 
+/* ===== CATEGORIES MANAGER ===== */
+function extractCategories() {
+  const set = new Set();
+  projects.forEach(p => {
+    let cat = p.category;
+    if (!cat && p.tags && p.tags.length > 0) {
+      cat = p.tags[0]; // Migrate legacy tag to category internally
+      p.category = cat;
+    }
+    if (cat) set.add(cat);
+    
+    // Clean up old tags array to keep JSON clean
+    if (p.tags) delete p.tags;
+  });
+  globalCategories = Array.from(set).sort();
+}
+
+function openCategoriesModal() {
+  document.getElementById('categoriesModal').classList.remove('hidden');
+  renderCategoriesManager();
+}
+function closeCategoriesModal() {
+  document.getElementById('categoriesModal').classList.add('hidden');
+}
+
+function renderCategoriesManager() {
+  const list = document.getElementById('catManagerList');
+  if (globalCategories.length === 0) {
+    list.innerHTML = '<p style="color:var(--text-muted);font-size:0.85rem">Nessuna categoria esistente.</p>';
+    return;
+  }
+  list.innerHTML = globalCategories.map((c, idx) => `
+    <div class="cat-manager-item">
+      <input type="text" value="${esc(c)}" onchange="renameCategory(${idx}, this.value)" />
+      <button class="btn btn-danger btn-sm" onclick="deleteCategory(${idx})">Elimina</button>
+    </div>
+  `).join('');
+}
+
+function createNewCategory() {
+  const input = document.getElementById('newCatInput');
+  const val = input.value.trim();
+  if (!val) return;
+  if (!globalCategories.includes(val)) {
+    globalCategories.push(val);
+    globalCategories.sort();
+    toast(`Categoria "${val}" creata`, 'success');
+  }
+  input.value = '';
+  renderCategoriesManager();
+  // if a project is open, update its dropdown
+  if (currentId) selectProject(currentId);
+}
+
+function renameCategory(idx, newName) {
+  newName = newName.trim();
+  const oldName = globalCategories[idx];
+  if (!newName || newName === oldName) return;
+  
+  globalCategories[idx] = newName;
+  // Update all projects that had the old category
+  projects.forEach(p => {
+    if (p.category === oldName) p.category = newName;
+  });
+  
+  toast(`Categoria rinominata in "${newName}"`, 'success');
+  globalCategories.sort();
+  renderCategoriesManager();
+  if (currentId) selectProject(currentId);
+}
+
+function deleteCategory(idx) {
+  const cat = globalCategories[idx];
+  if (!confirm(`Sei sicuro di voler eliminare la categoria "${cat}"? I progetti verranno lasciati "Senza Categoria".`)) return;
+  
+  globalCategories.splice(idx, 1);
+  // Update all projects
+  projects.forEach(p => {
+    if (p.category === cat) p.category = '';
+  });
+  
+  toast(`Categoria eliminata`, 'info');
+  renderCategoriesManager();
+  if (currentId) selectProject(currentId);
+}
+
 /* ===== SIDEBAR ===== */
 function renderSidebar() {
   const list = document.getElementById('projectList');
@@ -502,7 +619,7 @@ function renderSidebar() {
     div.onclick = () => selectProject(p.id);
     div.innerHTML = `
       <span class="project-dot" style="background:${COLORS[p.color] || '#aaa'}"></span>
-      <span class="project-item-name">${p.name || 'Senza nome'}</span>
+      <span class="project-item-name">${esc(p.name || 'Senza nome')}</span>
       <span class="project-item-year">${p.year || ''}</span>
     `;
     list.appendChild(div);
@@ -522,8 +639,8 @@ function addProject() {
   const id = 'project-' + Date.now();
   const p = {
     id, name: 'Nuovo Progetto', year: new Date().getFullYear(),
-    preview: '', color: 'blue', tags: [], description: '',
-    link: null, page: false, category: '', content: []
+    preview: '', color: 'blue', category: '', description: '',
+    link: null, page: false, content: []
   };
   projects.unshift(p);
   renderSidebar();
@@ -560,35 +677,6 @@ function updateField(field, value) {
 
 function slugify(str) {
   return str.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-}
-
-/* ===== TAGS ===== */
-function addTag() {
-  const input = document.getElementById('tagInput');
-  const val = input.value.trim();
-  if (!val) return;
-  const p = projects.find(x => x.id === currentId);
-  if (!p.tags) p.tags = [];
-  if (!p.tags.includes(val)) {
-    p.tags.push(val);
-    renderTags();
-  }
-  input.value = '';
-}
-
-function removeTag(tag) {
-  const p = projects.find(x => x.id === currentId);
-  p.tags = p.tags.filter(t => t !== tag);
-  renderTags();
-}
-
-function renderTags() {
-  const p = projects.find(x => x.id === currentId);
-  const wrap = document.getElementById('tagsWrap');
-  if (!wrap) return;
-  wrap.innerHTML = (p.tags || []).map(t =>
-    `<span class="tag-chip">${t}<button onclick="removeTag('${t}')">×</button></span>`
-  ).join('');
 }
 
 /* ===== CONTENT BLOCKS ===== */
@@ -658,9 +746,15 @@ function renderBlocks() {
 /* ===== RENDER EDITOR ===== */
 function renderEditor(p) {
   const main = document.getElementById('mainArea');
+  
+  // Costruisci le options per la categoria
+  const catOptions = globalCategories.map(c => 
+    `<option value="${esc(c)}" ${p.category === c ? 'selected' : ''}>${esc(c)}</option>`
+  ).join('');
+
   main.innerHTML = `
     <div class="editor-header">
-      <h2>${p.name || 'Progetto'}</h2>
+      <h2>${esc(p.name) || 'Progetto'}</h2>
       <div class="editor-header-actions">
         <button class="btn btn-danger btn-sm" onclick="deleteProject()">✕ Elimina</button>
       </div>
@@ -687,8 +781,11 @@ function renderEditor(p) {
       </div>
       <div class="form-row" style="margin-top:1rem">
         <div class="form-group">
-          <label>Categoria (es. Design, Web, esplorazioni)</label>
-          <input type="text" value="${esc(p.category||p.tags?.[0]||'')}" placeholder="es. esplorazioni" oninput="updateField('category',this.value)" />
+          <label>Categoria</label>
+          <select onchange="updateField('category', this.value)">
+            <option value="">-- Seleziona o lascia vuoto --</option>
+            ${catOptions}
+          </select>
         </div>
         <div class="form-group">
           <label>URL preview immagine</label>
@@ -697,24 +794,16 @@ function renderEditor(p) {
       </div>
     </div>
 
-    <!-- COLORE & TAG -->
+    <!-- COLORE -->
     <div class="form-card">
-      <div class="form-card-title">Colore & Tag</div>
+      <div class="form-card-title">Stile Pianeta</div>
       <div class="form-group">
-        <label>Colore pianeta</label>
+        <label>Colore nel sistema solare</label>
         <div class="color-picker" id="colorPicker">
           ${Object.entries(COLORS).map(([name, hex]) =>
             `<div class="color-option${p.color===name?' selected':''}" style="background:${hex}" onclick="selectColor('${name}')" title="${name}"></div>`
           ).join('')}
         </div>
-      </div>
-      <div class="form-group" style="margin-top:1rem">
-        <label>Tag</label>
-        <div class="tag-input-wrap">
-          <input type="text" id="tagInput" placeholder="Aggiungi tag..." onkeydown="if(event.key==='Enter')addTag()" />
-          <button class="btn btn-ghost btn-sm" onclick="addTag()">+ Aggiungi</button>
-        </div>
-        <div class="tags-wrap" id="tagsWrap"></div>
       </div>
     </div>
 
@@ -753,7 +842,6 @@ function renderEditor(p) {
     </div>
   `;
 
-  renderTags();
   renderBlocks();
 }
 
