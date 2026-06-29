@@ -1,11 +1,35 @@
 [
   {
+    "id": "project-1782754807074",
+    "name": "Nuovo Progetto",
+    "year": 2026,
+    "preview": "",
+    "color": "orange",
+    "tags": [
+      "web"
+    ],
+    "description": "hgdfbdfgfd",
+    "link": null,
+    "page": false,
+    "category": "",
+    "content": [
+      {
+        "type": "text",
+        "value": "ciao"
+      }
+    ]
+  },
+  {
     "id": "compact-security-camera",
     "name": "Compact Security Camera",
     "year": 2024,
     "preview": "projects/images/camera-preview.webp",
     "color": "yellow",
-    "tags": ["Design", "Figma", "Product"],
+    "tags": [
+      "Design",
+      "Figma",
+      "Product"
+    ],
     "description": "A personally made prototype of an extremely compact indoor security camera. Current solutions available on the market are often relatively bulky, despite the fact that there is no real need for space for electronics.",
     "link": null,
     "page": true,
@@ -40,7 +64,11 @@
     "year": 2024,
     "preview": "projects/images/cma-preview.webp",
     "color": "green",
-    "tags": ["Web", "Development", "Archive"],
+    "tags": [
+      "Web",
+      "Development",
+      "Archive"
+    ],
     "description": "An archive and collection platform for creative minds, designers and developers sharing their ongoing work and inspiration.",
     "link": "https://github.com",
     "page": false,
@@ -52,14 +80,18 @@
     "year": 2024,
     "preview": "projects/images/website-preview.webp",
     "color": "blue",
-    "tags": ["Web", "Design", "CSS"],
+    "tags": [
+      "Web",
+      "Design",
+      "CSS"
+    ],
     "description": "The second iteration of my personal portfolio website, designed with extreme minimalism in mind. System fonts, justified text, and a focus on content over decoration.",
     "link": null,
     "page": true,
     "content": [
       {
         "type": "text",
-        "value": "The second iteration of my personal portfolio. Designed with extreme minimalism — system fonts, justified text, almost no visual decoration. The constraint was to communicate everything through typography and layout alone."
+        "value": "The second iteration of my personal portfolio. Designed with extreme minimalism â system fonts, justified text, almost no visual decoration. The constraint was to communicate everything through typography and layout alone."
       },
       {
         "type": "text",
@@ -73,7 +105,11 @@
     "year": 2023,
     "preview": "projects/images/type-preview.jpg",
     "color": "pink",
-    "tags": ["Typography", "Design", "Exploration"],
+    "tags": [
+      "Typography",
+      "Design",
+      "Exploration"
+    ],
     "description": "A series of typographic experiments exploring the boundaries of legibility and visual rhythm through modular grid systems.",
     "link": null,
     "page": true,
