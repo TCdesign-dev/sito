@@ -274,7 +274,12 @@ async function loadProjectDetail(containerId) {
     ? `<a href="${esc(project.link)}" class="project-link-btn" target="_blank" rel="noopener noreferrer">View project ↗</a>`
     : '';
 
+  const isExploration = project.category && (project.category.toLowerCase() === 'explorations' || project.category.toLowerCase() === 'esplorazioni');
+  const backHref = isExploration ? 'explorations.html' : 'index.html?skipIntro=true';
+  const backText = isExploration ? 'Back to list' : 'Back to Galaxy';
+
   container.innerHTML = `
+    <a href="${backHref}" class="project-back">${backText}</a>
     <h1 class="project-title">${esc(project.name)}</h1>
     <div class="project-header-meta">
       <span class="project-year-badge">${esc(String(project.year))}</span>
@@ -285,18 +290,6 @@ async function loadProjectDetail(containerId) {
       ${contentHtml}
     </div>
   `;
-
-  // Update the floating back button dynamically
-  const dynBackBtn = document.getElementById('dynamic-back-btn');
-  if (dynBackBtn) {
-    if (project.category && (project.category.toLowerCase() === 'explorations' || project.category.toLowerCase() === 'esplorazioni')) {
-      dynBackBtn.href = 'explorations.html';
-      dynBackBtn.innerHTML = '← Back to list';
-    } else {
-      dynBackBtn.href = 'index.html?skipIntro=true';
-      dynBackBtn.innerHTML = '← Back to Galaxy';
-    }
-  }
 
   initScrollReveal();
 }
