@@ -30,15 +30,16 @@
   </header>
 
   <!-- 404 Content -->
-  <main class="space-main" role="main" style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; text-align:center; position:relative; z-index:10; padding: 0 1.5rem;">
+  <main class="space-main" role="main" style="display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; text-align:center; position:relative; z-index:10; padding: 5rem 1.5rem;">
     
-    <div id="solar-system" style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:-1;"></div>
+    <div id="solar-system" style="width:100%; max-width:800px; height:45vh; min-height:300px; margin-bottom:1rem;"></div>
     
-    <h1 style="color:#fff; font-size:clamp(4rem, 10vw, 8rem); margin-bottom:1rem; text-shadow: 0 4px 30px rgba(0,0,0,0.8); font-weight:800; letter-spacing:-0.05em;">404</h1>
-    <p style="color:#ccc; font-size:1.2rem; max-width:500px; margin:0 auto; line-height:1.6; text-shadow: 0 2px 10px rgba(0,0,0,0.8);">
-      Sembra che tu abbia esplorato troppo, oltre i confini dell'ecosistema orbitale conosciuto...<br><br>
-      Tranquillo, puoi sempre <a href="index.html" style="color:var(--accent); text-decoration:underline;">tornare alla galassia principale</a>.
+    <h1 style="color:#fff; font-size:clamp(4rem, 10vw, 8rem); margin-bottom:1rem; text-shadow: 0 4px 30px rgba(0,0,0,0.8); font-weight:800; letter-spacing:-0.05em; line-height: 1;">404</h1>
+    <p style="color:#ccc; font-size:1.2rem; max-width:500px; margin:0 auto 2.5rem auto; line-height:1.6; text-shadow: 0 2px 10px rgba(0,0,0,0.8);">
+      You've explored too far, beyond the boundaries of the known orbital ecosystem...
     </p>
+    
+    <a href="index.html" class="contact-btn" style="padding: 1rem 2.5rem; font-size: 1.1rem; box-shadow: 0 4px 15px rgba(255,255,255,0.2);">Back home</a>
   </main>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
