@@ -16,7 +16,7 @@
 /* ===========================
    CONFIG
    =========================== */
-const PROJECTS_JSON = 'projects/projects.json';
+const PROJECTS_JSON = '/projects/projects.json';
 
 const COLOR_MAP = {
   yellow: 'postit--yellow',
@@ -82,19 +82,23 @@ function buildPostitCard(project) {
   const rotation   = seedRotation(project.id);
   const curl       = shouldCurl(project.id);
   const isExternal = project.link && !project.page;
+  const hasPage    = !!project.page;
 
-  const href = project.page
-    ? `project.html?id=${encodeURIComponent(project.id)}`
-    : (project.link || '#');
+  const a = document.createElement('a');
+  if (hasPage) {
+    a.href = `/${encodeURIComponent(project.category || 'all')}/${encodeURIComponent(project.id)}`;
+  } else if (project.link) {
+    a.href = project.link;
+  } else {
+    a.href = '#';
+  }
 
   const tagsHtml = (project.tags || [])
     .slice(0, 2)
     .map(t => `<span class="postit-tag">${esc(t)}</span>`)
     .join('');
 
-  const a = document.createElement('a');
   a.className = `postit ${colorClass}${curl ? ' postit--curled' : ''}`;
-  a.href = href;
   a.style.setProperty('--r', `${rotation}deg`);
   a.setAttribute('aria-label', `${project.name} — ${project.year}`);
 
@@ -170,7 +174,7 @@ async function loadLatestProjects(containerId, count = 3) {
 
   latest.forEach((p, i) => {
     const href = p.page
-      ? `project.html?id=${encodeURIComponent(p.id)}`
+      ? `/${encodeURIComponent(p.category || 'all')}/${encodeURIComponent(p.id)}`
       : (p.link || '#');
 
     const a = document.createElement('a');
@@ -215,9 +219,9 @@ async function loadExplorations(containerId) {
   explorations.forEach(p => {
     const a = document.createElement('a');
     a.className = 'exploration-card reveal';
-    // Seleziona project.html se 'page' è true, O se non c'è un link esterno
-    const hasPage = p.page || (!p.page && !p.link);
-    a.href = hasPage ? `project.html?id=${encodeURIComponent(p.id)}` : p.link;
+    // Seleziona project.html (mascherata) se 'page' è true
+    const hasPage = p.page === true || p.page === "true";
+    a.href = hasPage ? `/${encodeURIComponent(p.category || 'all')}/${encodeURIComponent(p.id)}` : p.link;
     if (!hasPage && p.link) a.target = '_blank';
 
     a.innerHTML = `
@@ -242,7 +246,15 @@ async function loadProjectDetail(containerId) {
   const container = document.getElementById(containerId);
   if (!container) return;
 
-  const id = new URLSearchParams(window.location.search).get('id');
+  let id = new URLSearchParams(window.location.search).get('id') || container.dataset.id;
+  if (!id && window.location.pathname.length > 1) {
+    const parts = window.location.pathname.split('/').filter(p => p);
+    if (parts.length >= 2) {
+      id = parts[1]; // /category/id
+    } else if (parts[0] !== 'explorations' && parts[0] !== 'admin') {
+      id = parts[0]; // fallback /id
+    }
+  }
   if (!id) { container.innerHTML = notFoundHtml(); return; }
 
   const projects = await fetchProjects();
@@ -275,8 +287,8 @@ async function loadProjectDetail(containerId) {
     : '';
 
   const isExploration = project.category && (project.category.toLowerCase() === 'explorations' || project.category.toLowerCase() === 'esplorazioni');
-  const backHref = isExploration ? 'explorations.html' : 'index.html?skipIntro=true';
-  const backText = isExploration ? 'Back to list' : 'Back to Galaxy';
+  const backHref = isExploration ? '/explorations' : `/${encodeURIComponent(project.category || 'all')}`;
+  const backText = isExploration ? 'Back to list' : `Back to ${project.category || 'Galaxy'}`;
 
   container.innerHTML = `
     <a href="${backHref}" class="project-back">${backText}</a>
@@ -413,7 +425,7 @@ async function loadSolarSystem(systemId, bgId, mobileListId) {
     categories.forEach(cat => {
       orbitsMap[cat].forEach(p => {
         const pColor = PLANET_COLORS[p.color] || '#aaa';
-        const href = p.page ? `project.html?id=${encodeURIComponent(p.id)}` : (p.link || '#');
+        const href = p.page ? `/${encodeURIComponent(p.category || 'all')}/${encodeURIComponent(p.id)}` : (p.link || '#');
         const isExternal = p.link && !p.page;
 
         const ml = document.createElement('a');
@@ -481,6 +493,7 @@ function initThreeJS(container, backBtn) {
       const oldCat = currentView;
       currentView = 'galaxy';
       backBtn.classList.remove('visible');
+      history.pushState({}, '', '/');
       
       const bioWrap = document.querySelector('.hero-bio-wrap');
       if (bioWrap) bioWrap.style.display = 'block';
@@ -713,6 +726,7 @@ function handleObjectClick(obj) {
     const cat = obj.userData.category;
     currentView = cat;
     document.getElementById('galaxy-back-btn').classList.add('visible');
+    history.pushState({}, '', `/${cat}`);
 
     // 1. Stop all orbits
     planetsData.forEach(p => p.speed = 0);
@@ -775,7 +789,7 @@ function handleObjectClick(obj) {
       .start();
   } else if (obj.userData.isMoon) {
     const p = obj.userData.project;
-    const href = p.page ? `project.html?id=${encodeURIComponent(p.id)}` : (p.link || '#');
+    const href = p.page ? `/${encodeURIComponent(p.category || 'all')}/${encodeURIComponent(p.id)}` : (p.link || '#');
     
     if (isMobile) {
       if (window.isTransitioning) return;
@@ -1002,7 +1016,7 @@ function renderGalaxy3D() {
     scene.add(orbitLine);
 
     const mesh = model.clone();
-    mesh.userData = { isVoyager: true, link: 'explorations.html' };
+    mesh.userData = { isVoyager: true, link: '/explorations' };
     
     // Slight tilt to the model itself
     mesh.rotation.x = Math.PI / 4;
@@ -1020,7 +1034,7 @@ function renderGalaxy3D() {
   };
 
   if (!voyagerModel) {
-    gltfLoader.load('assets/Voyager.glb', (gltf) => {
+    gltfLoader.load('/assets/Voyager.glb', (gltf) => {
       voyagerModel = gltf.scene;
       // Adjust scale depending on the model's original size
       // We start with a reasonable guess, and scale it up. 
@@ -1048,6 +1062,22 @@ function renderGalaxy3D() {
   }
   
   updateScreenReaderA11y();
+  
+  // Auto-zoom if URL matches a category
+  const pathParts = window.location.pathname.split('/').filter(p => p);
+  const isCategoryUrl = pathParts.length === 1 && 
+                        pathParts[0] !== 'explorations' && 
+                        pathParts[0] !== 'admin' && 
+                        pathParts[0] !== 'index.html';
+  if (isCategoryUrl) {
+    const cat = decodeURIComponent(pathParts[0]);
+    const catPlanet = planetsData.find(p => p.mesh.userData.isCategory && p.mesh.userData.category === cat);
+    if (catPlanet) {
+      setTimeout(() => {
+        handleObjectClick(catPlanet.mesh);
+      }, 500); // Give it a moment to initialize
+    }
+  }
 }
 
 function renderSystem3D(category) {
@@ -1278,7 +1308,13 @@ document.addEventListener('DOMContentLoaded', () => {
   initCopyrightYear();
   initScrollReveal();
   
-  const skipIntro = new URLSearchParams(window.location.search).get('skipIntro') === 'true';
+  const pathParts = window.location.pathname.split('/').filter(p => p);
+  const isCategoryUrl = pathParts.length === 1 && 
+                        pathParts[0] !== 'explorations' && 
+                        pathParts[0] !== 'admin' && 
+                        pathParts[0] !== 'index.html';
+  const skipIntroQuery = new URLSearchParams(window.location.search).get('skipIntro') === 'true';
+  const skipIntro = skipIntroQuery || isCategoryUrl;
 
   // Disable interactions during sequence
   window.isTransitioning = !skipIntro;
