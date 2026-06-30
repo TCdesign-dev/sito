@@ -513,6 +513,9 @@ function initThreeJS(container, backBtn) {
       currentView = 'galaxy';
       backBtn.classList.remove('visible');
       
+      // Reset URL to root without reloading
+      history.pushState(null, '', '/');
+      
       const bioWrap = document.querySelector('.hero-bio-wrap');
       if (bioWrap) bioWrap.style.display = 'block';
 
@@ -744,6 +747,10 @@ function handleObjectClick(obj, skipAnim = false) {
     const cat = obj.userData.category;
     currentView = cat;
     document.getElementById('galaxy-back-btn').classList.add('visible');
+
+    // Update URL to the category without reloading
+    const catUrl = encodeURIComponent(cat.toLowerCase());
+    history.pushState(null, '', `/${catUrl}`);
 
     // 1. Stop all orbits
     planetsData.forEach(p => p.speed = 0);
