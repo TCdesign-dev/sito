@@ -1087,7 +1087,7 @@ function renderGalaxy3D() {
       // Adjust scale depending on the model's original size
       // We start with a reasonable guess, and scale it up. 
       // Typical models might need significant scaling.
-      voyagerModel.scale.set(3, 3, 3);
+      voyagerModel.scale.set(10, 10, 10);
       
       // Ensure materials are visible
       voyagerModel.traverse((child) => {
