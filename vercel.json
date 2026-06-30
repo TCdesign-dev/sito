@@ -6,9 +6,9 @@
     { "source": "/projects/(.*)", "destination": "/projects/$1" },
     { "source": "/style.css", "destination": "/style.css" },
     { "source": "/main.js", "destination": "/main.js" },
-    { "source": "/explorations", "destination": "/explorations.html" },
-    { "source": "/:category/:project", "destination": "/project.html" },
-    { "source": "/:category", "destination": "/index.html" }
+    { "source": "/explorations", "destination": "/explorations" },
+    { "source": "/:category/:project", "destination": "/project" },
+    { "source": "/:category", "destination": "/index" }
   ],
   "headers": [
     {

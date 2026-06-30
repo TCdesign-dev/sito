@@ -86,7 +86,7 @@ function buildPostitCard(project) {
 
   const a = document.createElement('a');
   if (hasPage) {
-    a.href = `/${encodeURIComponent(project.category || 'all')}/${encodeURIComponent(project.id)}`;
+    a.href = `/${encodeURIComponent((project.category || 'all').toLowerCase())}/${encodeURIComponent(project.id.toLowerCase())}`;
   } else if (project.link) {
     a.href = project.link;
   } else {
@@ -174,7 +174,7 @@ async function loadLatestProjects(containerId, count = 3) {
 
   latest.forEach((p, i) => {
     const href = p.page
-      ? `/${encodeURIComponent(p.category || 'all')}/${encodeURIComponent(p.id)}`
+      ? `/${encodeURIComponent((p.category || 'all').toLowerCase())}/${encodeURIComponent(p.id.toLowerCase())}`
       : (p.link || '#');
 
     const a = document.createElement('a');
@@ -221,7 +221,7 @@ async function loadExplorations(containerId) {
     a.className = 'exploration-card reveal';
     // Seleziona project.html (mascherata) se 'page' è true
     const hasPage = p.page === true || p.page === "true";
-    a.href = hasPage ? `/${encodeURIComponent(p.category || 'all')}/${encodeURIComponent(p.id)}` : p.link;
+    a.href = hasPage ? `/${encodeURIComponent((p.category || 'all').toLowerCase())}/${encodeURIComponent(p.id.toLowerCase())}` : p.link;
     if (!hasPage && p.link) a.target = '_blank';
 
     a.innerHTML = `
@@ -258,7 +258,7 @@ async function loadProjectDetail(containerId) {
   if (!id) { container.innerHTML = notFoundHtml(); return; }
 
   const projects = await fetchProjects();
-  const project  = projects.find(p => p.id === id);
+  const project  = projects.find(p => p.id.toLowerCase() === id.toLowerCase());
   if (!project)  { container.innerHTML = notFoundHtml(); return; }
 
   document.title = `${project.name} — Tommaso Costanza`;
@@ -287,7 +287,7 @@ async function loadProjectDetail(containerId) {
     : '';
 
   const isExploration = project.category && (project.category.toLowerCase() === 'explorations' || project.category.toLowerCase() === 'esplorazioni');
-  const backHref = isExploration ? '/explorations' : `/${encodeURIComponent(project.category || 'all')}`;
+  const backHref = isExploration ? '/explorations' : `/${encodeURIComponent((project.category || 'all').toLowerCase())}`;
   const backText = isExploration ? 'Back to list' : `Back to ${project.category || 'Galaxy'}`;
 
   container.innerHTML = `
@@ -425,7 +425,7 @@ async function loadSolarSystem(systemId, bgId, mobileListId) {
     categories.forEach(cat => {
       orbitsMap[cat].forEach(p => {
         const pColor = PLANET_COLORS[p.color] || '#aaa';
-        const href = p.page ? `/${encodeURIComponent(p.category || 'all')}/${encodeURIComponent(p.id)}` : (p.link || '#');
+        const href = p.page ? `/${encodeURIComponent((p.category || 'all').toLowerCase())}/${encodeURIComponent(p.id.toLowerCase())}` : (p.link || '#');
         const isExternal = p.link && !p.page;
 
         const ml = document.createElement('a');
@@ -726,7 +726,7 @@ function handleObjectClick(obj) {
     const cat = obj.userData.category;
     currentView = cat;
     document.getElementById('galaxy-back-btn').classList.add('visible');
-    history.pushState({}, '', `/${cat}`);
+    history.pushState({}, '', `/${cat.toLowerCase()}`);
 
     // 1. Stop all orbits
     planetsData.forEach(p => p.speed = 0);
@@ -789,7 +789,7 @@ function handleObjectClick(obj) {
       .start();
   } else if (obj.userData.isMoon) {
     const p = obj.userData.project;
-    const href = p.page ? `/${encodeURIComponent(p.category || 'all')}/${encodeURIComponent(p.id)}` : (p.link || '#');
+    const href = p.page ? `/${encodeURIComponent((p.category || 'all').toLowerCase())}/${encodeURIComponent(p.id.toLowerCase())}` : (p.link || '#');
     
     if (isMobile) {
       if (window.isTransitioning) return;
@@ -1071,7 +1071,7 @@ function renderGalaxy3D() {
                         pathParts[0] !== 'index.html';
   if (isCategoryUrl) {
     const cat = decodeURIComponent(pathParts[0]);
-    const catPlanet = planetsData.find(p => p.mesh.userData.isCategory && p.mesh.userData.category === cat);
+    const catPlanet = planetsData.find(p => p.mesh.userData.isCategory && p.mesh.userData.category.toLowerCase() === cat.toLowerCase());
     if (catPlanet) {
       setTimeout(() => {
         handleObjectClick(catPlanet.mesh);
