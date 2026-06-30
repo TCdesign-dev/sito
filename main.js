@@ -16,7 +16,7 @@
 /* ===========================
    CONFIG
    =========================== */
-const PROJECTS_JSON = 'projects/projects.json';
+const PROJECTS_JSON = '/projects/projects.json';
 
 const COLOR_MAP = {
   yellow: 'postit--yellow',
@@ -400,10 +400,10 @@ function isRecentTap(e) {
 }
 
 const TEXTURES = [
-  'assets/mars_texture_1782517556906.webp', 
-  'assets/earth_texture_1782517565911.webp', 
-  'assets/ice_texture_1782517572925.webp', 
-  'assets/gas_giant_texture_1782517547949.webp'
+  '/assets/mars_texture_1782517556906.webp', 
+  '/assets/earth_texture_1782517565911.webp', 
+  '/assets/ice_texture_1782517572925.webp', 
+  '/assets/gas_giant_texture_1782517547949.webp'
 ];
 
 async function loadSolarSystem(systemId, bgId, mobileListId) {
@@ -1080,7 +1080,7 @@ function renderGalaxy3D() {
   };
 
   if (!voyagerModel) {
-    gltfLoader.load('assets/Voyager.glb', (gltf) => {
+    gltfLoader.load('/assets/Voyager.glb', (gltf) => {
       voyagerModel = gltf.scene;
       // Adjust scale depending on the model's original size
       // We start with a reasonable guess, and scale it up. 
@@ -1290,7 +1290,7 @@ function load404Scene(canvasId) {
 
   let voyager;
   const gltfLoader = new THREE.GLTFLoader();
-  gltfLoader.load('assets/Voyager.glb', (gltf) => {
+  gltfLoader.load('/assets/Voyager.glb', (gltf) => {
     voyager = gltf.scene;
     voyager.scale.set(24, 24, 24);
     
