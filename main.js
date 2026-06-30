@@ -1403,4 +1403,16 @@ document.addEventListener('DOMContentLoaded', () => {
       }, 50);
     }
   }
+
+  // Router based on data-page
+  const pageType = document.body.getAttribute('data-page');
+  if (pageType === 'home') {
+    loadSolarSystem('solar-system', 'space-bg', 'mobile-planet-list');
+  } else if (pageType === 'project') {
+    loadProjectDetail('project-detail');
+  } else if (pageType === 'explorations') {
+    loadExplorations('explorations-list');
+  } else if (pageType === '404') {
+    load404Scene('solar-system');
+  }
 });

@@ -30,8 +30,9 @@
   <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
   <link rel="preconnect" href="https://cdn.jsdelivr.net" />
   <link rel="preload" href="/assets/Voyager.glb" as="fetch" crossorigin="anonymous" />
+
 </head>
-<body class="space-page" style="overflow: hidden;">
+<body data-page="404" class="space-page" style="overflow: hidden;">
 
   <!-- Star field background -->
   <div class="space-bg travel-mode"></div>
@@ -56,11 +57,8 @@
     <a href="/" style="background-color: #fff; color: #000; padding: 1rem 2.5rem; font-size: 1.1rem; border-radius: 9999px; text-decoration: none; font-weight: 600; display: inline-block;">Back home</a>
   </main>
 
-  <script defer src=""></script>
-  <script defer src=""></script>
-  <script defer src=""></script>
-  <script>
-    load404Scene('solar-system');
-  </script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+  <script defer src="/main.js"></script>
 </body>
 </html>

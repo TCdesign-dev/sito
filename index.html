@@ -38,8 +38,9 @@
   <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
   <link rel="preconnect" href="https://cdn.jsdelivr.net" />
   <link rel="preload" href="/assets/Voyager.glb" as="fetch" crossorigin="anonymous" />
+
 </head>
-<body class="space-page">
+<body class="space-page" data-page="home">
 
   <!-- Intro Screen -->
   <div id="intro-screen">
@@ -118,14 +119,11 @@
   </footer>
 
   <!-- Three.js & TWEEN for WebGL 3D -->
-  <script defer src=""></script>
-  <script defer src=""></script>
-  <script defer src=""></script>
-  <script defer src=""></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 
-  <script defer src=""></script>
-  <script>
-    loadSolarSystem('solar-system', 'space-bg', 'mobile-planet-list');
-  </script>
+  <script defer src="/main.js"></script>
 </body>
 </html>
