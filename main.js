@@ -1076,6 +1076,8 @@ function renderGalaxy3D() {
       setTimeout(() => {
         handleObjectClick(catPlanet.mesh);
       }, 500); // Give it a moment to initialize
+    } else {
+      window.location.replace('/404.html');
     }
   }
 }
