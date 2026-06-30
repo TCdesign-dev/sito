@@ -6,10 +6,10 @@
     { "source": "/projects/(.*)", "destination": "/projects/$1" },
     { "source": "/style.css", "destination": "/style.css" },
     { "source": "/main.js", "destination": "/main.js" },
-    { "source": "/404", "destination": "/404" },
-    { "source": "/explorations", "destination": "/explorations" },
-    { "source": "/:category/:project", "destination": "/project" },
-    { "source": "/:category", "destination": "/index" }
+    { "source": "/404", "destination": "/404.html" },
+    { "source": "/explorations", "destination": "/explorations.html" },
+    { "source": "/:category/:project", "destination": "/project.html" },
+    { "source": "/:category", "destination": "/index.html" }
   ],
   "headers": [
     {
