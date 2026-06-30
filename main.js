@@ -255,11 +255,11 @@ async function loadProjectDetail(containerId) {
       id = parts[0]; // fallback /id
     }
   }
-  if (!id) { container.innerHTML = notFoundHtml(); return; }
+  if (!id) { window.location.replace('/404.html'); return; }
 
   const projects = await fetchProjects();
   const project  = projects.find(p => p.id.toLowerCase() === id.toLowerCase());
-  if (!project)  { container.innerHTML = notFoundHtml(); return; }
+  if (!project)  { window.location.replace('/404.html'); return; }
 
   document.title = `${project.name} — Tommaso Costanza`;
   const meta = document.querySelector('meta[name="description"]');
@@ -305,6 +305,7 @@ async function loadProjectDetail(containerId) {
   `;
 
   initScrollReveal();
+  document.documentElement.classList.remove('verifying');
 }
 
 
@@ -339,18 +340,6 @@ function initCopyrightYear() {
   });
 }
 
-/* ===========================
-   NOT FOUND
-   =========================== */
-function notFoundHtml() {
-  return `
-    <a href="projects.html" class="project-back">Projects</a>
-    <h1 class="project-title">Project not found</h1>
-    <p class="content-text" style="margin-top:1rem;">
-      The project you're looking for doesn't exist or may have been moved.
-    </p>
-  `;
-}
 
 /* ===========================
    SOLAR SYSTEM (projects.html)
@@ -1336,6 +1325,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     } catch (e) {
       console.error("Error verifying category:", e);
     }
+    document.documentElement.classList.remove('verifying');
   }
 
   const skipIntroQuery = new URLSearchParams(window.location.search).get('skipIntro') === 'true';

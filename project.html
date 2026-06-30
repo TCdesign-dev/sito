@@ -26,6 +26,16 @@
     window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
   </script>
   <script defer src="/_vercel/insights/script.js"></script>
+  <style>
+    html { background-color: #0a0a0a; }
+    html.verifying body { opacity: 0 !important; pointer-events: none !important; }
+  </style>
+  <script>
+    (function() {
+      // For project.html, we always verify
+      document.documentElement.classList.add('verifying');
+    })();
+  </script>
 </head>
 <body>
 

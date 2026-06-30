@@ -31,6 +31,19 @@
     window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
   </script>
   <script defer src="/_vercel/insights/script.js"></script>
+  <style>
+    html { background-color: #040404; }
+    html.verifying body { opacity: 0 !important; pointer-events: none !important; }
+    html.verifying #intro-screen { display: none !important; }
+  </style>
+  <script>
+    (function() {
+      const parts = window.location.pathname.split('/').filter(Boolean);
+      if (parts.length === 1 && !['explorations', 'admin', 'index.html', '404.html'].includes(parts[0])) {
+        document.documentElement.classList.add('verifying');
+      }
+    })();
+  </script>
 </head>
 <body class="space-page">
 
