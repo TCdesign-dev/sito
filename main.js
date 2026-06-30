@@ -1304,7 +1304,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                         pathParts[0] !== 'explorations' && 
                         pathParts[0] !== 'admin' && 
                         pathParts[0] !== 'index.html' &&
-                        pathParts[0] !== '404.html';
+                        pathParts[0] !== '404.html' &&
+                        pathParts[0] !== '404';
 
   if (isCategoryUrl) {
     const intro = document.getElementById('intro-screen');
