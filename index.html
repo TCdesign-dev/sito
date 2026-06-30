@@ -23,27 +23,14 @@
   <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com" />
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
   <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
-  <link rel="preload" href="/style.css" as="style" />
-  <link rel="stylesheet" href="/style.css" />
+  <link rel="preload" href="style.css" as="style" />
+  <link rel="stylesheet" href="style.css" />
   
   <!-- Vercel Web Analytics -->
   <script>
     window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
   </script>
   <script defer src="/_vercel/insights/script.js"></script>
-  <style>
-    html { background-color: #040404; }
-    html.verifying body { opacity: 0 !important; pointer-events: none !important; }
-    html.verifying #intro-screen { display: none !important; }
-  </style>
-  <script>
-    (function() {
-      const parts = window.location.pathname.split('/').filter(Boolean);
-      if (parts.length === 1 && !['explorations', 'admin', 'index.html', '404.html'].includes(parts[0])) {
-        document.documentElement.classList.add('verifying');
-      }
-    })();
-  </script>
 </head>
 <body class="space-page">
 
@@ -58,7 +45,7 @@
   <!-- Nav — transparent, floating over space -->
   <header id="space-header" class="space-header page-wrap initially-hidden">
     <nav aria-label="Main navigation">
-      <a href="index.html" class="nav-name nav--light">Tommaso Costanza</a>
+      <a href="/" class="nav-name nav--light">Tommaso Costanza</a>
       <ul class="nav-links nav-links--light">
         <li><a href="#" class="contact-btn">Contact me</a></li>
       </ul>
@@ -128,7 +115,8 @@
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-  <script src="/main.js"></script>
+
+  <script src="main.js"></script>
   <script>
     loadSolarSystem('solar-system', 'space-bg', 'mobile-planet-list');
   </script>

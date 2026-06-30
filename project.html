@@ -19,29 +19,19 @@
   <meta name="twitter:title" content="Project detail — Tommaso Costanza" />
   <meta name="twitter:description" content="Explore this project by Tommaso Costanza, Product Design student in Turin." />
   <meta name="twitter:image" content="https://tommasocostanza.space/assets/preview.jpg" />
-  <link rel="stylesheet" href="/style.css" />
+  <link rel="stylesheet" href="style.css" />
   
   <!-- Vercel Web Analytics -->
   <script>
     window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
   </script>
   <script defer src="/_vercel/insights/script.js"></script>
-  <style>
-    html { background-color: #0a0a0a; }
-    html.verifying body { opacity: 0 !important; pointer-events: none !important; }
-  </style>
-  <script>
-    (function() {
-      // For project.html, we always verify
-      document.documentElement.classList.add('verifying');
-    })();
-  </script>
 </head>
 <body>
 
   <header class="page-wrap">
     <nav aria-label="Main navigation">
-      <a href="/" class="nav-name">Tommaso Costanza</a>
+      <a href="index.html?skipIntro=true" class="nav-name">Tommaso Costanza</a>
       <ul class="nav-links">
         <li><a href="#" class="contact-btn">Contact me</a></li>
       </ul>
@@ -66,17 +56,7 @@
     </div>
   </footer>
 
-  <script>
-    const id = new URLSearchParams(window.location.search).get('id');
-    if (!id && window.location.pathname.length > 1) {
-      // e.g. /category/project-id -> project-id
-      const parts = window.location.pathname.split('/').filter(p => p);
-      if (parts.length >= 2) {
-        document.getElementById('project-detail').dataset.id = parts[1];
-      }
-    }
-  </script>
-  <script src="/main.js"></script>
+  <script src="main.js"></script>
   <script>
     loadProjectDetail('project-detail');
   </script>

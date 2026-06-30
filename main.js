@@ -16,7 +16,7 @@
 /* ===========================
    CONFIG
    =========================== */
-const PROJECTS_JSON = '/projects/projects.json';
+const PROJECTS_JSON = 'projects/projects.json';
 
 const COLOR_MAP = {
   yellow: 'postit--yellow',
@@ -82,23 +82,20 @@ function buildPostitCard(project) {
   const rotation   = seedRotation(project.id);
   const curl       = shouldCurl(project.id);
   const isExternal = project.link && !project.page;
-  const hasPage    = !!project.page;
 
-  const a = document.createElement('a');
-  if (hasPage) {
-    a.href = `/${encodeURIComponent((project.category || 'all').toLowerCase())}/${encodeURIComponent(project.id.toLowerCase())}`;
-  } else if (project.link) {
-    a.href = project.link;
-  } else {
-    a.href = '#';
-  }
+  const catUrl = project.category ? encodeURIComponent(project.category.toLowerCase()) : 'misc';
+  const href = project.page
+    ? `/${catUrl}/${encodeURIComponent(project.id)}`
+    : (project.link || '#');
 
   const tagsHtml = (project.tags || [])
     .slice(0, 2)
     .map(t => `<span class="postit-tag">${esc(t)}</span>`)
     .join('');
 
+  const a = document.createElement('a');
   a.className = `postit ${colorClass}${curl ? ' postit--curled' : ''}`;
+  a.href = href;
   a.style.setProperty('--r', `${rotation}deg`);
   a.setAttribute('aria-label', `${project.name} — ${project.year}`);
 
@@ -173,8 +170,9 @@ async function loadLatestProjects(containerId, count = 3) {
   const latest   = projects.slice(0, count);
 
   latest.forEach((p, i) => {
+    const catUrl = p.category ? encodeURIComponent(p.category.toLowerCase()) : 'misc';
     const href = p.page
-      ? `/${encodeURIComponent((p.category || 'all').toLowerCase())}/${encodeURIComponent(p.id.toLowerCase())}`
+      ? `/${catUrl}/${encodeURIComponent(p.id)}`
       : (p.link || '#');
 
     const a = document.createElement('a');
@@ -219,9 +217,10 @@ async function loadExplorations(containerId) {
   explorations.forEach(p => {
     const a = document.createElement('a');
     a.className = 'exploration-card reveal';
-    // Seleziona project.html (mascherata) se 'page' è true
-    const hasPage = p.page === true || p.page === "true";
-    a.href = hasPage ? `/${encodeURIComponent((p.category || 'all').toLowerCase())}/${encodeURIComponent(p.id.toLowerCase())}` : p.link;
+    // Select dynamic route if 'page' is true, OR if there's no external link
+    const hasPage = p.page || (!p.page && !p.link);
+    const catUrl = p.category ? encodeURIComponent(p.category.toLowerCase()) : 'misc';
+    a.href = hasPage ? `/${catUrl}/${encodeURIComponent(p.id)}` : p.link;
     if (!hasPage && p.link) a.target = '_blank';
 
     a.innerHTML = `
@@ -246,24 +245,31 @@ async function loadProjectDetail(containerId) {
   const container = document.getElementById(containerId);
   if (!container) return;
 
-  let id = new URLSearchParams(window.location.search).get('id') || container.dataset.id;
-  if (!id && window.location.pathname.length > 1) {
-    const parts = window.location.pathname.split('/').filter(p => p);
-    if (parts.length >= 2) {
-      id = parts[1]; // /category/id
-    } else if (parts[0] !== 'explorations' && parts[0] !== 'admin') {
-      id = parts[0]; // fallback /id
-    }
+  const pathParts = window.location.pathname.split('/').filter(p => p && p !== 'project.html');
+  let id = new URLSearchParams(window.location.search).get('id');
+  
+  if (!id && pathParts.length >= 2) {
+    id = pathParts[1];
   }
-  if (!id) { window.location.replace('/404.html'); return; }
+
+  if (!id) { window.location.href = '/404'; return; }
 
   const projects = await fetchProjects();
-  const project  = projects.find(p => p.id.toLowerCase() === id.toLowerCase());
-  if (!project)  { window.location.replace('/404.html'); return; }
+  const project  = projects.find(p => p.id === id);
+  if (!project)  { window.location.href = '/404'; return; }
 
   document.title = `${project.name} — Tommaso Costanza`;
   const meta = document.querySelector('meta[name="description"]');
   if (meta) meta.setAttribute('content', project.description || '');
+
+  const catUrl = project.category ? encodeURIComponent(project.category.toLowerCase()) : 'misc';
+  const canonicalUrl = `https://tommasocostanza.space/${catUrl}/${id}`;
+  
+  const canonicalTag = document.querySelector('link[rel="canonical"]');
+  if (canonicalTag) canonicalTag.setAttribute('href', canonicalUrl);
+  
+  const ogUrlTag = document.querySelector('meta[property="og:url"]');
+  if (ogUrlTag) ogUrlTag.setAttribute('content', canonicalUrl);
 
   const tagsHtml = (project.tags || []).map(t => `<li>${esc(t)}</li>`).join('');
 
@@ -287,8 +293,8 @@ async function loadProjectDetail(containerId) {
     : '';
 
   const isExploration = project.category && (project.category.toLowerCase() === 'explorations' || project.category.toLowerCase() === 'esplorazioni');
-  const backHref = isExploration ? '/explorations' : `/${encodeURIComponent((project.category || 'all').toLowerCase())}`;
-  const backText = isExploration ? 'Back to list' : `Back to ${project.category || 'Galaxy'}`;
+  const backHref = isExploration ? 'explorations.html' : 'index.html?skipIntro=true';
+  const backText = isExploration ? 'Back to list' : 'Back to Galaxy';
 
   container.innerHTML = `
     <a href="${backHref}" class="project-back">${backText}</a>
@@ -305,7 +311,6 @@ async function loadProjectDetail(containerId) {
   `;
 
   initScrollReveal();
-  document.documentElement.classList.remove('verifying');
 }
 
 
@@ -340,6 +345,18 @@ function initCopyrightYear() {
   });
 }
 
+/* ===========================
+   NOT FOUND
+   =========================== */
+function notFoundHtml() {
+  return `
+    <a href="projects.html" class="project-back">Projects</a>
+    <h1 class="project-title">Project not found</h1>
+    <p class="content-text" style="margin-top:1rem;">
+      The project you're looking for doesn't exist or may have been moved.
+    </p>
+  `;
+}
 
 /* ===========================
    SOLAR SYSTEM (projects.html)
@@ -414,7 +431,8 @@ async function loadSolarSystem(systemId, bgId, mobileListId) {
     categories.forEach(cat => {
       orbitsMap[cat].forEach(p => {
         const pColor = PLANET_COLORS[p.color] || '#aaa';
-        const href = p.page ? `/${encodeURIComponent((p.category || 'all').toLowerCase())}/${encodeURIComponent(p.id.toLowerCase())}` : (p.link || '#');
+        const catUrl = encodeURIComponent(cat.toLowerCase());
+        const href = p.page ? `/${catUrl}/${encodeURIComponent(p.id)}` : (p.link || '#');
         const isExternal = p.link && !p.page;
 
         const ml = document.createElement('a');
@@ -436,6 +454,18 @@ async function loadSolarSystem(systemId, bgId, mobileListId) {
 
   initThreeJS(container, backBtn);
   renderGalaxy3D();
+
+  // Check if we should jump directly to a category based on URL
+  const pathParts = window.location.pathname.split('/').filter(p => p && p !== 'index.html');
+  if (pathParts.length === 1 && !['admin', '404', 'explorations', 'project'].includes(pathParts[0])) {
+    const targetCat = decodeURIComponent(pathParts[0]).toLowerCase();
+    const planetObj = planetsData.find(pd => pd.mesh.userData.isCategory && pd.mesh.userData.category.toLowerCase() === targetCat);
+    if (planetObj) {
+      handleObjectClick(planetObj.mesh, true);
+    } else {
+      window.location.href = '/404';
+    }
+  }
 }
 
 function initThreeJS(container, backBtn) {
@@ -482,7 +512,6 @@ function initThreeJS(container, backBtn) {
       const oldCat = currentView;
       currentView = 'galaxy';
       backBtn.classList.remove('visible');
-      history.pushState({}, '', '/');
       
       const bioWrap = document.querySelector('.hero-bio-wrap');
       if (bioWrap) bioWrap.style.display = 'block';
@@ -696,7 +725,7 @@ function initThreeJS(container, backBtn) {
   animate();
 }
 
-function handleObjectClick(obj) {
+function handleObjectClick(obj, skipAnim = false) {
   if (window.isTransitioning) return;
 
   if (obj.userData.isVoyager) {
@@ -715,7 +744,6 @@ function handleObjectClick(obj) {
     const cat = obj.userData.category;
     currentView = cat;
     document.getElementById('galaxy-back-btn').classList.add('visible');
-    history.pushState({}, '', `/${cat.toLowerCase()}`);
 
     // 1. Stop all orbits
     planetsData.forEach(p => p.speed = 0);
@@ -726,19 +754,41 @@ function handleObjectClick(obj) {
     planetsData.forEach(p => {
       if (p !== pData) {
         p.isHidden = true;
-        new TWEEN.Tween(p.mesh.scale).to({x:0, y:0, z:0}, 1000).start();
+        if (!skipAnim) new TWEEN.Tween(p.mesh.scale).to({x:0, y:0, z:0}, 1000).start();
+        else p.mesh.scale.set(0,0,0);
         if (p.labelEl) p.labelEl.classList.remove('visible');
       }
     });
     scene.children.forEach(child => {
       if (child.userData.isSun) {
-        new TWEEN.Tween(child.scale).to({x:0, y:0, z:0}, 1000).start();
+        if (!skipAnim) new TWEEN.Tween(child.scale).to({x:0, y:0, z:0}, 1000).start();
+        else child.scale.set(0,0,0);
       }
     });
 
     if (pData.labelEl) {
       pData.isHidden = true;
       pData.labelEl.classList.remove('visible');
+    }
+
+    const sysPos = isMobile ? { x: 0, y: 250, z: 500 } : { x: 0, y: 150, z: 350 };
+
+    if (skipAnim) {
+      pData.radius = 0;
+      obj.scale.set(3, 3, 3);
+      camera.position.set(sysPos.x, sysPos.y, sysPos.z);
+      controls.target.set(0, 0, 0);
+      renderSystem3D(cat);
+      planetsData.forEach(p => {
+        if (p.mesh.userData.isMoon) p.mesh.scale.set(1,1,1);
+      });
+      window.isTransitioning = false;
+      updateScreenReaderA11y();
+      
+      const intro = document.getElementById('intro-screen');
+      if (intro) intro.remove();
+      document.body.classList.add('loaded');
+      return;
     }
 
     // 3. Move clicked planet to center and scale up
@@ -753,7 +803,6 @@ function handleObjectClick(obj) {
       .start();
 
     // 4. Move camera to system view position
-    const sysPos = isMobile ? { x: 0, y: 250, z: 500 } : { x: 0, y: 150, z: 350 };
     new TWEEN.Tween(camera.position)
       .to(sysPos, 1500)
       .easing(TWEEN.Easing.Cubic.InOut)
@@ -778,7 +827,8 @@ function handleObjectClick(obj) {
       .start();
   } else if (obj.userData.isMoon) {
     const p = obj.userData.project;
-    const href = p.page ? `/${encodeURIComponent((p.category || 'all').toLowerCase())}/${encodeURIComponent(p.id.toLowerCase())}` : (p.link || '#');
+    const catUrl = p.category ? encodeURIComponent(p.category.toLowerCase()) : 'misc';
+    const href = p.page ? `/${catUrl}/${encodeURIComponent(p.id)}` : (p.link || '#');
     
     if (isMobile) {
       if (window.isTransitioning) return;
@@ -1023,7 +1073,7 @@ function renderGalaxy3D() {
   };
 
   if (!voyagerModel) {
-    gltfLoader.load('/assets/Voyager.glb', (gltf) => {
+    gltfLoader.load('assets/Voyager.glb', (gltf) => {
       voyagerModel = gltf.scene;
       // Adjust scale depending on the model's original size
       // We start with a reasonable guess, and scale it up. 
@@ -1051,24 +1101,6 @@ function renderGalaxy3D() {
   }
   
   updateScreenReaderA11y();
-  
-  // Auto-zoom if URL matches a category
-  const pathParts = window.location.pathname.split('/').filter(p => p);
-  const isCategoryUrl = pathParts.length === 1 && 
-                        pathParts[0] !== 'explorations' && 
-                        pathParts[0] !== 'admin' && 
-                        pathParts[0] !== 'index.html';
-  if (isCategoryUrl) {
-    const cat = decodeURIComponent(pathParts[0]);
-    const catPlanet = planetsData.find(p => p.mesh.userData.isCategory && p.mesh.userData.category.toLowerCase() === cat.toLowerCase());
-    if (catPlanet) {
-      setTimeout(() => {
-        handleObjectClick(catPlanet.mesh);
-      }, 500); // Give it a moment to initialize
-    } else {
-      window.location.replace('/404.html');
-    }
-  }
 }
 
 function renderSystem3D(category) {
@@ -1295,42 +1327,11 @@ function load404Scene(canvasId) {
 /* ===========================
    INIT (runs on every page)
    =========================== */
-document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', () => {
   initCopyrightYear();
   initScrollReveal();
   
-  const pathParts = window.location.pathname.split('/').filter(p => p);
-  const isCategoryUrl = pathParts.length === 1 && 
-                        pathParts[0] !== 'explorations' && 
-                        pathParts[0] !== 'admin' && 
-                        pathParts[0] !== 'index.html' &&
-                        pathParts[0] !== '404.html' &&
-                        pathParts[0] !== '404';
-
-  if (isCategoryUrl) {
-    const intro = document.getElementById('intro-screen');
-    if (intro) intro.style.display = 'none';
-    
-    const cat = decodeURIComponent(pathParts[0]).toLowerCase();
-    try {
-      const res = await fetch('/projects/projects.json');
-      if (res.ok) {
-        const projects = await res.json();
-        const categories = [...new Set(projects.map(p => p.category).filter(Boolean))];
-        const isValid = categories.some(c => c.toLowerCase() === cat);
-        if (!isValid) {
-          window.location.replace('/404.html');
-          return; // Stop execution
-        }
-      }
-    } catch (e) {
-      console.error("Error verifying category:", e);
-    }
-    document.documentElement.classList.remove('verifying');
-  }
-
-  const skipIntroQuery = new URLSearchParams(window.location.search).get('skipIntro') === 'true';
-  const skipIntro = skipIntroQuery || isCategoryUrl;
+  const skipIntro = new URLSearchParams(window.location.search).get('skipIntro') === 'true';
 
   // Disable interactions during sequence
   window.isTransitioning = !skipIntro;
