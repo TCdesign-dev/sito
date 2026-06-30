@@ -1346,6 +1346,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initCopyrightYear();
   initScrollReveal();
   
+  const pageType = document.body.getAttribute('data-page');
   const pathParts = window.location.pathname.split('/').filter(p => p && p !== 'index.html');
   const isDirectCat = pathParts.length === 1 && !['admin', '404', 'explorations', 'project'].includes(pathParts[0]);
   const skipIntro = isDirectCat || new URLSearchParams(window.location.search).get('skipIntro') === 'true';
@@ -1395,7 +1396,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (intro) intro.remove();
     if (instructions) instructions.remove();
     
-    if (skipIntro) {
+    if (skipIntro && pageType === 'home') {
       const checkCam = setInterval(() => {
         if (typeof camera !== 'undefined' && camera) {
           if (isMobile) camera.position.set(0, 650, 900);
@@ -1407,7 +1408,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Router based on data-page
-  const pageType = document.body.getAttribute('data-page');
   if (pageType === 'home') {
     loadSolarSystem('solar-system', 'space-bg', 'mobile-planet-list');
   } else if (pageType === 'project') {
