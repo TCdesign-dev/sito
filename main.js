@@ -216,7 +216,7 @@ async function loadExplorations(containerId) {
 
   explorations.forEach(p => {
     const a = document.createElement('a');
-    a.className = 'exploration-card reveal';
+    a.className = 'exploration-card visible';
     // Select dynamic route if 'page' is true, OR if there's no external link
     const hasPage = p.page || (!p.page && !p.link);
     const catUrl = p.category ? encodeURIComponent(p.category.toLowerCase()) : 'misc';
@@ -570,7 +570,7 @@ function initThreeJS(container, backBtn) {
         }
       });
 
-      const galaxyPos = isMobile ? { x: 0, y: 500, z: 900 } : { x: 0, y: 400, z: 700 };
+      const galaxyPos = isMobile ? { x: 0, y: 650, z: 900 } : { x: 0, y: 400, z: 700 };
       new TWEEN.Tween(camera.position)
         .to(galaxyPos, 1500)
         .easing(TWEEN.Easing.Cubic.InOut)
@@ -1369,7 +1369,7 @@ document.addEventListener('DOMContentLoaded', () => {
           if (instructions) instructions.classList.remove('visible');
           
           if (camera) {
-            const introTarget = isMobile ? { x: 0, y: 500, z: 900 } : { x: 0, y: 400, z: 700 };
+            const introTarget = isMobile ? { x: 0, y: 650, z: 900 } : { x: 0, y: 400, z: 700 };
             new TWEEN.Tween(camera.position)
               .to(introTarget, 2500)
               .easing(TWEEN.Easing.Cubic.InOut)
@@ -1396,7 +1396,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (skipIntro) {
       const checkCam = setInterval(() => {
         if (typeof camera !== 'undefined' && camera) {
-          if (isMobile) camera.position.set(0, 500, 900);
+          if (isMobile) camera.position.set(0, 650, 900);
           else camera.position.set(0, 400, 700);
           clearInterval(checkCam);
         }
