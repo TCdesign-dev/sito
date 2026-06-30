@@ -1333,9 +1333,11 @@ function load404Scene(canvasId) {
   });
 }
 
-THREE.DefaultLoadingManager.onLoad = function ( ) {
-  document.body.classList.add('assets-loaded');
-};
+if (typeof THREE !== 'undefined') {
+  THREE.DefaultLoadingManager.onLoad = function ( ) {
+    document.body.classList.add('assets-loaded');
+  };
+}
 
 /* ===========================
    INIT (runs on every page)
