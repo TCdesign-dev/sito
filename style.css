@@ -1425,3 +1425,4 @@ footer {
     bottom: 2rem;
   }
 }
+body:not(.assets-loaded) .webgl-label { opacity: 0 !important; pointer-events: none !important; }
