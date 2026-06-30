@@ -1306,7 +1306,7 @@ function load404Scene(canvasId) {
 /* ===========================
    INIT (runs on every page)
    =========================== */
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   initCopyrightYear();
   initScrollReveal();
   
@@ -1314,7 +1314,30 @@ document.addEventListener('DOMContentLoaded', () => {
   const isCategoryUrl = pathParts.length === 1 && 
                         pathParts[0] !== 'explorations' && 
                         pathParts[0] !== 'admin' && 
-                        pathParts[0] !== 'index.html';
+                        pathParts[0] !== 'index.html' &&
+                        pathParts[0] !== '404.html';
+
+  if (isCategoryUrl) {
+    const intro = document.getElementById('intro-screen');
+    if (intro) intro.style.display = 'none';
+    
+    const cat = decodeURIComponent(pathParts[0]).toLowerCase();
+    try {
+      const res = await fetch('/projects/projects.json');
+      if (res.ok) {
+        const projects = await res.json();
+        const categories = [...new Set(projects.map(p => p.category).filter(Boolean))];
+        const isValid = categories.some(c => c.toLowerCase() === cat);
+        if (!isValid) {
+          window.location.replace('/404.html');
+          return; // Stop execution
+        }
+      }
+    } catch (e) {
+      console.error("Error verifying category:", e);
+    }
+  }
+
   const skipIntroQuery = new URLSearchParams(window.location.search).get('skipIntro') === 'true';
   const skipIntro = skipIntroQuery || isCategoryUrl;
 
