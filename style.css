@@ -1041,7 +1041,8 @@ footer {
 }
 
 .hero-bio {
-  max-width: 500px;
+  max-width: 100%;
+  text-align: justify;
   color: #ffffff;
   font-size: 0.95rem;
   line-height: 1.5;
