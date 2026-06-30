@@ -461,6 +461,8 @@ async function loadSolarSystem(systemId, bgId, mobileListId) {
     const targetCat = decodeURIComponent(pathParts[0]).toLowerCase();
     const planetObj = planetsData.find(pd => pd.mesh.userData.isCategory && pd.mesh.userData.category.toLowerCase() === targetCat);
     if (planetObj) {
+      // Ensure interaction is enabled and cancel intro behavior
+      window.isTransitioning = false;
       handleObjectClick(planetObj.mesh, true);
     } else {
       window.location.href = '/404';
@@ -1338,7 +1340,9 @@ document.addEventListener('DOMContentLoaded', () => {
   initCopyrightYear();
   initScrollReveal();
   
-  const skipIntro = new URLSearchParams(window.location.search).get('skipIntro') === 'true';
+  const pathParts = window.location.pathname.split('/').filter(p => p && p !== 'index.html');
+  const isDirectCat = pathParts.length === 1 && !['admin', '404', 'explorations', 'project'].includes(pathParts[0]);
+  const skipIntro = isDirectCat || new URLSearchParams(window.location.search).get('skipIntro') === 'true';
 
   // Disable interactions during sequence
   window.isTransitioning = !skipIntro;
