@@ -1123,12 +1123,8 @@ footer {
   text-shadow: 0 2px 4px rgba(0,0,0,0.8);
   pointer-events: auto;
   cursor: pointer;
-  background: rgba(0,0,0,0.4);
-  padding: 0.3rem 0.6rem;
-  border-radius: 20px;
-  backdrop-filter: blur(4px);
-  border: 1px solid rgba(255,255,255,0.15);
-  transition: transform 0.2s, background 0.2s;
+  background: transparent;
+  transition: transform 0.2s;
   white-space: nowrap;
   display: none; /* hidden by default until positioned */
 }
@@ -1139,13 +1135,12 @@ footer {
 
 .webgl-label:hover {
   transform: translate(-50%, -50%) scale(1.1);
-  background: rgba(0,0,0,0.7);
+  background: transparent;
 }
 
 .webgl-label--moon {
   font-size: 0.75rem;
-  background: rgba(0,0,0,0.6);
-  padding: 0.2rem 0.5rem;
+  background: transparent;
 }
 
 
