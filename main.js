@@ -1272,6 +1272,9 @@ function load404Scene(canvasId) {
   dirLight.position.set(200, 300, 400);
   scene.add(dirLight);
 
+  const voyagerGroup = new THREE.Group();
+  scene.add(voyagerGroup);
+
   let voyager;
   const gltfLoader = new THREE.GLTFLoader();
   gltfLoader.load('/assets/Voyager.glb', (gltf) => {
@@ -1289,15 +1292,18 @@ function load404Scene(canvasId) {
       }
     });
     
-    // No tilts
-    scene.add(voyager);
+    // Tilt to look cool
+    voyager.rotation.x = Math.PI / 6;
+    voyager.rotation.z = Math.PI / 12;
+    
+    voyagerGroup.add(voyager);
   }, undefined, (err) => console.error(err));
 
   function animate404() {
     requestAnimationFrame(animate404);
-    if (voyager) {
-      voyager.rotation.z += 0.002;
-      voyager.position.y = Math.sin(Date.now() * 0.001) * 10;
+    if (voyagerGroup) {
+      voyagerGroup.rotation.y += 0.002;
+      voyagerGroup.position.y = Math.sin(Date.now() * 0.001) * 10;
     }
     renderer.render(scene, camera);
   }
