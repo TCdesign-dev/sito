@@ -1276,7 +1276,7 @@ function load404Scene(canvasId) {
   const gltfLoader = new THREE.GLTFLoader();
   gltfLoader.load('/assets/Voyager.glb', (gltf) => {
     voyager = gltf.scene;
-    voyager.scale.set(24, 24, 24);
+    voyager.scale.set(36, 36, 36);
     
     voyager.traverse((child) => {
       if (child.isMesh) {
