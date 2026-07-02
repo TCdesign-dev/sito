@@ -1289,10 +1289,7 @@ function load404Scene(canvasId) {
       }
     });
     
-    // Tilt to look cool
-    voyager.rotation.x = Math.PI / 4;
-    voyager.rotation.z = Math.PI / 6;
-    
+    // No tilts so it rotates strictly on one axis (Y)
     scene.add(voyager);
   }, undefined, (err) => console.error(err));
 
