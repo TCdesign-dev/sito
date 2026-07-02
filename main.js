@@ -245,12 +245,7 @@ async function loadProjectDetail(containerId) {
   const container = document.getElementById(containerId);
   if (!container) return;
 
-  const pathParts = window.location.pathname.split('/').filter(p => p && p !== 'project.html');
-  let id = new URLSearchParams(window.location.search).get('id');
-  
-  if (!id && pathParts.length >= 2) {
-    id = pathParts[1];
-  }
+  const id = new URLSearchParams(window.location.search).get('id');
 
   if (!id) { window.location.href = '/404'; return; }
 
@@ -262,8 +257,7 @@ async function loadProjectDetail(containerId) {
   const meta = document.querySelector('meta[name="description"]');
   if (meta) meta.setAttribute('content', project.description || '');
 
-  const catUrl = project.category ? encodeURIComponent(project.category.toLowerCase()) : 'misc';
-  const canonicalUrl = `https://tommasocostanza.space/${catUrl}/${id}`;
+  const canonicalUrl = `https://tommasocostanza.space/project.html?id=${id}`;
   
   const canonicalTag = document.querySelector('link[rel="canonical"]');
   if (canonicalTag) canonicalTag.setAttribute('href', canonicalUrl);
@@ -455,19 +449,7 @@ async function loadSolarSystem(systemId, bgId, mobileListId) {
   initThreeJS(container, backBtn);
   renderGalaxy3D();
 
-  // Check if we should jump directly to a category based on URL
-  const pathParts = window.location.pathname.split('/').filter(p => p && p !== 'index.html');
-  if (pathParts.length === 1 && !['admin', '404', 'explorations', 'project'].includes(pathParts[0])) {
-    const targetCat = decodeURIComponent(pathParts[0]).toLowerCase();
-    const planetObj = planetsData.find(pd => pd.mesh.userData.isCategory && pd.mesh.userData.category.toLowerCase() === targetCat);
-    if (planetObj) {
-      // Ensure interaction is enabled and cancel intro behavior
-      window.isTransitioning = false;
-      handleObjectClick(planetObj.mesh, true);
-    } else {
-      window.location.href = '/404';
-    }
-  }
+  // Deep-link routing removed
 }
 
 function initThreeJS(container, backBtn) {
@@ -515,8 +497,7 @@ function initThreeJS(container, backBtn) {
       currentView = 'galaxy';
       backBtn.classList.remove('visible');
       
-      // Reset URL to root without reloading
-      history.pushState(null, '', '/');
+      // Removed pushState
       
       const bioWrap = document.querySelector('.hero-bio-wrap');
       if (bioWrap) bioWrap.style.display = 'block';
@@ -750,9 +731,7 @@ function handleObjectClick(obj, skipAnim = false) {
     currentView = cat;
     document.getElementById('galaxy-back-btn').classList.add('visible');
 
-    // Update URL to the category without reloading
-    const catUrl = encodeURIComponent(cat.toLowerCase());
-    history.pushState(null, '', `/${catUrl}`);
+    // Removed pushState
 
     // 1. Stop all orbits
     planetsData.forEach(p => p.speed = 0);
@@ -836,8 +815,7 @@ function handleObjectClick(obj, skipAnim = false) {
       .start();
   } else if (obj.userData.isMoon) {
     const p = obj.userData.project;
-    const catUrl = p.category ? encodeURIComponent(p.category.toLowerCase()) : 'misc';
-    const href = p.page ? `/${catUrl}/${encodeURIComponent(p.id)}` : (p.link || '#');
+    const href = p.page ? `project.html?id=${encodeURIComponent(p.id)}` : (p.link || '#');
     
     if (isMobile) {
       if (window.isTransitioning) return;
@@ -1347,9 +1325,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initScrollReveal();
   
   const pageType = document.body.getAttribute('data-page');
-  const pathParts = window.location.pathname.split('/').filter(p => p && p !== 'index.html');
-  const isDirectCat = pathParts.length === 1 && !['admin', '404', 'explorations', 'project'].includes(pathParts[0]);
-  const skipIntro = isDirectCat || new URLSearchParams(window.location.search).get('skipIntro') === 'true';
+  const skipIntro = new URLSearchParams(window.location.search).get('skipIntro') === 'true';
 
   // Disable interactions during sequence
   window.isTransitioning = !skipIntro;
@@ -1417,9 +1393,4 @@ document.addEventListener('DOMContentLoaded', () => {
   } else if (pageType === '404') {
     load404Scene('solar-system');
   }
-
-  // Handle browser back/forward buttons
-  window.addEventListener('popstate', () => {
-    window.location.reload();
-  });
 });
