@@ -472,13 +472,8 @@ function initThreeJS(container, backBtn) {
   scene = new THREE.Scene();
   scene.add(new THREE.AmbientLight(0xffffff, 0.6)); 
 
-  const skipIntro = new URLSearchParams(window.location.search).get('skipIntro') === 'true';
   camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 1, 3000);
-  if (skipIntro) {
-    camera.position.set(0, isMobile ? 650 : 400, isMobile ? 900 : 700);
-  } else {
-    camera.position.set(0, 200, isMobile ? 780 : 400);
-  }
+  camera.position.set(0, 200, isMobile ? 780 : 400);
 
   renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
   renderer.setSize(container.clientWidth, container.clientHeight);
@@ -536,8 +531,9 @@ function initThreeJS(container, backBtn) {
           .easing(TWEEN.Easing.Cubic.InOut)
           .start();
 
+        const targetScale = pData.baseScale || 1;
         new TWEEN.Tween(pData.mesh.scale)
-          .to({ x: 1, y: 1, z: 1 }, 1500)
+          .to({ x: targetScale, y: targetScale, z: targetScale }, 1500)
           .easing(TWEEN.Easing.Cubic.InOut)
           .start();
       }
@@ -550,10 +546,11 @@ function initThreeJS(container, backBtn) {
         }
       });
       planetsData.forEach(p => {
-        if (p !== pData) {
-           p.mesh.scale.set(0,0,0);
-           new TWEEN.Tween(p.mesh.scale).to({x:1, y:1, z:1}, 1500).easing(TWEEN.Easing.Cubic.InOut).start();
-        }
+         if (p !== pData) {
+            p.mesh.scale.set(0,0,0);
+            const targetScale = p.baseScale || 1;
+            new TWEEN.Tween(p.mesh.scale).to({x: targetScale, y: targetScale, z: targetScale}, 1500).easing(TWEEN.Easing.Cubic.InOut).start();
+         }
       });
 
       const galaxyPos = isMobile ? { x: 0, y: 650, z: 900 } : { x: 0, y: 400, z: 700 };
@@ -1029,7 +1026,8 @@ function renderGalaxy3D() {
     planetsData.push({
       mesh, orbitLine, labelEl, radius, speed, 
       angle: globalPlanetState[cat].angle,
-      catRef: globalPlanetState[cat]
+      catRef: globalPlanetState[cat],
+      baseScale: 1
     });
   });
 
@@ -1058,7 +1056,8 @@ function renderGalaxy3D() {
     planetsData.push({
       mesh, orbitLine, labelEl, radius, speed,
       angle: globalPlanetState['explorations'].angle,
-      catRef: globalPlanetState['explorations']
+      catRef: globalPlanetState['explorations'],
+      baseScale: 5
     });
     
     updateScreenReaderA11y();
@@ -1377,6 +1376,15 @@ document.addEventListener('DOMContentLoaded', () => {
     if (intro) intro.remove();
     if (instructions) instructions.remove();
     
+    if (skipIntro && pageType === 'home') {
+      const checkCam = setInterval(() => {
+        if (typeof camera !== 'undefined' && camera) {
+          if (isMobile) camera.position.set(0, 650, 900);
+          else camera.position.set(0, 400, 700);
+          clearInterval(checkCam);
+        }
+      }, 50);
+    }
   }
 
   // Router based on data-page
