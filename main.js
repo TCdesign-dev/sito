@@ -293,7 +293,7 @@ async function loadProjectDetail(containerId) {
     : '';
 
   const isExploration = project.category && (project.category.toLowerCase() === 'explorations' || project.category.toLowerCase() === 'esplorazioni');
-  const backHref = isExploration ? 'explorations.html' : 'index.html?skipIntro=true';
+  const backHref = isExploration ? '/explorations' : `/${catUrl}`;
   const backText = isExploration ? 'Back to list' : 'Back to Galaxy';
 
   container.innerHTML = `
