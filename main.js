@@ -1273,13 +1273,10 @@ function load404Scene(canvasId) {
   scene.add(dirLight);
 
   let voyager;
-  const voyagerGroup = new THREE.Group();
-  scene.add(voyagerGroup);
-
   const gltfLoader = new THREE.GLTFLoader();
   gltfLoader.load('/assets/Voyager.glb', (gltf) => {
     voyager = gltf.scene;
-    voyager.scale.set(36, 36, 36);
+    voyager.scale.set(30, 30, 30);
     
     voyager.traverse((child) => {
       if (child.isMesh) {
@@ -1292,21 +1289,18 @@ function load404Scene(canvasId) {
       }
     });
     
-    // Add to group
-    voyagerGroup.add(voyager);
+    // Tilt to look cool
+    voyager.rotation.x = Math.PI / 4;
+    voyager.rotation.z = Math.PI / 6;
     
-    // Tilt the parent group
-    voyagerGroup.rotation.x = Math.PI / 6;
-    voyagerGroup.rotation.z = -Math.PI / 12;
+    scene.add(voyager);
   }, undefined, (err) => console.error(err));
 
   function animate404() {
     requestAnimationFrame(animate404);
     if (voyager) {
-      // Rotate only on Y axis
       voyager.rotation.y += 0.002;
-      // Floating effect on the group
-      voyagerGroup.position.y = Math.sin(Date.now() * 0.001) * 15;
+      voyager.position.y = Math.sin(Date.now() * 0.001) * 10;
     }
     renderer.render(scene, camera);
   }
