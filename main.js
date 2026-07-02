@@ -1298,7 +1298,7 @@ function load404Scene(canvasId) {
   function animate404() {
     requestAnimationFrame(animate404);
     if (voyager) {
-      voyager.rotation.z += 0.002;
+      voyager.rotation.y += 0.002;
       voyager.position.y = Math.sin(Date.now() * 0.001) * 10;
     }
     renderer.render(scene, camera);
