@@ -1057,7 +1057,7 @@ function renderGalaxy3D() {
       mesh, orbitLine, labelEl, radius, speed,
       angle: globalPlanetState['explorations'].angle,
       catRef: globalPlanetState['explorations'],
-      baseScale: 5
+      baseScale: 4
     });
     
     updateScreenReaderA11y();
@@ -1069,7 +1069,7 @@ function renderGalaxy3D() {
       // Adjust scale depending on the model's original size
       // We start with a reasonable guess, and scale it up. 
       // Typical models might need significant scaling.
-      voyagerModel.scale.set(5, 5, 5);
+      voyagerModel.scale.set(4, 4, 4);
       
       // Ensure materials are visible
       voyagerModel.traverse((child) => {
