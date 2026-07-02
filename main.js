@@ -472,8 +472,13 @@ function initThreeJS(container, backBtn) {
   scene = new THREE.Scene();
   scene.add(new THREE.AmbientLight(0xffffff, 0.6)); 
 
+  const skipIntro = new URLSearchParams(window.location.search).get('skipIntro') === 'true';
   camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 1, 3000);
-  camera.position.set(0, 200, isMobile ? 780 : 400);
+  if (skipIntro) {
+    camera.position.set(0, isMobile ? 650 : 400, isMobile ? 900 : 700);
+  } else {
+    camera.position.set(0, 200, isMobile ? 780 : 400);
+  }
 
   renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
   renderer.setSize(container.clientWidth, container.clientHeight);
@@ -1372,15 +1377,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (intro) intro.remove();
     if (instructions) instructions.remove();
     
-    if (skipIntro && pageType === 'home') {
-      const checkCam = setInterval(() => {
-        if (typeof camera !== 'undefined' && camera) {
-          if (isMobile) camera.position.set(0, 650, 900);
-          else camera.position.set(0, 400, 700);
-          clearInterval(checkCam);
-        }
-      }, 50);
-    }
   }
 
   // Router based on data-page
