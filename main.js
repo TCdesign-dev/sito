@@ -1289,16 +1289,14 @@ function load404Scene(canvasId) {
       }
     });
     
-    // Tilt it slightly
-    voyager.rotation.x = 0.4;
-    voyager.rotation.y = 0.2;
+    // No tilts
     scene.add(voyager);
   }, undefined, (err) => console.error(err));
 
   function animate404() {
     requestAnimationFrame(animate404);
     if (voyager) {
-      voyager.rotation.y += 0.002;
+      voyager.rotation.z += 0.002;
       voyager.position.y = Math.sin(Date.now() * 0.001) * 10;
     }
     renderer.render(scene, camera);
