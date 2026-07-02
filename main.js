@@ -293,7 +293,7 @@ async function loadProjectDetail(containerId) {
     : '';
 
   const isExploration = project.category && (project.category.toLowerCase() === 'explorations' || project.category.toLowerCase() === 'esplorazioni');
-  const backHref = isExploration ? '/explorations' : `/${catUrl}`;
+  const backHref = isExploration ? '/explorations' : '/?skipIntro=true';
   const backText = isExploration ? 'Back to list' : 'Back to Galaxy';
 
   container.innerHTML = `
@@ -1417,4 +1417,9 @@ document.addEventListener('DOMContentLoaded', () => {
   } else if (pageType === '404') {
     load404Scene('solar-system');
   }
+
+  // Handle browser back/forward buttons
+  window.addEventListener('popstate', () => {
+    window.location.reload();
+  });
 });
