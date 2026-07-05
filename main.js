@@ -245,7 +245,14 @@ async function loadProjectDetail(containerId) {
   const container = document.getElementById(containerId);
   if (!container) return;
 
-  const id = new URLSearchParams(window.location.search).get('id');
+  // Id can arrive as ?id=... (legacy) or as a pretty URL /category/id
+  // (vercel.json rewrites /:category/:id to project.html without touching
+  // the browser URL, so the id lives in the last path segment).
+  let id = new URLSearchParams(window.location.search).get('id');
+  if (!id) {
+    const segs = window.location.pathname.split('/').filter(Boolean);
+    if (segs.length >= 2) id = decodeURIComponent(segs[segs.length - 1]);
+  }
 
   if (!id) { window.location.href = '/404'; return; }
 
@@ -257,7 +264,8 @@ async function loadProjectDetail(containerId) {
   const meta = document.querySelector('meta[name="description"]');
   if (meta) meta.setAttribute('content', project.description || '');
 
-  const canonicalUrl = `https://tommasocostanza.space/project.html?id=${id}`;
+  const projCatUrl = encodeURIComponent((project.category || 'misc').toLowerCase());
+  const canonicalUrl = `https://tommasocostanza.space/${projCatUrl}/${encodeURIComponent(id)}`;
   
   const canonicalTag = document.querySelector('link[rel="canonical"]');
   if (canonicalTag) canonicalTag.setAttribute('href', canonicalUrl);
@@ -292,7 +300,7 @@ async function loadProjectDetail(containerId) {
 
   container.innerHTML = `
     <a href="${backHref}" class="project-back">${backText}</a>
-    ${project.preview ? `<img src="${esc(project.preview)}" class="project-detail-hero" alt="Anteprima progetto" />` : ''}
+    ${project.preview ? `<img src="${esc(project.preview)}" class="project-detail-hero" alt="Project preview" />` : ''}
     <h1 class="project-title">${esc(project.name)}</h1>
     <div class="project-header-meta">
       <span class="project-year-badge">${esc(String(project.year))}</span>
@@ -372,6 +380,9 @@ let gltfLoader;
 let voyagerModel = null;
 let currentView = 'galaxy';
 let globalPlanetState = {};
+// Category slug from a deep-link URL like /design (set on DOMContentLoaded,
+// consumed by loadSolarSystem once the galaxy is built)
+let deepLinkCategory = null;
 
 // Tap vs Drag differentiation variables
 let pointerStartX = 0;
@@ -449,7 +460,21 @@ async function loadSolarSystem(systemId, bgId, mobileListId) {
   initThreeJS(container, backBtn);
   renderGalaxy3D();
 
-  // Deep-link routing removed
+  // Deep-link: /design → jump straight to that category's system view.
+  // vercel.json rewrites /:category to index.html, so the slug is in the path.
+  if (deepLinkCategory) {
+    const catKey = Object.keys(orbitsMap).find(
+      c => c.toLowerCase() === deepLinkCategory
+    );
+    const pData = catKey
+      ? planetsData.find(p => p.mesh.userData.category === catKey)
+      : null;
+    if (pData) {
+      handleObjectClick(pData.mesh, true);
+    } else {
+      window.location.replace('/404');
+    }
+  }
 }
 
 function initThreeJS(container, backBtn) {
@@ -817,7 +842,8 @@ function handleObjectClick(obj, skipAnim = false) {
       .start();
   } else if (obj.userData.isMoon) {
     const p = obj.userData.project;
-    const href = p.page ? `project.html?id=${encodeURIComponent(p.id)}` : (p.link || '#');
+    const moonCatUrl = encodeURIComponent((p.category || 'misc').toLowerCase());
+    const href = p.page ? `/${moonCatUrl}/${encodeURIComponent(p.id)}` : (p.link || '#');
     
     if (isMobile) {
       if (window.isTransitioning) return;
@@ -1117,8 +1143,7 @@ function renderSystem3D(category) {
   const light = new THREE.PointLight(0xffffff, 1, 800);
   scene.add(light);
 
-  const orbits = globalPlanetState[category] ? globalPlanetState[category].totalOrbits : 0;
-  const centerLabel = createLabel(`${category} (Orbits: ${orbits})`, false);
+  const centerLabel = createLabel(category, false);
   planetsData.push({ mesh: centerMesh, labelEl: centerLabel, radius: 0, speed: 0, angle: 0 });
 
   const projects = orbitsMap[category];
@@ -1329,7 +1354,17 @@ document.addEventListener('DOMContentLoaded', () => {
   initScrollReveal();
   
   const pageType = document.body.getAttribute('data-page');
-  const skipIntro = new URLSearchParams(window.location.search).get('skipIntro') === 'true';
+
+  // Deep-link detection: index.html served at /<category> via vercel rewrite.
+  // A deep link behaves like skipIntro (no intro sequence, straight to the 3D view).
+  const pathSegs = window.location.pathname.split('/').filter(Boolean);
+  if (pageType === 'home' && pathSegs.length === 1) {
+    deepLinkCategory = decodeURIComponent(pathSegs[0]).toLowerCase();
+  }
+
+  const skipIntro =
+    new URLSearchParams(window.location.search).get('skipIntro') === 'true' ||
+    !!deepLinkCategory;
 
   // Disable interactions during sequence
   window.isTransitioning = !skipIntro;
@@ -1376,7 +1411,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (intro) intro.remove();
     if (instructions) instructions.remove();
     
-    if (skipIntro && pageType === 'home') {
+    // Galaxy overview camera — skipped for deep links, where
+    // handleObjectClick(skipAnim) positions the camera on the system view.
+    if (skipIntro && pageType === 'home' && !deepLinkCategory) {
       const checkCam = setInterval(() => {
         if (typeof camera !== 'undefined' && camera) {
           if (isMobile) camera.position.set(0, 650, 900);

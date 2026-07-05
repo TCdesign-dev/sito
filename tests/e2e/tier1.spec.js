@@ -182,7 +182,7 @@ test.describe('Tier 1: Feature Coverage', () => {
     await moonLabel.click({ force: true });
     
     const exploreBtn = page.locator('#mobile-explore-btn');
-    await expect(exploreBtn).toHaveAttribute('href', /project\.html\?id=/);
+    await expect(exploreBtn).toHaveAttribute('href', /^\/[^/]+\/[^/]+$/);
   });
 
   test('F4-5: Clicking moon label on desktop navigates to details page', async ({ page }) => {
@@ -192,10 +192,11 @@ test.describe('Tier 1: Feature Coverage', () => {
     const moonLabel = page.locator('#labels-container .webgl-label--moon').first();
     await expect(moonLabel).toBeVisible();
     
-    // Click moon on desktop - redirects to project.html
+    // Click moon on desktop - navigates to the pretty URL /<category>/<id>
+    // (rewritten to project.html by vercel.json in production)
     await moonLabel.click({ force: true });
-    await page.waitForURL(/\/project\.html\?id=/);
-    expect(page.url()).toContain('project.html?id=');
+    await page.waitForURL(/\/[^/]+\/[^/?]+$/);
+    expect(new URL(page.url()).pathname.split('/').filter(Boolean).length).toBe(2);
   });
 
   // ==========================================
