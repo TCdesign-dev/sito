@@ -217,10 +217,9 @@ async function loadExplorations(containerId) {
   explorations.forEach(p => {
     const a = document.createElement('a');
     a.className = 'exploration-card visible';
-    // Select dynamic route if 'page' is true, OR if there's no external link
+    // Dedicated page if 'page' is true, OR if there's no external link
     const hasPage = p.page || (!p.page && !p.link);
-    const catUrl = p.category ? encodeURIComponent(p.category.toLowerCase()) : 'misc';
-    a.href = hasPage ? `/${catUrl}/${encodeURIComponent(p.id)}` : p.link;
+    a.href = hasPage ? `/project.html?id=${encodeURIComponent(p.id)}` : p.link;
     if (!hasPage && p.link) a.target = '_blank';
 
     a.innerHTML = `
@@ -264,8 +263,7 @@ async function loadProjectDetail(containerId) {
   const meta = document.querySelector('meta[name="description"]');
   if (meta) meta.setAttribute('content', project.description || '');
 
-  const projCatUrl = encodeURIComponent((project.category || 'misc').toLowerCase());
-  const canonicalUrl = `https://tommasocostanza.space/${projCatUrl}/${encodeURIComponent(id)}`;
+  const canonicalUrl = `https://tommasocostanza.space/project.html?id=${encodeURIComponent(id)}`;
   
   const canonicalTag = document.querySelector('link[rel="canonical"]');
   if (canonicalTag) canonicalTag.setAttribute('href', canonicalUrl);
@@ -471,6 +469,8 @@ async function loadSolarSystem(systemId, bgId, mobileListId) {
       : null;
     if (pData) {
       handleObjectClick(pData.mesh, true);
+      // Show the pretty URL regardless of how we got here (path or ?goto=)
+      history.replaceState(null, '', '/' + encodeURIComponent(deepLinkCategory));
     } else {
       window.location.replace('/404');
     }
@@ -842,8 +842,7 @@ function handleObjectClick(obj, skipAnim = false) {
       .start();
   } else if (obj.userData.isMoon) {
     const p = obj.userData.project;
-    const moonCatUrl = encodeURIComponent((p.category || 'misc').toLowerCase());
-    const href = p.page ? `/${moonCatUrl}/${encodeURIComponent(p.id)}` : (p.link || '#');
+    const href = p.page ? `/project.html?id=${encodeURIComponent(p.id)}` : (p.link || '#');
     
     if (isMobile) {
       if (window.isTransitioning) return;
@@ -1355,11 +1354,18 @@ document.addEventListener('DOMContentLoaded', () => {
   
   const pageType = document.body.getAttribute('data-page');
 
-  // Deep-link detection: index.html served at /<category> via vercel rewrite.
+  // Deep-link detection. Two entry points:
+  // - /<category> served as index.html by the vercel rewrite (slug in the path)
+  // - /?goto=<category>, used by the 404-page fallback router
   // A deep link behaves like skipIntro (no intro sequence, straight to the 3D view).
   const pathSegs = window.location.pathname.split('/').filter(Boolean);
-  if (pageType === 'home' && pathSegs.length === 1) {
-    deepLinkCategory = decodeURIComponent(pathSegs[0]).toLowerCase();
+  const gotoParam = new URLSearchParams(window.location.search).get('goto');
+  if (pageType === 'home') {
+    if (gotoParam) {
+      deepLinkCategory = gotoParam.toLowerCase();
+    } else if (pathSegs.length === 1) {
+      deepLinkCategory = decodeURIComponent(pathSegs[0]).toLowerCase();
+    }
   }
 
   const skipIntro =
