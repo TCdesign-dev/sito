@@ -8,6 +8,7 @@
     { "source": "/main.js", "destination": "/main.js" },
     { "source": "/404", "destination": "/404.html" },
     { "source": "/explorations", "destination": "/explorations.html" },
+    { "source": "/project", "destination": "/project.html" },
     { "source": "/:category/:id", "destination": "/project.html" },
     { "source": "/:category", "destination": "/index.html" }
   ],

@@ -7,6 +7,34 @@
   <meta name="description" content="You've explored too far. 404 Page Not Found — Tommaso Costanza, Product Design student in Turin." />
   
   <link rel="canonical" href="https://tommasocostanza.space/404.html" />
+
+  <!-- Fallback router: if the visitor landed here via a category or project
+       URL (/design, /design/<id>), redirect to the right page. Runs first,
+       before any heavy asset, so valid deep links bounce away quickly. -->
+  <script>
+    (async () => {
+      const segs = location.pathname.split('/').filter(Boolean);
+      if (!segs.length || segs.length > 2) return;
+      try {
+        const res = await fetch('/projects/projects.json');
+        if (!res.ok) return;
+        const projects = await res.json();
+        if (segs.length === 2) {
+          const id = decodeURIComponent(segs[1]);
+          if (projects.some(p => p.id === id)) {
+            location.replace('/project.html?id=' + encodeURIComponent(id));
+          }
+          return;
+        }
+        const slug = decodeURIComponent(segs[0]).toLowerCase();
+        if (slug === 'explorations') { location.replace('/explorations'); return; }
+        const isCategory = projects.some(
+          p => (p.category || '').toLowerCase() === slug
+        );
+        if (isCategory) location.replace('/?goto=' + encodeURIComponent(slug));
+      } catch (e) { /* stay on 404 */ }
+    })();
+  </script>
   
   <meta property="og:title" content="404 — Tommaso Costanza" />
   <meta property="og:description" content="You've explored too far. 404 Page Not Found — Tommaso Costanza, Product Design student in Turin." />
