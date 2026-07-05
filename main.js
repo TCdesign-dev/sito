@@ -1348,7 +1348,15 @@ if (typeof THREE !== 'undefined') {
 /* ===========================
    INIT (runs on every page)
    =========================== */
-document.addEventListener('DOMContentLoaded', () => {
+// The 404 page injects this script after DOMContentLoaded has already
+// fired (it waits for the fallback-router decision), so run immediately
+// when the document is ready instead of only listening for the event.
+function onDocumentReady(fn) {
+  if (document.readyState !== 'loading') fn();
+  else document.addEventListener('DOMContentLoaded', fn);
+}
+
+onDocumentReady(() => {
   initCopyrightYear();
   initScrollReveal();
   
