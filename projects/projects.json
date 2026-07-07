@@ -8,7 +8,7 @@
     "category": "Products",
     "description": "",
     "link": null,
-    "page": false,
+    "page": true,
     "content": [
       {
         "type": "text",
