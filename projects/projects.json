@@ -1,5 +1,17 @@
 [
   {
+    "id": "project-1783466103547",
+    "name": "New Project",
+    "year": 2026,
+    "preview": "",
+    "color": "blue",
+    "category": "",
+    "description": "",
+    "link": null,
+    "page": true,
+    "content": []
+  },
+  {
     "id": "project-1783465625709",
     "name": "Pod camera",
     "year": 2024,
