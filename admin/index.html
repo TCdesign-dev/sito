@@ -596,7 +596,7 @@ async function handleFileUpload(input, targetField, blockIdx = null) {
     const cleanName = p.name ? slugify(p.name) : 'project';
     const timestamp = Date.now();
     const filename = `${cleanName}-${timestamp}.${ext}`;
-    const filePath = `assets/projects/${filename}`;
+    const filePath = `projects/images/${filename}`;
     
     // Upload to GitHub
     const url = `https://api.github.com/repos/${githubRepo}/contents/${filePath}`;

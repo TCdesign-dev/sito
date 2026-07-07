@@ -3,7 +3,7 @@
     "id": "project-1783465131590",
     "name": "New Project",
     "year": 2026,
-    "preview": "assets/projects/new-project-1783465139669.webp",
+    "preview": "projects/images/new-project-1783465139669.webp",
     "color": "blue",
     "category": "Products",
     "description": "",
@@ -15,7 +15,7 @@
     "id": "project-1783464267830",
     "name": "Pod Camera",
     "year": 2024,
-    "preview": "assets/projects/pod-camera-1783465089373.webp",
+    "preview": "projects/images/pod-camera-1783465089373.webp",
     "color": "yellow",
     "category": "Products",
     "description": "",
@@ -28,7 +28,7 @@
       },
       {
         "type": "image",
-        "src": "assets/projects/new-project-1783464463050.webp",
+        "src": "projects/images/new-project-1783464463050.webp",
         "caption": ""
       },
       {
@@ -37,7 +37,7 @@
       },
       {
         "type": "image",
-        "src": "assets/projects/new-project-1783464482910.webp",
+        "src": "projects/images/new-project-1783464482910.webp",
         "caption": ""
       },
       {
