@@ -1,23 +1,11 @@
 [
   {
-    "id": "project-1783466103547",
-    "name": "New Project",
-    "year": 2026,
-    "preview": "projects/images/new-project-1783466109963.webp",
-    "color": "blue",
-    "category": "",
-    "description": "",
-    "link": null,
-    "page": true,
-    "content": []
-  },
-  {
-    "id": "project-1783465625709",
-    "name": "Pod camera",
+    "id": "project-1783466183524",
+    "name": "Pod Camera Concept",
     "year": 2024,
-    "preview": "projects/images/pod-camera-1783466056913.webp",
-    "color": "yellow",
-    "category": "Products",
+    "preview": "projects/images/pod-camera-concept-1783466206355.webp",
+    "color": "green",
+    "category": "",
     "description": "",
     "link": null,
     "page": true,
@@ -28,7 +16,7 @@
       },
       {
         "type": "image",
-        "src": "projects/images/pod-camera-1783466061026.webp",
+        "src": "projects/images/pod-camera-concept-1783466234090.webp",
         "caption": ""
       },
       {
@@ -37,7 +25,7 @@
       },
       {
         "type": "image",
-        "src": "projects/images/pod-camera-1783466064326.webp",
+        "src": "projects/images/pod-camera-concept-1783466254192.webp",
         "caption": ""
       },
       {
@@ -45,6 +33,18 @@
         "value": "Due to its size, it can be easily placed on shelves, bedside tables and furniture without being obtrusive. The design was created using Figma, without the aid of 3D modeling software."
       }
     ]
+  },
+  {
+    "id": "project-1783466103547",
+    "name": "New Project",
+    "year": 2026,
+    "preview": "projects/images/new-project-1783466109963.webp",
+    "color": "blue",
+    "category": "",
+    "description": "",
+    "link": null,
+    "page": true,
+    "content": []
   },
   {
     "id": "project-1783465559847",
