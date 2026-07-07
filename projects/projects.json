@@ -1,50 +1,15 @@
 [
   {
-    "id": "project-1783465131590",
-    "name": "New Project",
+    "id": "project-1783465559847",
+    "name": "Ciao",
     "year": 2026,
-    "preview": "projects/images/new-project-1783465139669.webp",
+    "preview": "projects/images/ciao-1783465574077.webp",
     "color": "blue",
-    "category": "Products",
-    "description": "",
-    "link": "https://ideasapp-site.vercel.app/",
-    "page": true,
-    "content": []
-  },
-  {
-    "id": "project-1783464267830",
-    "name": "Pod Camera",
-    "year": 2024,
-    "preview": "projects/images/pod-camera-1783465089373.webp",
-    "color": "yellow",
     "category": "Products",
     "description": "",
     "link": null,
     "page": true,
-    "content": [
-      {
-        "type": "text",
-        "value": "This is a personally made prototype of an extremely compact indoor security camera. Current solutions available on the market are often relatively bulky, despite the fact that there is no real need for space for electronics. While analyzing a Xiaomi model, I noticed a waste of interior space."
-      },
-      {
-        "type": "image",
-        "src": "projects/images/new-project-1783464463050.webp",
-        "caption": ""
-      },
-      {
-        "type": "text",
-        "value": "I therefore decided to design a camera with more discreetly camouflaged shapes for the home environment."
-      },
-      {
-        "type": "image",
-        "src": "projects/images/new-project-1783464482910.webp",
-        "caption": ""
-      },
-      {
-        "type": "text",
-        "value": "Due to its size, it can be easily placed on shelves, bedside tables and furniture without being obtrusive. The design was created using Figma, without the aid of 3D modeling software."
-      }
-    ]
+    "content": []
   },
   {
     "id": "project-1782820268018",
@@ -134,7 +99,7 @@
     "content": [
       {
         "type": "text",
-        "value": "The second iteration of my personal portfolio. Designed with extreme minimalism ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ system fonts, justified text, almost no visual decoration. The constraint was to communicate everything through typography and layout alone."
+        "value": "The second iteration of my personal portfolio. Designed with extreme minimalism ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ system fonts, justified text, almost no visual decoration. The constraint was to communicate everything through typography and layout alone."
       },
       {
         "type": "text",
