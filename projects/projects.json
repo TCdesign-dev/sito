@@ -1,5 +1,17 @@
 [
   {
+    "id": "project-1783465131590",
+    "name": "New Project",
+    "year": 2026,
+    "preview": "assets/projects/new-project-1783465139669.webp",
+    "color": "blue",
+    "category": "Products",
+    "description": "",
+    "link": null,
+    "page": true,
+    "content": []
+  },
+  {
     "id": "project-1783464267830",
     "name": "Pod Camera",
     "year": 2024,
