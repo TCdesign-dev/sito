@@ -514,12 +514,29 @@ async function saveToGitHub() {
   try {
     const url = `https://api.github.com/repos/${githubRepo}/contents/projects/projects.json`;
     const content = btoa(unescape(encodeURIComponent(JSON.stringify(projects, null, 2))));
-    const body = { message: 'Update projects via admin panel', content, sha: window._fileSha };
-    const res = await fetch(url, {
+
+    let res = await fetch(url, {
       method: 'PUT',
       headers: { Authorization: `token ${githubToken}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
+      body: JSON.stringify({ message: 'Update projects via admin panel', content, sha: window._fileSha })
     });
+
+    // If 409 conflict (stale SHA), fetch the latest SHA and retry once
+    if (res.status === 409) {
+      const freshRes = await fetch(url, {
+        headers: { Authorization: `token ${githubToken}` }
+      });
+      if (freshRes.ok) {
+        const freshData = await freshRes.json();
+        window._fileSha = freshData.sha;
+        res = await fetch(url, {
+          method: 'PUT',
+          headers: { Authorization: `token ${githubToken}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: 'Update projects via admin panel', content, sha: window._fileSha })
+        });
+      }
+    }
+
     if (!res.ok) throw new Error(await res.text());
     const data = await res.json();
     window._fileSha = data.content.sha;
