@@ -2,14 +2,37 @@
   {
     "id": "project-1783465625709",
     "name": "Pod camera",
-    "year": 2026,
-    "preview": "projects/images/new-project-1783465632066.webp",
+    "year": 2024,
+    "preview": "projects/images/pod-camera-1783465733417.webp",
     "color": "yellow",
     "category": "Products",
     "description": "",
     "link": null,
     "page": true,
-    "content": []
+    "content": [
+      {
+        "type": "text",
+        "value": "This is a personally made prototype of an extremely compact indoor security camera. Current solutions available on the market are often relatively bulky, despite the fact that there is no real need for space for electronics. While analyzing a Xiaomi model, I noticed a waste of interior space."
+      },
+      {
+        "type": "image",
+        "src": "projects/images/pod-camera-1783465753863.webp",
+        "caption": ""
+      },
+      {
+        "type": "text",
+        "value": "I therefore decided to design a camera with more discreetly camouflaged shapes for the home environment."
+      },
+      {
+        "type": "image",
+        "src": "projects/images/pod-camera-1783465774362.webp",
+        "caption": ""
+      },
+      {
+        "type": "text",
+        "value": "Due to its size, it can be easily placed on shelves, bedside tables and furniture without being obtrusive. The design was created using Figma, without the aid of 3D modeling software."
+      }
+    ]
   },
   {
     "id": "project-1783465559847",
