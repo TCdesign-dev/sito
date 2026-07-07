@@ -1,5 +1,40 @@
 [
   {
+    "id": "project-1783464267830",
+    "name": "New Project",
+    "year": 2026,
+    "preview": "assets/projects/new-project-1783464390302.webp",
+    "color": "yellow",
+    "category": "Products",
+    "description": "",
+    "link": null,
+    "page": false,
+    "content": [
+      {
+        "type": "text",
+        "value": "This is a personally made prototype of an extremely compact indoor security camera. Current solutions available on the market are often relatively bulky, despite the fact that there is no real need for space for electronics. While analyzing a Xiaomi model, I noticed a waste of interior space."
+      },
+      {
+        "type": "image",
+        "src": "assets/projects/new-project-1783464463050.webp",
+        "caption": ""
+      },
+      {
+        "type": "text",
+        "value": "I therefore decided to design a camera with more discreetly camouflaged shapes for the home environment."
+      },
+      {
+        "type": "image",
+        "src": "assets/projects/new-project-1783464482910.webp",
+        "caption": ""
+      },
+      {
+        "type": "text",
+        "value": "Due to its size, it can be easily placed on shelves, bedside tables and furniture without being obtrusive. The design was created using Figma, without the aid of 3D modeling software."
+      }
+    ]
+  },
+  {
     "id": "project-1782820268018",
     "name": "wqswswsw",
     "year": 2026,
@@ -87,7 +122,7 @@
     "content": [
       {
         "type": "text",
-        "value": "The second iteration of my personal portfolio. Designed with extreme minimalism ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ system fonts, justified text, almost no visual decoration. The constraint was to communicate everything through typography and layout alone."
+        "value": "The second iteration of my personal portfolio. Designed with extreme minimalism ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ system fonts, justified text, almost no visual decoration. The constraint was to communicate everything through typography and layout alone."
       },
       {
         "type": "text",
