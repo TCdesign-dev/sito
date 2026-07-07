@@ -60,6 +60,12 @@ function esc(str) {
     .replace(/"/g, '&quot;');
 }
 
+/** Ensure image paths are always root-relative (prefix / if missing) */
+function imgUrl(src) {
+  if (!src) return '';
+  return src.startsWith('/') || src.startsWith('http') ? src : '/' + src;
+}
+
 /* ===========================
    DATA LOADING
    =========================== */
@@ -111,7 +117,7 @@ function buildPostitCard(project) {
         ${isExternal ? `<span class="postit-external-icon" aria-hidden="true">↗</span>` : ''}
         <img
           class="postit-image"
-          src="${esc(project.preview)}"
+          src="${esc(imgUrl(project.preview))}"
           alt="${esc(project.name)}"
           loading="lazy"
           onerror="this.style.opacity='0'"
@@ -182,7 +188,7 @@ async function loadLatestProjects(containerId, count = 3) {
 
     a.innerHTML = `
       <img
-        src="${esc(p.preview)}"
+        src="${esc(imgUrl(p.preview))}"
         alt="${esc(p.name)}"
         loading="lazy"
         onerror="this.style.opacity='0.15'"
@@ -223,7 +229,7 @@ async function loadExplorations(containerId) {
     if (!hasPage && p.link) a.target = '_blank';
 
     a.innerHTML = `
-      <img src="${esc(p.preview || '')}" alt="${esc(p.name)}" class="exploration-img" loading="lazy" />
+      <img src="${esc(imgUrl(p.preview || ''))}" alt="${esc(p.name)}" class="exploration-img" loading="lazy" />
       <div class="exploration-content">
         <h3 class="exploration-title">${esc(p.name)}</h3>
         <p class="exploration-desc">${esc(p.description || '')}</p>
@@ -280,7 +286,7 @@ async function loadProjectDetail(containerId) {
     if (block.type === 'image') {
       return `
         <figure class="content-image reveal">
-          <img src="${esc(block.src)}" alt="${esc(block.caption || '')}" loading="lazy" />
+          <img src="${esc(imgUrl(block.src))}" alt="${esc(block.caption || '')}" loading="lazy" />
           ${block.caption ? `<figcaption>${esc(block.caption)}</figcaption>` : ''}
         </figure>
       `;
@@ -298,7 +304,7 @@ async function loadProjectDetail(containerId) {
 
   container.innerHTML = `
     <a href="${backHref}" class="project-back">${backText}</a>
-    ${project.preview ? `<img src="${esc(project.preview)}" class="project-detail-hero" alt="Project preview" />` : ''}
+    ${project.preview ? `<img src="${esc(imgUrl(project.preview))}" class="project-detail-hero" alt="Project preview" />` : ''}
     <h1 class="project-title">${esc(project.name)}</h1>
     <div class="project-header-meta">
       <span class="project-year-badge">${esc(String(project.year))}</span>
