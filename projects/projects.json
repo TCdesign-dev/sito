@@ -1,5 +1,48 @@
 [
   {
+    "id": "project-1783548668190",
+    "name": "Car Plate Chat Concept",
+    "year": 2024,
+    "preview": "projects/images/new-project-1783548685141.webp",
+    "color": "blue",
+    "category": "Apps",
+    "description": "",
+    "link": null,
+    "page": true,
+    "content": [
+      {
+        "type": "text",
+        "value": "This is the prototype of a messaging application based on car license plates. Users can register using their car's license plate to verify ownership. To communicate with other users, simply frame or manually enter the car's license plate and see if the user has an account."
+      },
+      {
+        "type": "image",
+        "src": "projects/images/new-project-1783548682601.webp",
+        "caption": ""
+      },
+      {
+        "type": "text",
+        "value": "But... Why would it be useful to use license plates to communicate?"
+      },
+      {
+        "type": "text",
+        "value": "This idea came about one morning when I noticed a car parked with an open door, but I was passing by and wanted to notify the owner somehow. This gave rise to the problem of not being able to communicate, having only the license plate and model of the car. Actually, it is a chat between “cars,” where users are identified not by their name, but by the model of the car."
+      },
+      {
+        "type": "image",
+        "src": "projects/images/new-project-1783548740469.webp",
+        "caption": ""
+      },
+      {
+        "type": "text",
+        "value": "The application should allow replacing traditional tickets left on the dashboard, taking advantage of the technological devices that we all now possess."
+      },
+      {
+        "type": "text",
+        "value": "I developed the first wireframes and prototypes of the application, however, I could not proceed with the full development due to my limited computer skills. The implementation of such an application requires advanced knowledge in security protocols and messaging, as well as the implementation of license plate recognition algorithms."
+      }
+    ]
+  },
+  {
     "id": "project-1783547712543",
     "name": "Ealt",
     "year": 2025,
