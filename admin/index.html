@@ -809,11 +809,30 @@ function updateField(field, value) {
   if (!p) return;
   if (field === 'id') p.id = slugify(value);
   else if (field === 'link') p.link = value || null;
+  else if (field === 'name') {
+    // Keep the id (and therefore the public URL /<category>/<id>) readable:
+    // as long as the id was never customized, it follows the project name.
+    const wasAuto = /^project-\d+$/.test(p.id) || p.id === slugify(p.name || '');
+    p.name = value;
+    if (wasAuto) {
+      const s = uniqueSlug(value, p);
+      if (s) { p.id = s; currentId = s; }
+    }
+    renderSidebar();
+  }
   else p[field] = value;
 }
 
 function slugify(str) {
   return str.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+}
+
+function uniqueSlug(name, current) {
+  const base = slugify(name || '');
+  if (!base) return null;
+  let slug = base, n = 2;
+  while (projects.some(p => p !== current && p.id === slug)) slug = `${base}-${n++}`;
+  return slug;
 }
 
 /* ===== CONTENT BLOCKS ===== */

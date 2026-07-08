@@ -13,7 +13,10 @@ All site text must be in English (`lang="en"`).
 - `404.html` — space-themed 404 page, ALSO acts as fallback router (see below)
 - `main.js` — all logic for every page (routed via `<body data-page="...">`)
 - `projects/projects.json` — single source of truth for projects/categories,
-  edited via the custom admin panel at `/admin` (GitHub API, token in localStorage)
+  edited via the custom admin panel at `/admin` (GitHub API, token in localStorage).
+  The admin derives each project's id from its name (`slugify`, collision-safe),
+  so public URLs stay readable; ids are part of public URLs — do not rename
+  ids of already-published projects casually
 - `vercel.json` — cleanUrls + rewrites + cache headers
 
 ## Deep-link routing — DO NOT BREAK
