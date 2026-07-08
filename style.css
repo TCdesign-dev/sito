@@ -664,8 +664,8 @@ footer {
 }
 
 .exploration-card {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
   border-radius: 16px;
   overflow: hidden;
   text-decoration: none;
@@ -677,15 +677,15 @@ footer {
 
 .exploration-card:hover {
   transform: translateY(-5px);
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(0, 0, 0, 0.04);
 }
 
 .exploration-img {
   width: 100%;
   aspect-ratio: 16/10;
   object-fit: cover;
-  background: #111;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
 }
 
 .exploration-content {
@@ -710,7 +710,7 @@ footer {
 
 .exploration-date {
   font-size: 0.8rem;
-  color: rgba(255,255,255,0.4);
+  color: var(--text-muted);
   margin-top: 0.5rem;
 }
 
