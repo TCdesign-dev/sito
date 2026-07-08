@@ -1,11 +1,11 @@
 [
   {
     "id": "project-1783547712543",
-    "name": "New Project",
-    "year": 2026,
+    "name": "Ealt",
+    "year": 2025,
     "preview": "projects/images/new-project-1783547945971.webp",
-    "color": "blue",
-    "category": "",
+    "color": "green",
+    "category": "Apps",
     "description": "",
     "link": "https://ealt.netlify.app/",
     "page": true,
