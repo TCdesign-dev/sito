@@ -36,7 +36,10 @@ Two cooperating mechanisms:
 Rules that follow from this design:
 - Internal navigation (moon clicks, mobile explore button, explorations cards)
   deliberately uses `/project.html?id=<id>` — reliable everywhere. Do not
-  switch internal links to the pretty `/<category>/<id>` form.
+  switch internal links to the pretty `/<category>/<id>` form. Once the
+  project loads, `loadProjectDetail` rewrites the visible URL to
+  `/<category>/<id>` via `history.replaceState` (refreshing that URL
+  round-trips through the fallback router back to the project).
 - `404.html` loads Three.js/GLTFLoader/`main.js` ONLY after `__stay404`
   resolves true (script injection at the bottom of `<body>`). Never add them
   back as static/deferred tags and never re-add a `Voyager.glb` preload there:

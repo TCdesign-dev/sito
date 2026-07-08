@@ -269,7 +269,13 @@ async function loadProjectDetail(containerId) {
   const meta = document.querySelector('meta[name="description"]');
   if (meta) meta.setAttribute('content', project.description || '');
 
-  const canonicalUrl = `https://tommasocostanza.space/project.html?id=${encodeURIComponent(id)}`;
+  // Show the pretty /<category>/<id> URL. Navigation arrives on the reliable
+  // project.html?id= form; refreshing the pretty URL round-trips through the
+  // 404 fallback router (or the vercel rewrite) back to this page.
+  const prettyPath = `/${encodeURIComponent((project.category || 'misc').toLowerCase())}/${encodeURIComponent(id)}`;
+  history.replaceState(null, '', prettyPath);
+
+  const canonicalUrl = `https://tommasocostanza.space${prettyPath}`;
   
   const canonicalTag = document.querySelector('link[rel="canonical"]');
   if (canonicalTag) canonicalTag.setAttribute('href', canonicalUrl);
@@ -1377,7 +1383,8 @@ onDocumentReady(() => {
   if (pageType === 'home') {
     if (gotoParam) {
       deepLinkCategory = gotoParam.toLowerCase();
-    } else if (pathSegs.length === 1) {
+    } else if (pathSegs.length === 1 && !pathSegs[0].includes('.')) {
+      // ignore direct file paths like /index.html — not category slugs
       deepLinkCategory = decodeURIComponent(pathSegs[0]).toLowerCase();
     }
   }
