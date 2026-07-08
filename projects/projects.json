@@ -1,5 +1,36 @@
 [
   {
+    "id": "project-1783547712543",
+    "name": "New Project",
+    "year": 2026,
+    "preview": "projects/images/new-project-1783547945971.webp",
+    "color": "blue",
+    "category": "",
+    "description": "",
+    "link": "https://ealt.netlify.app/",
+    "page": true,
+    "content": [
+      {
+        "type": "text",
+        "value": "Ealt is a new concept in minimalist health apps. The concept is for Ealt to be the first app you open as soon as you pick up your phone in the morning, not social, email or games."
+      },
+      {
+        "type": "image",
+        "src": "projects/images/new-project-1783547834148.webp",
+        "caption": ""
+      },
+      {
+        "type": "text",
+        "value": "The idea is to bring into one app the main applications that a user can and does use to get ready for the day, from the clothes to put on to the physical activity Ealt provides:\n\n- Location\n- Date (day, month, year)\n- Temperature\n- Humidity\n- Weather situation (sunny, rainy, cloudy, snow)\n- Today Tips: Small phrases that provide advice based on weather situations\n- Hours of sleep (yet to be confirmed)\n- Steps\n- Heart rate\n- Height\n- Weight"
+      },
+      {
+        "type": "image",
+        "src": "projects/images/new-project-1783547910277.webp",
+        "caption": ""
+      }
+    ]
+  },
+  {
     "id": "project-1783546590268",
     "name": "iPadOS calculator Concept",
     "year": 2023,
