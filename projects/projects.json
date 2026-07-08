@@ -1,5 +1,40 @@
 [
   {
+    "id": "project-1783546590268",
+    "name": "iPadOS calculator Concept",
+    "year": 2023,
+    "preview": "projects/images/ipados-calculator-concept-1783546671137.webp",
+    "color": "purple",
+    "category": "Explorations",
+    "description": "",
+    "link": null,
+    "page": true,
+    "content": [
+      {
+        "type": "text",
+        "value": "This is a concept illustrating what the iPadOS native calculator might look like, an idea often mentioned by Apple's senior vice president Craig Federighi. Currently, iPads do not have a native “calculator” app as they do on iOS, as there are many quality alternatives on the market and Apple has not yet developed a single app that meets the requirements for iPadOS."
+      },
+      {
+        "type": "image",
+        "src": "projects/images/ipados-calculator-concept-1783546698978.webp",
+        "caption": ""
+      },
+      {
+        "type": "text",
+        "value": "Instead of devising a full-screen version, I thought of a popup version. This would make the calculator more accessible and easy to use while using other apps. In fact, we often need a calculator while we are already engaged in another activity on the iPad, and having to interrupt that activity to open a separate app is inconvenient."
+      },
+      {
+        "type": "image",
+        "src": "projects/images/ipados-calculator-concept-1783546726597.webp",
+        "caption": ""
+      },
+      {
+        "type": "text",
+        "value": "My prototype works similarly to other iPadOS features, emerging from the corners such as the “quick note” feature. Swiping with a finger or the Apple Pencil from the outside to the inside of the screen would bring up the calculator quickly and intuitively."
+      }
+    ]
+  },
+  {
     "id": "project-1783466183524",
     "name": "Pod Camera Concept",
     "year": 2024,
@@ -33,18 +68,6 @@
         "value": "Due to its size, it can be easily placed on shelves, bedside tables and furniture without being obtrusive. The design was created using Figma, without the aid of 3D modeling software."
       }
     ]
-  },
-  {
-    "id": "project-1783465559847",
-    "name": "Ciao",
-    "year": 2026,
-    "preview": "projects/images/ciao-1783465574077.webp",
-    "color": "blue",
-    "category": "Products",
-    "description": "",
-    "link": null,
-    "page": true,
-    "content": []
   },
   {
     "id": "project-1782820268018",
@@ -134,7 +157,7 @@
     "content": [
       {
         "type": "text",
-        "value": "The second iteration of my personal portfolio. Designed with extreme minimalism ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ system fonts, justified text, almost no visual decoration. The constraint was to communicate everything through typography and layout alone."
+        "value": "The second iteration of my personal portfolio. Designed with extreme minimalism ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ system fonts, justified text, almost no visual decoration. The constraint was to communicate everything through typography and layout alone."
       },
       {
         "type": "text",
