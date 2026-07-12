@@ -25,7 +25,7 @@
       },
       {
         "type": "text",
-        "value": "This idea came about one morning when I noticed a car parked with an open door, but I was passing by and wanted to notify the owner somehow. This gave rise to the problem of not being able to communicate, having only the license plate and model of the car. Actually, it is a chat between “cars,” where users are identified not by their name, but by the model of the car."
+        "value": "This idea came about one morning when I noticed a car parked with an open door, but I was passing by and wanted to notify the owner somehow. This gave rise to the problem of not being able to communicate, having only the license plate and model of the car. Actually, it is a chat between âcars,â where users are identified not by their name, but by the model of the car."
       },
       {
         "type": "image",
@@ -59,7 +59,7 @@
       },
       {
         "type": "image",
-        "src": "projects/images/new-project-1783547834148.webp",
+        "src": "projects/images/ealt-1783896038242.webp",
         "caption": ""
       },
       {
@@ -86,7 +86,7 @@
     "content": [
       {
         "type": "text",
-        "value": "This is a concept illustrating what the iPadOS native calculator might look like, an idea often mentioned by Apple's senior vice president Craig Federighi. Currently, iPads do not have a native “calculator” app as they do on iOS, as there are many quality alternatives on the market and Apple has not yet developed a single app that meets the requirements for iPadOS."
+        "value": "This is a concept illustrating what the iPadOS native calculator might look like, an idea often mentioned by Apple's senior vice president Craig Federighi. Currently, iPads do not have a native âcalculatorâ app as they do on iOS, as there are many quality alternatives on the market and Apple has not yet developed a single app that meets the requirements for iPadOS."
       },
       {
         "type": "image",
@@ -104,7 +104,7 @@
       },
       {
         "type": "text",
-        "value": "My prototype works similarly to other iPadOS features, emerging from the corners such as the “quick note” feature. Swiping with a finger or the Apple Pencil from the outside to the inside of the screen would bring up the calculator quickly and intuitively."
+        "value": "My prototype works similarly to other iPadOS features, emerging from the corners such as the âquick noteâ feature. Swiping with a finger or the Apple Pencil from the outside to the inside of the screen would bring up the calculator quickly and intuitively."
       }
     ]
   },
