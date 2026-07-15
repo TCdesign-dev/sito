@@ -8,40 +8,6 @@
   
   <link rel="canonical" href="https://tommasocostanza.space/404.html" />
 
-  <!-- Fallback router: if the visitor landed here via a category or project
-       URL (/design, /design/<id>), redirect to the right page. The promise
-       resolves true only when this really is a 404 — the heavy 3D assets at
-       the bottom of the page wait for it, so redirects stay fast. -->
-  <script>
-    window.__stay404 = (async () => {
-      const segs = location.pathname.split('/').filter(Boolean);
-      if (!segs.length || segs.length > 2) return true;
-      try {
-        const res = await fetch('/projects/projects.json');
-        if (!res.ok) return true;
-        const projects = await res.json();
-        if (segs.length === 2) {
-          const id = decodeURIComponent(segs[1]);
-          if (projects.some(p => p.id === id)) {
-            location.replace('/project.html?id=' + encodeURIComponent(id));
-            return false;
-          }
-          return true;
-        }
-        const slug = decodeURIComponent(segs[0]).toLowerCase();
-        if (slug === 'explorations') { location.replace('/explorations'); return false; }
-        const isCategory = projects.some(
-          p => (p.category || '').toLowerCase() === slug
-        );
-        if (isCategory) {
-          location.replace('/?goto=' + encodeURIComponent(slug));
-          return false;
-        }
-      } catch (e) { /* stay on 404 */ }
-      return true;
-    })();
-  </script>
-  
   <meta property="og:title" content="404 — Tommaso Costanza" />
   <meta property="og:description" content="You've explored too far. 404 Page Not Found — Tommaso Costanza, Product Design student in Turin." />
   <meta property="og:url" content="https://tommasocostanza.space/404.html" />
@@ -94,20 +60,8 @@
     <a href="/" style="background-color: #fff; color: #000; padding: 1rem 2.5rem; font-size: 1.1rem; border-radius: 9999px; text-decoration: none; font-weight: 600; display: inline-block; margin-bottom: 4rem;">Back home</a>
   </main>
 
-  <!-- 3D assets load only once the fallback router confirms we stay here -->
-  <script>
-    window.__stay404.then((stay) => {
-      if (!stay) return;
-      const load = (src) => new Promise((ok, err) => {
-        const s = document.createElement('script');
-        s.src = src; s.onload = ok; s.onerror = err;
-        document.body.appendChild(s);
-      });
-      load('https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js')
-        .then(() => load('https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js'))
-        .then(() => load('/main.js?v=2'))
-        .catch(() => {});
-    });
-  </script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+  <script defer src="/main.js?v=2"></script>
 </body>
 </html>

@@ -192,11 +192,10 @@ test.describe('Tier 1: Feature Coverage', () => {
     const moonLabel = page.locator('#labels-container .webgl-label--moon').first();
     await expect(moonLabel).toBeVisible();
     
-    // Click moon on desktop - navigates to project.html?id=..., which then
-    // rewrites the visible URL to the pretty /<category>/<id> form
+    // Click moon on desktop - redirects to project.html
     await moonLabel.click({ force: true });
-    await page.waitForURL(/\/[^/?]+\/[^/?]+$/);
-    expect(new URL(page.url()).pathname.split('/').filter(Boolean).length).toBe(2);
+    await page.waitForURL(/\/project\.html\?id=/);
+    expect(page.url()).toContain('project.html?id=');
   });
 
   // ==========================================

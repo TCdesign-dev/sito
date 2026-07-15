@@ -23,10 +23,9 @@ test.describe('Tier 4: Real-World Application Scenarios', () => {
     await expect(moonLabel).toBeVisible({ timeout: 5000 });
     await moonLabel.click({ force: true });
     
-    // 5. Verify navigation to project details page (URL is rewritten to
-    // the pretty /<category>/<id> form once the project loads)
-    await page.waitForURL(/\/design\/compact-security-camera/);
-    expect(page.url()).toContain('/design/compact-security-camera');
+    // 5. Verify navigation to project details page
+    await page.waitForURL(/\/project\.html\?id=compact-security-camera/);
+    expect(page.url()).toContain('project.html?id=compact-security-camera');
     
     // 6. Click back button in project detail to return to Galaxy
     const projectBackLink = page.locator('a.project-back');
