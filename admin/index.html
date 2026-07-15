@@ -485,7 +485,10 @@ async function loadProjects() {
     const res = await fetch(url, { headers: { Authorization: `token ${githubToken}` } });
     if (!res.ok) throw new Error(res.status);
     const data = await res.json();
-    const content = atob(data.content.replace(/\n/g, ''));
+    // atob() alone mangles UTF-8 (curly quotes, accents, em dashes) — decode
+    // the base64 bytes as real UTF-8, mirroring the encode in saveProjects.
+    const bytes = Uint8Array.from(atob(data.content.replace(/\n/g, '')), c => c.charCodeAt(0));
+    const content = new TextDecoder('utf-8').decode(bytes);
     projects = JSON.parse(content);
     window._fileSha = data.sha; // needed to update the file
     

@@ -364,7 +364,9 @@ const PLANET_COLORS = {
   yellow: '#fde047',
   green: '#86efac',
   pink: '#f9a8d4',
-  blue: '#93c5fd'
+  blue: '#93c5fd',
+  purple: '#d8b4fe',
+  orange: '#fdba74'
 };
 
 let orbitsMap = {};
