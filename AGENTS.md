@@ -16,11 +16,7 @@ All site text must be in English (`lang="en"`).
   edited via the custom admin panel at `/admin` (GitHub API, token in localStorage).
   The admin derives each project's id from its name (`slugify`, collision-safe),
   so public URLs stay readable; ids are part of public URLs — do not rename
-  ids of already-published projects casually.
-  The admin can also generate the short description with Gemini
-  (`generateDescription`, model in `GEMINI_MODEL`); the API key is optional,
-  entered in Settings and stored only in localStorage (`gemini_key`) — never
-  commit or hardcode it
+  ids of already-published projects casually
 - `vercel.json` — cleanUrls + rewrites + cache headers
 
 ## Routing — deliberately simple
