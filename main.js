@@ -250,14 +250,7 @@ async function loadProjectDetail(containerId) {
   const container = document.getElementById(containerId);
   if (!container) return;
 
-  // Id can arrive as ?id=... (legacy) or as a pretty URL /category/id
-  // (vercel.json rewrites /:category/:id to project.html without touching
-  // the browser URL, so the id lives in the last path segment).
-  let id = new URLSearchParams(window.location.search).get('id');
-  if (!id) {
-    const segs = window.location.pathname.split('/').filter(Boolean);
-    if (segs.length >= 2) id = decodeURIComponent(segs[segs.length - 1]);
-  }
+  const id = new URLSearchParams(window.location.search).get('id');
 
   if (!id) { window.location.href = '/404'; return; }
 
@@ -371,7 +364,9 @@ const PLANET_COLORS = {
   yellow: '#fde047',
   green: '#86efac',
   pink: '#f9a8d4',
-  blue: '#93c5fd'
+  blue: '#93c5fd',
+  purple: '#d8b4fe',
+  orange: '#fdba74'
 };
 
 let orbitsMap = {};
@@ -384,9 +379,6 @@ let gltfLoader;
 let voyagerModel = null;
 let currentView = 'galaxy';
 let globalPlanetState = {};
-// Category slug from a deep-link URL like /design (set on DOMContentLoaded,
-// consumed by loadSolarSystem once the galaxy is built)
-let deepLinkCategory = null;
 
 // Tap vs Drag differentiation variables
 let pointerStartX = 0;
@@ -463,24 +455,6 @@ async function loadSolarSystem(systemId, bgId, mobileListId) {
 
   initThreeJS(container, backBtn);
   renderGalaxy3D();
-
-  // Deep-link: /design → jump straight to that category's system view.
-  // vercel.json rewrites /:category to index.html, so the slug is in the path.
-  if (deepLinkCategory) {
-    const catKey = Object.keys(orbitsMap).find(
-      c => c.toLowerCase() === deepLinkCategory
-    );
-    const pData = catKey
-      ? planetsData.find(p => p.mesh.userData.category === catKey)
-      : null;
-    if (pData) {
-      handleObjectClick(pData.mesh, true);
-      // Show the pretty URL regardless of how we got here (path or ?goto=)
-      history.replaceState(null, '', '/' + encodeURIComponent(deepLinkCategory));
-    } else {
-      window.location.replace('/404');
-    }
-  }
 }
 
 function initThreeJS(container, backBtn) {
@@ -1368,23 +1342,7 @@ onDocumentReady(() => {
   
   const pageType = document.body.getAttribute('data-page');
 
-  // Deep-link detection. Two entry points:
-  // - /<category> served as index.html by the vercel rewrite (slug in the path)
-  // - /?goto=<category>, used by the 404-page fallback router
-  // A deep link behaves like skipIntro (no intro sequence, straight to the 3D view).
-  const pathSegs = window.location.pathname.split('/').filter(Boolean);
-  const gotoParam = new URLSearchParams(window.location.search).get('goto');
-  if (pageType === 'home') {
-    if (gotoParam) {
-      deepLinkCategory = gotoParam.toLowerCase();
-    } else if (pathSegs.length === 1) {
-      deepLinkCategory = decodeURIComponent(pathSegs[0]).toLowerCase();
-    }
-  }
-
-  const skipIntro =
-    new URLSearchParams(window.location.search).get('skipIntro') === 'true' ||
-    !!deepLinkCategory;
+  const skipIntro = new URLSearchParams(window.location.search).get('skipIntro') === 'true';
 
   // Disable interactions during sequence
   window.isTransitioning = !skipIntro;
@@ -1431,9 +1389,7 @@ onDocumentReady(() => {
     if (intro) intro.remove();
     if (instructions) instructions.remove();
     
-    // Galaxy overview camera — skipped for deep links, where
-    // handleObjectClick(skipAnim) positions the camera on the system view.
-    if (skipIntro && pageType === 'home' && !deepLinkCategory) {
+    if (skipIntro && pageType === 'home') {
       const checkCam = setInterval(() => {
         if (typeof camera !== 'undefined' && camera) {
           if (isMobile) camera.position.set(0, 650, 900);

@@ -1,6 +1,6 @@
 [
   {
-    "id": "project-1783548668190",
+    "id": "car-plate-chat-concept",
     "name": "Car Plate Chat Concept",
     "year": 2024,
     "preview": "projects/images/new-project-1783548685141.webp",
@@ -25,7 +25,7 @@
       },
       {
         "type": "text",
-        "value": "This idea came about one morning when I noticed a car parked with an open door, but I was passing by and wanted to notify the owner somehow. This gave rise to the problem of not being able to communicate, having only the license plate and model of the car. Actually, it is a chat between âcars,â where users are identified not by their name, but by the model of the car."
+        "value": "This idea came about one morning when I noticed a car parked with an open door, but I was passing by and wanted to notify the owner somehow. This gave rise to the problem of not being able to communicate, having only the license plate and model of the car. Actually, it is a chat between “cars,” where users are identified not by their name, but by the model of the car."
       },
       {
         "type": "image",
@@ -43,7 +43,7 @@
     ]
   },
   {
-    "id": "project-1783547712543",
+    "id": "ealt",
     "name": "Ealt",
     "year": 2025,
     "preview": "projects/images/ealt-1783548231663.webp",
@@ -74,7 +74,7 @@
     ]
   },
   {
-    "id": "project-1783546590268",
+    "id": "ipados-calculator-concept",
     "name": "iPadOS calculator Concept",
     "year": 2023,
     "preview": "projects/images/ipados-calculator-concept-1783546851186.webp",
@@ -86,7 +86,7 @@
     "content": [
       {
         "type": "text",
-        "value": "This is a concept illustrating what the iPadOS native calculator might look like, an idea often mentioned by Apple's senior vice president Craig Federighi. Currently, iPads do not have a native âcalculatorâ app as they do on iOS, as there are many quality alternatives on the market and Apple has not yet developed a single app that meets the requirements for iPadOS."
+        "value": "This is a concept illustrating what the iPadOS native calculator might look like, an idea often mentioned by Apple's senior vice president Craig Federighi. Currently, iPads do not have a native “calculator” app as they do on iOS, as there are many quality alternatives on the market and Apple has not yet developed a single app that meets the requirements for iPadOS."
       },
       {
         "type": "image",
@@ -104,12 +104,12 @@
       },
       {
         "type": "text",
-        "value": "My prototype works similarly to other iPadOS features, emerging from the corners such as the âquick noteâ feature. Swiping with a finger or the Apple Pencil from the outside to the inside of the screen would bring up the calculator quickly and intuitively."
+        "value": "My prototype works similarly to other iPadOS features, emerging from the corners such as the “quick note” feature. Swiping with a finger or the Apple Pencil from the outside to the inside of the screen would bring up the calculator quickly and intuitively."
       }
     ]
   },
   {
-    "id": "project-1783466183524",
+    "id": "pod-camera-concept",
     "name": "Pod Camera Concept",
     "year": 2024,
     "preview": "projects/images/pod-camera-concept-1783466206355.webp",
