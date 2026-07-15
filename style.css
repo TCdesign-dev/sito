@@ -22,12 +22,6 @@
   --link-hover: #555;
   --accent: #111;
 
-  /* Post-it colors */
-  --postit-yellow: #fef08a;
-  --postit-green:  #bbf7d0;
-  --postit-pink:   #fecaca;
-  --postit-blue:   #bae6fd;
-
   /* Spacing */
   --max-width: 700px;
   --page-pad: clamp(1.25rem, 5vw, 3rem);
@@ -149,23 +143,12 @@ body.loaded #intro-screen {
   margin: 0 auto;
 }
 
-/* Wide column (projects grid) */
-.content-wide {
-  max-width: 1280px;
-  margin: 0 auto;
-}
-
 /* ===========================
    HEADER / NAV
    =========================== */
 header {
   padding-top: 2rem;
   padding-bottom: 2rem;
-}
-
-header .content-narrow,
-header .content-wide {
-  display: contents; /* nav fills directly */
 }
 
 nav {
@@ -269,387 +252,6 @@ footer {
 .reveal.visible {
   opacity: 1;
   transform: translateY(0);
-}
-
-/* Slide from right (project preview cards on home) */
-.reveal-right {
-  opacity: 0;
-  transform: translateX(28px);
-  transition: opacity 0.5s ease, transform 0.5s ease;
-}
-.reveal-right.visible {
-  opacity: 1;
-  transform: translateX(0);
-}
-
-/* Stagger delays */
-.reveal-delay-1  { transition-delay: 0.08s; }
-.reveal-delay-2  { transition-delay: 0.16s; }
-.reveal-delay-3  { transition-delay: 0.24s; }
-
-/* ===========================
-   HOME PAGE
-   =========================== */
-.home-content {
-  padding-top: 0.5rem;
-  padding-bottom: var(--section-gap);
-}
-
-.home-bio {
-  font-size: 1rem;
-  line-height: 1.8;
-  text-align: justify;
-  hyphens: auto;
-  margin-bottom: var(--section-gap);
-  color: var(--text);
-}
-
-.home-section {
-  margin-bottom: var(--section-gap);
-}
-
-.home-section h2 {
-  font-size: 1rem;
-  font-weight: 500;
-  margin-bottom: 0.75rem;
-}
-
-.now-list {
-  list-style: disc;
-  padding-left: 1.25rem;
-  font-size: 0.95rem;
-  line-height: 1.9;
-}
-.now-list a {
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
-/* Latest projects on home — slide from right */
-.home-latest-projects {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.25rem;
-  margin-top: 1.25rem;
-}
-
-.home-project-card {
-  text-decoration: none;
-  color: var(--text);
-  display: flex;
-  flex-direction: column;
-  gap: 0.45rem;
-  transition: opacity 0.2s, transform 0.25s ease;
-}
-.home-project-card:hover {
-  opacity: 0.75;
-  transform: translateY(-2px);
-}
-
-.home-project-card img {
-  width: 100%;
-  aspect-ratio: 1;
-  object-fit: cover;
-  background: var(--border);
-  border-radius: 2px;
-}
-
-.home-project-card .card-name {
-  font-size: 0.85rem;
-  font-weight: 500;
-}
-.home-project-card .card-year {
-  font-size: 0.8rem;
-  color: var(--text-muted);
-}
-
-.home-all-link {
-  display: inline-block;
-  margin-top: 1rem;
-  font-size: 0.85rem;
-  color: var(--text-muted);
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
-.contact-section p {
-  font-size: 0.95rem;
-  line-height: 1.75;
-}
-
-/* ===========================
-   PROJECTS PAGE — POST-IT BOARD
-   =========================== */
-.projects-page-header {
-  padding: 0.75rem 0 2.5rem;
-  /* Same centering as home content */
-  max-width: var(--max-width);
-  margin: 0 auto;
-}
-
-.projects-page-header h1 {
-  font-size: 1rem;
-  font-weight: 500;
-  margin-bottom: 0.2rem;
-}
-
-.projects-count {
-  font-size: 0.85rem;
-  color: var(--text-muted);
-}
-
-/* Post-it grid — same left/right margin as home */
-.postit-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-  gap: 2.5rem 1.75rem;
-  padding-bottom: 5rem;
-  max-width: var(--max-width);
-  margin: 0 auto;
-}
-
-/* ===========================
-   POST-IT CARD — Realistic
-   =========================== */
-.postit {
-  position: relative;
-  display: block;
-  text-decoration: none;
-  color: var(--text);
-  /* Rotation set via --r custom prop inline */
-  transform: rotate(var(--r, 0deg));
-  transform-origin: 50% 8%;   /* near top = where glue would be */
-  transition:
-    transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  will-change: transform;
-  cursor: pointer;
-}
-
-/*
-   SHADOW — simple elliptical blob below the card.
-   Sits only at the BOTTOM (where paper lifts from the wall).
-   Top stays shadow-free (adhesive strip is flat against surface).
-   No mask tricks — just a positioned ellipse, reliable across all browsers.
-*/
-.postit-shadow {
-  position: absolute;
-  /* Slightly below the bottom edge of the card */
-  bottom: -7px;
-  /* Narrower than the card so it reads as "floating" not "stuck" */
-  left: 6%;
-  right: 6%;
-  height: 20px;
-  background: rgba(0,0,0,0.22);
-  border-radius: 50%;
-  filter: blur(10px);
-  z-index: -1;
-  pointer-events: none;
-  transition: bottom 0.3s ease, opacity 0.3s ease, filter 0.3s ease, left 0.3s ease, right 0.3s ease;
-}
-
-/* Hover: card lifts, shadow moves further down and softens */
-.postit:hover {
-  transform: rotate(0deg) scale(1.05) translateY(-8px) !important;
-  z-index: 20;
-}
-.postit:hover .postit-shadow {
-  bottom: -14px;
-  left: 10%;
-  right: 10%;
-  opacity: 0.75;
-  filter: blur(16px);
-}
-
-/* Color variants */
-.postit--yellow .postit-paper { background: var(--postit-yellow); }
-.postit--green  .postit-paper { background: var(--postit-green); }
-.postit--pink   .postit-paper { background: var(--postit-pink); }
-.postit--blue   .postit-paper { background: var(--postit-blue); }
-
-/* Paper surface */
-.postit-paper {
-  position: relative;
-  border-radius: 2px;
-  overflow: hidden;
-}
-
-
-/*
-   Very subtle gradient overlay:
-   slightly darker at top (paper pressed flat against wall),
-   slightly lighter at bottom (bowing towards viewer).
-   Two-stop only — avoids any visible transparency-edge artifacts.
-*/
-.postit-paper::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    to bottom,
-    rgba(0,0,0,0.06) 0%,
-    rgba(255,255,255,0.12) 100%
-  );
-  pointer-events: none;
-  z-index: 1;
-  border-radius: inherit;
-}
-
-/* Content area */
-.postit-body {
-  padding: 0.7rem 0.8rem 1rem;
-}
-
-/* Post-it image */
-.postit-image {
-  width: 100%;
-  aspect-ratio: 4/3;
-  object-fit: cover;
-  border-radius: 1px;
-  margin-bottom: 0.65rem;
-  background: rgba(0,0,0,0.06);
-  display: block;
-}
-
-.postit-name {
-  font-size: 0.82rem;
-  font-weight: 600;
-  line-height: 1.3;
-  margin-bottom: 0.3rem;
-  letter-spacing: -0.01em;
-}
-
-.postit-meta {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  gap: 0.4rem;
-}
-
-.postit-year {
-  font-size: 0.72rem;
-  opacity: 0.55;
-  flex-shrink: 0;
-}
-
-.postit-tags {
-  display: flex;
-  gap: 0.25rem;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-}
-
-.postit-tag {
-  font-size: 0.62rem;
-  opacity: 0.5;
-  background: rgba(0,0,0,0.08);
-  padding: 0.08rem 0.35rem;
-  border-radius: 100px;
-}
-
-.postit-external-icon {
-  position: absolute;
-  top: 1.4rem;
-  right: 0.6rem;
-  font-size: 0.65rem;
-  opacity: 0.35;
-}
-
-/* ===========================
-   CURL EFFECT (--curled variant)
-
-   The curl is rendered by .postit-curl which sits OUTSIDE .postit-paper
-   (not subject to overflow:hidden). It creates a right-triangle in the
-   bottom-right corner that shows the page background, making it look like
-   the corner is physically peeled away from the wall.
-
-   The ::after on .postit-paper draws the shadow cast by the lifted flap
-   onto the paper surface below it.
-   =========================== */
-
-/* Flat bottom-right corner for curled variant (no border-radius there) */
-.postit--curled .postit-paper {
-  border-radius: 2px 2px 0 2px;
-}
-
-/*
-   Shadow on paper from the lifted flap.
-   Goes from dark (at corner) to transparent (spreading into paper).
-   Uses ::after on the paper so it's clipped by overflow:hidden (correct).
-*/
-.postit--curled .postit-paper::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 50px;
-  height: 50px;
-  /*
-    135deg goes top-left → bottom-right.
-    Bottom-right triangle = dark (shadow under curl).
-    Top-left triangle = transparent.
-  */
-  background: linear-gradient(
-    135deg,
-    transparent  50%,
-    rgba(0,0,0,0.16) 50%,
-    rgba(0,0,0,0.04) 75%,
-    transparent  90%
-  );
-  pointer-events: none;
-  z-index: 2;
-}
-
-/*
-   The "lifted flap" curl triangle.
-   Sits OUTSIDE .postit-paper (no overflow clipping).
-   Shows page background in bottom-right triangle.
-
-   drop-shadow casts a shadow from the flap onto the paper:
-   direction: upper-left (−x, −y) = shadow falls toward top-left of curl.
-*/
-.postit-curl {
-  display: none;
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 50px;
-  height: 50px;
-  z-index: 5;
-  pointer-events: none;
-}
-.postit--curled .postit-curl { display: block; }
-
-.postit-curl::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  /*
-    135deg: top-left half = transparent (paper shows through),
-            bottom-right half = page background (the "revealed" curl).
-  */
-  background: linear-gradient(
-    135deg,
-    transparent 50%,
-    var(--bg)   50%
-  );
-  filter: drop-shadow(-2px -2px 5px rgba(0,0,0,0.28));
-}
-
-/* Post-it scroll reveal */
-.postit {
-  opacity: 0;
-  transform: rotate(var(--r, 0deg)) translateY(12px) scale(0.97);
-  transition:
-    opacity 0.45s ease,
-    transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-.postit.visible {
-  opacity: 1;
-  transform: rotate(var(--r, 0deg)) translateY(0) scale(1);
-}
-.postit:hover {
-  opacity: 1;
-  transform: rotate(0deg) scale(1.05) translateY(-8px) !important;
 }
 
 /* ===========================
@@ -854,26 +456,10 @@ footer {
     --page-pad: 1.25rem;
     --section-gap: 2.25rem;
   }
-  .home-latest-projects {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .postit-grid {
-    grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
-    gap: 2rem 1.25rem;
-  }
 }
 
 @media (max-width: 480px) {
   :root { --page-pad: 1rem; }
-
-  .home-latest-projects {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-  }
-  .postit-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1.75rem 1rem;
-  }
   .project-title { font-size: 1.25rem; }
   .project-header-meta {
     flex-direction: column;
@@ -884,17 +470,6 @@ footer {
     flex-direction: column;
     align-items: flex-start;
   }
-}
-
-/* ===========================
-   UTILITY
-   =========================== */
-.visually-hidden {
-  position: absolute;
-  width: 1px; height: 1px;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  white-space: nowrap;
 }
 
 /* ===========================
@@ -1143,7 +718,6 @@ footer {
 }
 
 
-
 /* Moon Popup */
 .moon-popup {
   position: absolute;
@@ -1379,49 +953,6 @@ footer {
 @media (min-width: 769px) {
   #mobile-planet-list {
     display: none;
-  }
-}
-
-
-/* Floating back button for subpages */
-.floating-back-btn {
-  position: fixed;
-  bottom: 2.5rem;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(255, 255, 255, 0.08);
-  color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  padding: 0.6rem 1.5rem;
-  border-radius: 100px;
-  font-family: inherit;
-  font-size: 0.9rem;
-  cursor: pointer;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  z-index: 999;
-  transition: all 0.3s ease;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  animation: fadeInSlideUp 0.6s ease forwards;
-}
-
-@keyframes fadeInSlideUp {
-  from { opacity: 0; transform: translate(-50%, 20px); }
-  to { opacity: 1; transform: translate(-50%, 0); }
-}
-
-.floating-back-btn:hover {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 255, 255, 0.3);
-  transform: translateX(-50%) scale(1.05);
-}
-
-@media (max-width: 768px) {
-  .floating-back-btn {
-    bottom: 2rem;
   }
 }
 body:not(.assets-loaded) .webgl-label { opacity: 0 !important; pointer-events: none !important; }

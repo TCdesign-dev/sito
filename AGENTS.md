@@ -1,7 +1,10 @@
 # Agent notes — tommasocostanza.space
 
 Static portfolio site (plain HTML/CSS/JS, no build step) deployed on Vercel.
-3D solar-system homepage built with Three.js r128 loaded from CDN.
+3D solar-system homepage built with Three.js r128, vendored in
+`assets/vendor/` (no CDN dependency — keep it that way; upgrading past r128
+would require porting the legacy `examples/js` OrbitControls/GLTFLoader
+globals to ES modules).
 All site text must be in English (`lang="en"`).
 
 ## Architecture
@@ -10,7 +13,7 @@ All site text must be in English (`lang="en"`).
   its "system" where moons are the projects of that category
 - `project.html` — project detail page, driven by `?id=<project-id>`
 - `explorations.html` — list page for the "Explorations" category
-- `404.html` — space-themed 404 page, ALSO acts as fallback router (see below)
+- `404.html` — space-themed 404 page (floating Voyager)
 - `main.js` — all logic for every page (routed via `<body data-page="...">`)
 - `projects/projects.json` — single source of truth for projects/categories,
   edited via the custom admin panel at `/admin` (GitHub API, token in localStorage).
@@ -43,17 +46,19 @@ Current state:
   `project.html`, `explorations.html` and `404.html` must NOT preload it.
 - Homepage Lighthouse baseline is ~90 (measured on `/`).
 
+## Testing
+
+- e2e suite: `npm test` (Playwright vs `python3 -m http.server 8000`,
+  config in `playwright.config.js`). Tests are data-driven: journeys pick a
+  real project from `projects/projects.json`, so content edits via the admin
+  don't break them. The local server has no Vercel rewrites — only test
+  behaviors that don't depend on them.
+
 ## Known issues / deliberately left as-is (July 2026)
 
 - "Contact me" button is a placeholder (`href="#"`), footer hidden on mobile —
-  intentional for now
-- `projects.json` currently holds throwaway test projects; one entry has
-  mojibake (`ÃÂ...` = double-encoded em dash) — fix is editing the JSON text
-- Dead code in `main.js` (`loadProjectsGrid`, `loadLatestProjects`,
-  `buildPostitCard`, `notFoundHtml`) and post-it CSS: leftovers from a removed
-  `projects.html` board page; kept on purpose for now
+  intentional for now, owner will decide later
 - Orbit counting (`globalPlanetState[cat].totalOrbits`) is computed but no
   longer displayed in the center label — keep the logic
-- e2e tests (`tests/e2e`, Playwright vs `python3 -m http.server 8000`) predate
-  several changes; the local server has no Vercel rewrites, so pretty-URL
-  navigation cannot be tested locally without emulating them
+- The hidden `#mobile-planet-list` fallback (display:none everywhere) is kept
+  on purpose as a potential no-WebGL fallback — owner will decide later

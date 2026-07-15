@@ -70,28 +70,35 @@ test.describe('Tier 3: Cross-Feature Combinations', () => {
   });
 
   test('F3-5: Multiple category transitions without page reload do not accumulate duplicate labels', async ({ page }) => {
+    // Derive the expected categories from the live data so the test
+    // survives content changes made through the admin panel.
+    const projects = require('../../projects/projects.json');
+    const categories = [...new Set(
+      projects
+        .map(p => p.category)
+        .filter(c => c && c.toLowerCase() !== 'explorations')
+    )];
+    const hasExplorations = projects.some(
+      p => (p.category || '').toLowerCase() === 'explorations'
+    );
+    // One label per category planet, plus the Voyager "Explorations" label
+    const expectedLabels = categories.length + (hasExplorations ? 1 : 0);
+
     await page.goto('/?skipIntro=true');
-    
-    const designLabel = page.locator('#labels-container .webgl-label:has-text("Design")');
-    await expect(designLabel).toBeVisible();
-    await designLabel.click({ force: true });
-    
     const backBtn = page.locator('#galaxy-back-btn');
-    await expect(backBtn).toHaveClass(/visible/);
-    await backBtn.click();
-    await expect(backBtn).not.toHaveClass(/visible/);
-    
-    const webLabel = page.locator('#labels-container .webgl-label:has-text("Web")');
-    await expect(webLabel).toBeVisible();
-    await webLabel.click({ force: true });
-    await backBtn.click();
-    await expect(backBtn).not.toHaveClass(/visible/);
-    
-    // Verify that the number of category labels in galaxy view is still correct (exactly the unique categories, not duplicated)
+
+    for (const cat of categories.slice(0, 2)) {
+      const label = page.locator(`#labels-container .webgl-label:has-text("${cat}")`);
+      await expect(label).toBeVisible();
+      await label.click({ force: true });
+      await expect(backBtn).toHaveClass(/visible/);
+      await backBtn.click();
+      await expect(backBtn).not.toHaveClass(/visible/);
+    }
+
+    // Verify galaxy labels are not duplicated after the round trips
     const categoryLabels = page.locator('#labels-container .webgl-label:not(.webgl-label--moon)');
-    const count = await categoryLabels.count();
-    // Unique categories are Design, Web, Typography. So count should be 3.
-    expect(count).toBe(3);
+    await expect(categoryLabels).toHaveCount(expectedLabels, { timeout: 10000 });
   });
 
 });
