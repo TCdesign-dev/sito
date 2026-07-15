@@ -220,7 +220,10 @@ let pointerStartX = 0;
 let pointerStartY = 0;
 let pointerStartTime = 0;
 const TAP_DISTANCE_THRESHOLD = 8;
-const TAP_TIME_THRESHOLD = 300;
+// Distance is the real tap-vs-drag discriminator; the time limit only guards
+// long presses. Keep it generous — on slow devices the pointerdown→click gap
+// alone can exceed 300ms, which used to swallow legitimate clicks.
+const TAP_TIME_THRESHOLD = 800;
 
 function isRecentTap(e) {
   if (e.detail === 0 || (e.clientX === 0 && e.clientY === 0) || pointerStartTime === 0) {
