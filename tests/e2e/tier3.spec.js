@@ -8,11 +8,11 @@ test.describe('Tier 3: Cross-Feature Combinations', () => {
     
     const categoryLabel = page.locator('#labels-container .webgl-label:not(.webgl-label--moon)').first();
     await expect(categoryLabel).toBeVisible();
-    await categoryLabel.click({ force: true });
+    await categoryLabel.evaluate(el => el.click());
     
     const moonLabel = page.locator('#labels-container .webgl-label--moon').first();
     await expect(moonLabel).toBeVisible({ timeout: 10000 });
-    await moonLabel.click({ force: true });
+    await moonLabel.evaluate(el => el.click());
     
     const popup = page.locator('#mobile-moon-popup');
     await expect(popup).toHaveClass(/visible/, { timeout: 10000 });
@@ -25,7 +25,7 @@ test.describe('Tier 3: Cross-Feature Combinations', () => {
     
     const categoryLabel = page.locator('#labels-container .webgl-label:not(.webgl-label--moon)').first();
     await expect(categoryLabel).toBeVisible();
-    await categoryLabel.click({ force: true });
+    await categoryLabel.evaluate(el => el.click());
     
     // 2. Resize to mobile width (700px)
     await page.setViewportSize({ width: 700, height: 800 });
@@ -40,10 +40,10 @@ test.describe('Tier 3: Cross-Feature Combinations', () => {
     await page.goto('/?skipIntro=true');
     
     // Enter system and click a moon to open bottom sheet
-    await page.locator('#labels-container .webgl-label:not(.webgl-label--moon)').first().click({ force: true });
+    await page.locator('#labels-container .webgl-label:not(.webgl-label--moon)').first().evaluate(el => el.click());
     const moonLabel = page.locator('#labels-container .webgl-label--moon').first();
     await expect(moonLabel).toBeVisible();
-    await moonLabel.click({ force: true });
+    await moonLabel.evaluate(el => el.click());
     
     const popup = page.locator('#mobile-moon-popup');
     await expect(popup).toHaveClass(/visible/);
@@ -90,10 +90,12 @@ test.describe('Tier 3: Cross-Feature Combinations', () => {
     for (const cat of categories.slice(0, 2)) {
       const label = page.locator(`#labels-container .webgl-label:has-text("${cat}")`);
       await expect(label).toBeVisible();
-      await label.click({ force: true });
+      await label.evaluate(el => el.click());
       await expect(backBtn).toHaveClass(/visible/);
+      // Clicks are ignored while the zoom transition is running — wait it out
+      await page.waitForFunction(() => window.isTransitioning === false);
       await backBtn.click();
-      await expect(backBtn).not.toHaveClass(/visible/);
+      await expect(backBtn).not.toHaveClass(/visible/, { timeout: 10000 });
     }
 
     // Verify galaxy labels are not duplicated after the round trips

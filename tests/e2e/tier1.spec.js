@@ -88,7 +88,7 @@ test.describe('Tier 1: Feature Coverage', () => {
     await page.goto('/?skipIntro=true');
     const categoryLabel = page.locator('#labels-container .webgl-label:not(.webgl-label--moon)').first();
     await expect(categoryLabel).toBeVisible();
-    await categoryLabel.click({ force: true });
+    await categoryLabel.evaluate(el => el.click());
     const backBtn = page.locator('#galaxy-back-btn');
     await expect(backBtn).toHaveClass(/visible/, { timeout: 10000 });
   });
@@ -97,7 +97,7 @@ test.describe('Tier 1: Feature Coverage', () => {
     await page.goto('/?skipIntro=true');
     const categoryLabel = page.locator('#labels-container .webgl-label:not(.webgl-label--moon)').first();
     await expect(categoryLabel).toBeVisible();
-    await categoryLabel.click({ force: true });
+    await categoryLabel.evaluate(el => el.click());
     const bioWrap = page.locator('.hero-bio-wrap');
     await expect(bioWrap).toBeHidden();
   });
@@ -106,12 +106,14 @@ test.describe('Tier 1: Feature Coverage', () => {
     await page.goto('/?skipIntro=true');
     const categoryLabel = page.locator('#labels-container .webgl-label:not(.webgl-label--moon)').first();
     await expect(categoryLabel).toBeVisible();
-    await categoryLabel.click({ force: true });
+    await categoryLabel.evaluate(el => el.click());
     
     const backBtn = page.locator('#galaxy-back-btn');
     await expect(backBtn).toHaveClass(/visible/);
+    // Clicks are ignored while the zoom transition is running — wait it out
+    await page.waitForFunction(() => window.isTransitioning === false);
     await backBtn.click();
-    
+
     const bioWrap = page.locator('.hero-bio-wrap');
     await expect(bioWrap).toBeVisible();
   });
@@ -120,7 +122,7 @@ test.describe('Tier 1: Feature Coverage', () => {
     await page.goto('/?skipIntro=true');
     const categoryLabel = page.locator('#labels-container .webgl-label:not(.webgl-label--moon)').first();
     await expect(categoryLabel).toBeVisible();
-    await categoryLabel.click({ force: true });
+    await categoryLabel.evaluate(el => el.click());
     
     const moonLabel = page.locator('#labels-container .webgl-label--moon');
     await expect(moonLabel.first()).toBeVisible({ timeout: 10000 });
@@ -145,11 +147,11 @@ test.describe('Tier 1: Feature Coverage', () => {
     
     const categoryLabel = page.locator('#labels-container .webgl-label:not(.webgl-label--moon)').first();
     await expect(categoryLabel).toBeVisible();
-    await categoryLabel.click({ force: true });
+    await categoryLabel.evaluate(el => el.click());
     
     const moonLabel = page.locator('#labels-container .webgl-label--moon').first();
     await expect(moonLabel).toBeVisible({ timeout: 10000 });
-    await moonLabel.click({ force: true });
+    await moonLabel.evaluate(el => el.click());
     
     const popup = page.locator('#mobile-moon-popup');
     await expect(popup).toHaveClass(/visible/, { timeout: 10000 });
@@ -160,11 +162,11 @@ test.describe('Tier 1: Feature Coverage', () => {
     await page.goto('/?skipIntro=true');
     
     // Enter category and click first moon
-    await page.locator('#labels-container .webgl-label:not(.webgl-label--moon)').first().click({ force: true });
+    await page.locator('#labels-container .webgl-label:not(.webgl-label--moon)').first().evaluate(el => el.click());
     const moonLabel = page.locator('#labels-container .webgl-label--moon').first();
     await expect(moonLabel).toBeVisible();
     const expectedTitle = await moonLabel.textContent();
-    await moonLabel.click({ force: true });
+    await moonLabel.evaluate(el => el.click());
     
     const titleEl = page.locator('#mobile-moon-title');
     const descEl = page.locator('#mobile-moon-desc');
@@ -176,10 +178,10 @@ test.describe('Tier 1: Feature Coverage', () => {
     await page.setViewportSize({ width: 700, height: 800 });
     await page.goto('/?skipIntro=true');
     
-    await page.locator('#labels-container .webgl-label:not(.webgl-label--moon)').first().click({ force: true });
+    await page.locator('#labels-container .webgl-label:not(.webgl-label--moon)').first().evaluate(el => el.click());
     const moonLabel = page.locator('#labels-container .webgl-label--moon').first();
     await expect(moonLabel).toBeVisible();
-    await moonLabel.click({ force: true });
+    await moonLabel.evaluate(el => el.click());
     
     const exploreBtn = page.locator('#mobile-explore-btn');
     await expect(exploreBtn).toHaveAttribute('href', /project\.html\?id=/);
@@ -188,12 +190,12 @@ test.describe('Tier 1: Feature Coverage', () => {
   test('F4-5: Clicking moon label on desktop navigates to details page', async ({ page }) => {
     await page.goto('/?skipIntro=true');
     
-    await page.locator('#labels-container .webgl-label:not(.webgl-label--moon)').first().click({ force: true });
+    await page.locator('#labels-container .webgl-label:not(.webgl-label--moon)').first().evaluate(el => el.click());
     const moonLabel = page.locator('#labels-container .webgl-label--moon').first();
     await expect(moonLabel).toBeVisible();
     
     // Click moon on desktop - redirects to project.html
-    await moonLabel.click({ force: true });
+    await moonLabel.evaluate(el => el.click());
     await page.waitForURL(/\/project\.html\?id=/);
     expect(page.url()).toContain('project.html?id=');
   });
@@ -213,10 +215,10 @@ test.describe('Tier 1: Feature Coverage', () => {
     await page.setViewportSize({ width: 700, height: 800 });
     await page.goto('/?skipIntro=true');
     
-    await page.locator('#labels-container .webgl-label:not(.webgl-label--moon)').first().click({ force: true });
+    await page.locator('#labels-container .webgl-label:not(.webgl-label--moon)').first().evaluate(el => el.click());
     const moonLabel = page.locator('#labels-container .webgl-label--moon').first();
     await expect(moonLabel).toBeVisible();
-    await moonLabel.click({ force: true });
+    await moonLabel.evaluate(el => el.click());
     
     const categoryTitle = page.locator('#mobile-category-title');
     await expect(categoryTitle).toHaveClass(/visible/);
@@ -226,10 +228,10 @@ test.describe('Tier 1: Feature Coverage', () => {
     await page.setViewportSize({ width: 700, height: 800 });
     await page.goto('/?skipIntro=true');
     
-    await page.locator('#labels-container .webgl-label:not(.webgl-label--moon)').first().click({ force: true });
+    await page.locator('#labels-container .webgl-label:not(.webgl-label--moon)').first().evaluate(el => el.click());
     const moonLabel = page.locator('#labels-container .webgl-label--moon').first();
     await expect(moonLabel).toBeVisible();
-    await moonLabel.click({ force: true });
+    await moonLabel.evaluate(el => el.click());
     
     const popup = page.locator('#mobile-moon-popup');
     await expect(popup).toHaveClass(/visible/);
@@ -242,10 +244,10 @@ test.describe('Tier 1: Feature Coverage', () => {
     await page.setViewportSize({ width: 700, height: 800 });
     await page.goto('/?skipIntro=true');
     
-    await page.locator('#labels-container .webgl-label:not(.webgl-label--moon)').first().click({ force: true });
+    await page.locator('#labels-container .webgl-label:not(.webgl-label--moon)').first().evaluate(el => el.click());
     const moonLabel = page.locator('#labels-container .webgl-label--moon').first();
     await expect(moonLabel).toBeVisible();
-    await moonLabel.click({ force: true });
+    await moonLabel.evaluate(el => el.click());
     
     const categoryTitle = page.locator('#mobile-category-title');
     await expect(categoryTitle).toHaveClass(/visible/);

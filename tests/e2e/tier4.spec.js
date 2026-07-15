@@ -25,12 +25,12 @@ test.describe('Tier 4: Real-World Application Scenarios', () => {
     // 3. Click the sample project's category planet label
     const categoryLabel = page.locator(`#labels-container .webgl-label:has-text("${sample.category}")`);
     await expect(categoryLabel).toBeVisible();
-    await categoryLabel.click({ force: true });
+    await categoryLabel.evaluate(el => el.click());
 
     // 4. Click the sample project's moon label
     const moonLabel = page.locator(`#labels-container .webgl-label--moon:has-text("${sample.name}")`);
     await expect(moonLabel).toBeVisible({ timeout: 5000 });
-    await moonLabel.click({ force: true });
+    await moonLabel.evaluate(el => el.click());
 
     // 5. Verify navigation to the project details page
     await page.waitForURL(new RegExp(`/project\\.html\\?id=${sample.id}`));
@@ -55,12 +55,12 @@ test.describe('Tier 4: Real-World Application Scenarios', () => {
     // 1. Enter category system
     const categoryLabel = page.locator(`#labels-container .webgl-label:has-text("${sample.category}")`);
     await expect(categoryLabel).toBeVisible();
-    await categoryLabel.click({ force: true });
+    await categoryLabel.evaluate(el => el.click());
 
     // 2. Click a moon to open bottom sheet
     const moonLabel = page.locator(`#labels-container .webgl-label--moon:has-text("${sample.name}")`);
     await expect(moonLabel).toBeVisible({ timeout: 5000 });
-    await moonLabel.click({ force: true });
+    await moonLabel.evaluate(el => el.click());
 
     // 3. Verify mobile bottom sheet and category title are visible
     const popup = page.locator('#mobile-moon-popup');
@@ -74,11 +74,13 @@ test.describe('Tier 4: Real-World Application Scenarios', () => {
     await expect(popup).not.toHaveClass(/visible/);
     await expect(categoryTitle).not.toHaveClass(/visible/);
 
-    // 5. Click back button to return to galaxy
+    // 5. Click back button to return to galaxy (wait for the camera
+    // return transition started by the close button to finish first)
+    await page.waitForFunction(() => window.isTransitioning === false);
     const backBtn = page.locator('#galaxy-back-btn');
     await expect(backBtn).toBeVisible();
     await backBtn.click();
-    await expect(backBtn).not.toHaveClass(/visible/);
+    await expect(backBtn).not.toHaveClass(/visible/, { timeout: 10000 });
   });
 
   test('F4-Scenario-3: Multi-orientation Resize Stability', async ({ page }) => {
@@ -89,7 +91,7 @@ test.describe('Tier 4: Real-World Application Scenarios', () => {
     // Open system view
     const categoryLabel = page.locator('#labels-container .webgl-label:not(.webgl-label--moon)').first();
     await expect(categoryLabel).toBeVisible();
-    await categoryLabel.click({ force: true });
+    await categoryLabel.evaluate(el => el.click());
 
     // Rotate to landscape (width > 768px resolves to desktop behavior)
     await page.setViewportSize({ width: 800, height: 600 });
@@ -111,15 +113,17 @@ test.describe('Tier 4: Real-World Application Scenarios', () => {
     // Double click or spam click on category label rapidly
     const categoryLabel = page.locator('#labels-container .webgl-label:not(.webgl-label--moon)').first();
     await expect(categoryLabel).toBeVisible();
-    await categoryLabel.click({ force: true });
-    await categoryLabel.click({ force: true });
-    await categoryLabel.click({ force: true });
+    await categoryLabel.evaluate(el => el.click());
+    await categoryLabel.evaluate(el => el.click());
+    await categoryLabel.evaluate(el => el.click());
 
     // Wait and verify we entered system view correctly
     const backBtn = page.locator('#galaxy-back-btn');
     await expect(backBtn).toHaveClass(/visible/, { timeout: 5000 });
 
-    // Spam click back button
+    // Spam click back button (first one waits for the transition to end,
+    // the extra ones exercise the spam-protection)
+    await page.waitForFunction(() => window.isTransitioning === false);
     await backBtn.click();
     await backBtn.click();
     await backBtn.click();
