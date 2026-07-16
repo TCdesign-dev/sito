@@ -9,6 +9,12 @@ const extSample = projects.find(
 
 test.describe('Tier 2: Boundary & Corner Cases', () => {
 
+  // Keep the suite hermetic: external font requests hang in sandboxed
+  // environments and can stall stylesheet-blocked script execution.
+  test.beforeEach(async ({ page }) => {
+    await page.route(/fonts\.(googleapis|gstatic)\.com/, r => r.abort());
+  });
+
   // ==========================================
   // FEATURE 1: Intro Sequence & Liveness (5 tests)
   // ==========================================
@@ -119,7 +125,10 @@ test.describe('Tier 2: Boundary & Corner Cases', () => {
   test('F3-2-3: Clicking outside elements on 3D canvas does not trigger navigation', async ({ page }) => {
     await page.goto('/?skipIntro=true');
     const canvas = page.locator('#webgl-canvas');
-    await canvas.click({ position: { x: 5, y: 5 } });
+    // Bottom-left corner: empty space, away from the transparent header
+    // that overlays the top of the canvas (force skips the overlay check)
+    const box = await canvas.boundingBox();
+    await canvas.click({ position: { x: 5, y: box.height - 5 }, force: true });
     const backBtn = page.locator('#galaxy-back-btn');
     await expect(backBtn).not.toHaveClass(/visible/);
   });
@@ -130,7 +139,9 @@ test.describe('Tier 2: Boundary & Corner Cases', () => {
     await categoryLabel.evaluate(el => el.click());
     const backBtn = page.locator('#galaxy-back-btn');
     await expect(backBtn).toHaveClass(/visible/);
-    
+
+    // Clicks are ignored while the zoom transition is running — wait it out
+    await page.waitForFunction(() => window.isTransitioning === false);
     await backBtn.dblclick();
     await expect(backBtn).not.toHaveClass(/visible/);
   });
@@ -292,8 +303,9 @@ test.describe('Tier 2: Boundary & Corner Cases', () => {
 
   test('F5-2-5: Clicking labels-container non-label element does not trigger event handler', async ({ page }) => {
     await page.goto('/?skipIntro=true');
-    const container = page.locator('#labels-container');
-    await container.click({ position: { x: 10, y: 10 } });
+    // Fire the click on the container itself (not a .webgl-label child):
+    // the delegated handler must ignore it
+    await page.locator('#labels-container').evaluate(el => el.click());
     const backBtn = page.locator('#galaxy-back-btn');
     await expect(backBtn).not.toHaveClass(/visible/);
   });

@@ -2,6 +2,12 @@ const { test, expect } = require('@playwright/test');
 
 test.describe('Tier 1: Feature Coverage', () => {
 
+  // Keep the suite hermetic: external font requests hang in sandboxed
+  // environments and can stall stylesheet-blocked script execution.
+  test.beforeEach(async ({ page }) => {
+    await page.route(/fonts\.(googleapis|gstatic)\.com/, r => r.abort());
+  });
+
   // ==========================================
   // FEATURE 1: Intro Sequence & Liveness (5 tests)
   // ==========================================

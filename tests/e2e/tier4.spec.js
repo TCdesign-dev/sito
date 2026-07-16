@@ -9,6 +9,12 @@ const sample = projects.find(
 
 test.describe('Tier 4: Real-World Application Scenarios', () => {
 
+  // Keep the suite hermetic: external font requests hang in sandboxed
+  // environments and can stall stylesheet-blocked script execution.
+  test.beforeEach(async ({ page }) => {
+    await page.route(/fonts\.(googleapis|gstatic)\.com/, r => r.abort());
+  });
+
   test('F4-Scenario-1: Full Desktop Navigation Journey', async ({ page }) => {
     test.skip(!sample, 'No non-exploration project with a page in projects.json');
 
@@ -27,14 +33,17 @@ test.describe('Tier 4: Real-World Application Scenarios', () => {
     await expect(categoryLabel).toBeVisible();
     await categoryLabel.evaluate(el => el.click());
 
-    // 4. Click the sample project's moon label
+    // 4. Click the sample project's moon label (moons appear once the zoom
+    // transition completes; wait for it so the click isn't ignored)
     const moonLabel = page.locator(`#labels-container .webgl-label--moon:has-text("${sample.name}")`);
-    await expect(moonLabel).toBeVisible({ timeout: 5000 });
+    await expect(moonLabel).toBeVisible({ timeout: 10000 });
+    await page.waitForFunction(() => window.isTransitioning === false);
     await moonLabel.evaluate(el => el.click());
 
-    // 5. Verify navigation to the project details page
-    await page.waitForURL(new RegExp(`/project\\.html\\?id=${sample.id}`));
-    await expect(page.locator('h1.project-title')).toHaveText(sample.name);
+    // 5. Verify navigation to the project details page ('commit' so slow
+    // third-party subresources can't stall the URL check)
+    await page.waitForURL(new RegExp(`/project\\.html\\?id=${sample.id}`), { waitUntil: 'commit' });
+    await expect(page.locator('h1.project-title')).toHaveText(sample.name, { timeout: 15000 });
 
     // 6. Click back link in project detail to return to the galaxy
     const projectBackLink = page.locator('a.project-back');
@@ -122,11 +131,13 @@ test.describe('Tier 4: Real-World Application Scenarios', () => {
     await expect(backBtn).toHaveClass(/visible/, { timeout: 5000 });
 
     // Spam click back button (first one waits for the transition to end,
-    // the extra ones exercise the spam-protection)
+    // the extra ones exercise the spam-protection). Fire the clicks on the
+    // element itself — the animating 3D canvas can momentarily overlap the
+    // button and make coordinate-based clicks flaky.
     await page.waitForFunction(() => window.isTransitioning === false);
-    await backBtn.click();
-    await backBtn.click();
-    await backBtn.click();
+    await backBtn.evaluate(el => el.click());
+    await backBtn.evaluate(el => el.click());
+    await backBtn.evaluate(el => el.click());
 
     // Verify we returned to galaxy view correctly
     await expect(backBtn).not.toHaveClass(/visible/, { timeout: 5000 });

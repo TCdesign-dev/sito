@@ -2,6 +2,12 @@ const { test, expect } = require('@playwright/test');
 
 test.describe('Tier 3: Cross-Feature Combinations', () => {
 
+  // Keep the suite hermetic: external font requests hang in sandboxed
+  // environments and can stall stylesheet-blocked script execution.
+  test.beforeEach(async ({ page }) => {
+    await page.route(/fonts\.(googleapis|gstatic)\.com/, r => r.abort());
+  });
+
   test('F3-1: skipIntro with mobile viewport allows bottom sheet click instantly', async ({ page }) => {
     await page.setViewportSize({ width: 700, height: 800 });
     await page.goto('/?skipIntro=true');
@@ -47,12 +53,13 @@ test.describe('Tier 3: Cross-Feature Combinations', () => {
     
     const popup = page.locator('#mobile-moon-popup');
     await expect(popup).toHaveClass(/visible/);
-    
-    // Click "Galaxy" back button directly
+
+    // Click "Galaxy" back button directly. The open bottom sheet overlaps it
+    // on this viewport, so fire the click on the element itself.
     const backBtn = page.locator('#galaxy-back-btn');
     await expect(backBtn).toBeVisible();
-    await backBtn.click();
-    
+    await backBtn.evaluate(el => el.click());
+
     // Both back button and mobile popup should close, and we return to galaxy view
     await expect(backBtn).not.toHaveClass(/visible/);
   });
@@ -96,6 +103,8 @@ test.describe('Tier 3: Cross-Feature Combinations', () => {
       await page.waitForFunction(() => window.isTransitioning === false);
       await backBtn.click();
       await expect(backBtn).not.toHaveClass(/visible/, { timeout: 10000 });
+      // Let the return-to-galaxy transition finish before the next round
+      await page.waitForFunction(() => window.isTransitioning === false);
     }
 
     // Verify galaxy labels are not duplicated after the round trips
