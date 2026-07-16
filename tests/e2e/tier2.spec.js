@@ -80,11 +80,11 @@ test.describe('Tier 2: Boundary & Corner Cases', () => {
 
   test('F2-2-4: WebGL context is initialized correctly', async ({ page }) => {
     await page.goto('/?skipIntro=true');
-    const hasGL = await page.evaluate(() => {
-      const canvas = document.getElementById('webgl-canvas');
-      if (!canvas) return false;
-      return !!canvas.getContext('webgl') || !!canvas.getContext('webgl2');
-    });
+    // Ask the Three.js renderer for its context: re-calling getContext with a
+    // different type than the one already created legitimately returns null.
+    const hasGL = await page.evaluate(() =>
+      typeof renderer !== 'undefined' && !!renderer.getContext()
+    );
     expect(hasGL).toBe(true);
   });
 
