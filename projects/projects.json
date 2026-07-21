@@ -1,5 +1,48 @@
 [
   {
+    "id": "barilla-mio-iaad-admission-test-concept",
+    "name": "Barilla MIO · IAAD Admission Test Concept",
+    "year": 2025,
+    "preview": "projects/images/barilla-mio-iaad-admission-test-concept-copertina.webp",
+    "color": "blue",
+    "category": "Explorations",
+    "description": "",
+    "link": null,
+    "page": true,
+    "content": [
+      {
+        "type": "image",
+        "src": "projects/images/barilla-mio-iaad-admission-test-concept-1784671809595.webp",
+        "caption": ""
+      },
+      {
+        "type": "image",
+        "src": "projects/images/barilla-mio-iaad-admission-test-concept-1784671812646.webp",
+        "caption": ""
+      },
+      {
+        "type": "image",
+        "src": "projects/images/barilla-mio-iaad-admission-test-concept-1784671817025.webp",
+        "caption": ""
+      },
+      {
+        "type": "image",
+        "src": "projects/images/barilla-mio-iaad-admission-test-concept-1784671827206.webp",
+        "caption": ""
+      },
+      {
+        "type": "image",
+        "src": "projects/images/barilla-mio-iaad-admission-test-concept-1784671833250.webp",
+        "caption": ""
+      },
+      {
+        "type": "image",
+        "src": "projects/images/barilla-mio-iaad-admission-test-concept-1784671839856.webp",
+        "caption": ""
+      }
+    ]
+  },
+  {
     "id": "car-plate-chat-concept",
     "name": "Car Plate Chat Concept",
     "year": 2024,
