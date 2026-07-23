@@ -403,10 +403,6 @@
     <label>Repository</label>
     <input type="text" id="settingsRepo" placeholder="username/repository" />
   </div>
-  <div class="form-group">
-    <label>Gemini API Key (optional — enables ✨ description generation, get one at <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener" style="color:var(--accent)">aistudio.google.com/apikey</a>)</label>
-    <input type="text" id="settingsGemini" placeholder="AIzaSy..." />
-  </div>
   <button class="btn btn-primary" onclick="saveSettingsFromPanel()">Save settings</button>
   <hr/>
   <button class="btn btn-ghost" onclick="exportJSON()" style="justify-content:center">⬇ Download projects.json</button>
@@ -422,8 +418,6 @@ let globalCategories = [];
 let currentId = null;
 let githubToken = '';
 let githubRepo = '';
-let geminiKey = '';
-const GEMINI_MODEL = 'gemini-2.5-flash';
 
 const COLORS = {
   yellow: '#f5c842',
@@ -438,7 +432,6 @@ const COLORS = {
 window.addEventListener('DOMContentLoaded', async () => {
   githubToken = localStorage.getItem('gh_token') || '';
   githubRepo  = localStorage.getItem('gh_repo')  || 'TCdesign-dev/sito';
-  geminiKey   = localStorage.getItem('gemini_key') || '';
 
   if (!githubToken) {
     document.getElementById('setupModal').classList.remove('hidden');
@@ -468,20 +461,16 @@ function toggleSettings() {
   if (p.classList.contains('open')) {
     document.getElementById('settingsToken').value = githubToken;
     document.getElementById('settingsRepo').value = githubRepo;
-    document.getElementById('settingsGemini').value = geminiKey;
   }
 }
 
 function saveSettingsFromPanel() {
   const t = document.getElementById('settingsToken').value.trim();
   const r = document.getElementById('settingsRepo').value.trim();
-  const g = document.getElementById('settingsGemini').value.trim();
   if (!t || !r) { toast('Please fill all fields', 'error'); return; }
-  githubToken = t; githubRepo = r; geminiKey = g;
+  githubToken = t; githubRepo = r;
   localStorage.setItem('gh_token', t);
   localStorage.setItem('gh_repo', r);
-  if (g) localStorage.setItem('gemini_key', g);
-  else localStorage.removeItem('gemini_key');
   document.getElementById('saveBtn').disabled = false;
   toggleSettings();
   toast('Settings saved', 'success');
@@ -841,68 +830,6 @@ function slugify(str) {
   return str.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 }
 
-/* ===== AI DESCRIPTION (Gemini) ===== */
-async function generateDescription(btn) {
-  const p = projects.find(x => x.id === currentId);
-  if (!p) return;
-  if (!geminiKey) {
-    toast('Add your Gemini API key in Settings first', 'error');
-    const panel = document.getElementById('settingsPanel');
-    if (panel && !panel.classList.contains('open')) toggleSettings();
-    return;
-  }
-  const textBlocks = (p.content || [])
-    .filter(b => b.type === 'text' && b.value)
-    .map(b => b.value)
-    .join('\n');
-  if (!p.name && !textBlocks) {
-    toast('Give the project a name or some text content first', 'error');
-    return;
-  }
-
-  const prompt =
-    'Write a short description (1-2 sentences, max 220 characters) in English ' +
-    'for a design portfolio project card. Plain text only: no markdown, no quotes, ' +
-    'no exclamation marks. Describe what the project is and what makes it interesting.\n\n' +
-    `Project name: ${p.name}\n` +
-    `Category: ${p.category || 'n/a'}\n` +
-    `Project content:\n${textBlocks.slice(0, 4000)}`;
-
-  const prevLabel = btn.textContent;
-  btn.disabled = true;
-  btn.textContent = 'Generating…';
-  try {
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${encodeURIComponent(geminiKey)}`;
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: {
-          temperature: 0.7,
-          maxOutputTokens: 300,
-          thinkingConfig: { thinkingBudget: 0 }
-        }
-      })
-    });
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    const data = await res.json();
-    const parts = data.candidates?.[0]?.content?.parts || [];
-    const text = parts.map(x => x.text || '').join('').trim();
-    if (!text) throw new Error('Empty response');
-    p.description = text;
-    const ta = document.getElementById('descInput');
-    if (ta) ta.value = text;
-    toast('Description generated ✨', 'success');
-  } catch (e) {
-    console.error('Gemini error:', e);
-    toast('Generation failed — check your Gemini API key', 'error');
-  } finally {
-    btn.disabled = false;
-    btn.textContent = prevLabel;
-  }
-}
-
 function uniqueSlug(name, current) {
   const base = slugify(name || '');
   if (!base) return null;
@@ -1016,11 +943,8 @@ function renderEditor(p) {
       </div>
       <div class="form-row cols-1" style="margin-top:1rem">
         <div class="form-group">
-          <label style="display:flex;align-items:center;justify-content:space-between">
-            <span>Short description *</span>
-            <button type="button" class="btn btn-ghost btn-sm" onclick="generateDescription(this)">✨ Generate with AI</button>
-          </label>
-          <textarea id="descInput" oninput="updateField('description',this.value)">${esc(p.description||'')}</textarea>
+          <label>Short description *</label>
+          <textarea oninput="updateField('description',this.value)">${esc(p.description||'')}</textarea>
         </div>
       </div>
       <div class="form-row" style="margin-top:1rem">

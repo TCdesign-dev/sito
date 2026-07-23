@@ -1,13 +1,11 @@
 {
-  "name": "sharp-newton",
+  "name": "tommasocostanza-space",
   "version": "1.0.0",
-  "description": "",
-  "main": "main.js",
+  "description": "Portfolio of Tommaso Costanza — 3D solar system built with Three.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "playwright test"
   },
-  "keywords": [],
-  "author": "",
+  "author": "Tommaso Costanza",
   "license": "ISC",
   "devDependencies": {
     "@playwright/test": "^1.61.1"

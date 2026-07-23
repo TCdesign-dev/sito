@@ -1,14 +1,15 @@
 /**
  * main.js — Portfolio Tommaso Costanza
  *
- * - fetchProjects: loads projects/projects.json
- * - buildPostitCard: renders realistic post-it HTML
- * - loadProjectsGrid: projects.html board
- * - loadLatestProjects: index.html strip
- * - loadProjectDetail: project.html page
- * - applyWeatherTheme: wttr.in weather → CSS class
- * - initScrollReveal: IntersectionObserver reveals
- * - initCopyrightYear: auto-updates year in footer
+ * Pages are routed via <body data-page="...">:
+ * - home         → loadSolarSystem: 3D galaxy of category planets (Three.js);
+ *                  clicking a planet zooms into its system of project moons
+ * - project      → loadProjectDetail: renders a project from ?id=<project-id>
+ * - explorations → loadExplorations: card list of the Explorations category
+ * - 404          → load404Scene: floating Voyager model
+ *
+ * Data source: projects/projects.json (edited via /admin).
+ * Shared helpers: initScrollReveal, initCopyrightYear.
  */
 
 'use strict';
@@ -18,38 +19,9 @@
    =========================== */
 const PROJECTS_JSON = '/projects/projects.json';
 
-const COLOR_MAP = {
-  yellow: 'postit--yellow',
-  green:  'postit--green',
-  pink:   'postit--pink',
-  blue:   'postit--blue',
-};
-
-const MAX_ROTATION = 3.0;
-
 /* ===========================
    UTILITIES
    =========================== */
-
-/** Deterministic rotation from project id — same project = same angle */
-function seedRotation(str) {
-  let h = 0;
-  for (let i = 0; i < str.length; i++) {
-    h = (h << 5) - h + str.charCodeAt(i);
-    h |= 0;
-  }
-  return ((h % 1000) / 1000) * MAX_ROTATION;
-}
-
-/** Deterministic curl decision — ~50/50 */
-function shouldCurl(str) {
-  let h = 0;
-  for (let i = 0; i < str.length; i++) {
-    h = (h << 3) + str.charCodeAt(i);
-    h |= 0;
-  }
-  return Math.abs(h) % 2 === 0;
-}
 
 /** HTML-escape a string */
 function esc(str) {
@@ -78,130 +50,6 @@ async function fetchProjects() {
     console.error('Could not load projects.json:', err);
     return [];
   }
-}
-
-/* ===========================
-   POST-IT CARD BUILDER
-   =========================== */
-function buildPostitCard(project) {
-  const colorClass = COLOR_MAP[project.color] || 'postit--yellow';
-  const rotation   = seedRotation(project.id);
-  const curl       = shouldCurl(project.id);
-  const isExternal = project.link && !project.page;
-
-  const catUrl = project.category ? encodeURIComponent(project.category.toLowerCase()) : 'misc';
-  const href = project.page
-    ? `/${catUrl}/${encodeURIComponent(project.id)}`
-    : (project.link || '#');
-
-  const tagsHtml = (project.tags || [])
-    .slice(0, 2)
-    .map(t => `<span class="postit-tag">${esc(t)}</span>`)
-    .join('');
-
-  const a = document.createElement('a');
-  a.className = `postit ${colorClass}${curl ? ' postit--curled' : ''}`;
-  a.href = href;
-  a.style.setProperty('--r', `${rotation}deg`);
-  a.setAttribute('aria-label', `${project.name} — ${project.year}`);
-
-  if (isExternal) {
-    a.target = '_blank';
-    a.rel = 'noopener noreferrer';
-  }
-
-  a.innerHTML = `
-    <div class="postit-shadow"></div>
-    <div class="postit-paper">
-      <div class="postit-body">
-        ${isExternal ? `<span class="postit-external-icon" aria-hidden="true">↗</span>` : ''}
-        <img
-          class="postit-image"
-          src="${esc(imgUrl(project.preview))}"
-          alt="${esc(project.name)}"
-          loading="lazy"
-          onerror="this.style.opacity='0'"
-        />
-        <p class="postit-name">${esc(project.name)}</p>
-        <div class="postit-meta">
-          <span class="postit-year">${esc(String(project.year))}</span>
-          <div class="postit-tags">${tagsHtml}</div>
-        </div>
-      </div>
-    </div>
-    <div class="postit-curl" aria-hidden="true"></div>
-  `;
-
-  return a;
-}
-
-/* ===========================
-   PROJECTS GRID  (projects.html)
-   =========================== */
-async function loadProjectsGrid(gridId, countId) {
-  const grid    = document.getElementById(gridId);
-  const countEl = document.getElementById(countId);
-  if (!grid) return;
-
-  const projects = await fetchProjects();
-
-  if (countEl) {
-    countEl.textContent = `${projects.length} project${projects.length !== 1 ? 's' : ''}`;
-  }
-
-  if (!projects.length) {
-    grid.innerHTML = '<p style="color:var(--text-muted);font-size:0.9rem;">No projects yet.</p>';
-    return;
-  }
-
-  projects.forEach((p, i) => {
-    const card = buildPostitCard(p);
-    // Stagger delay for scroll reveal
-    card.style.transitionDelay = `${i * 55}ms`;
-    grid.appendChild(card);
-  });
-
-  // Trigger IntersectionObserver after DOM is updated
-  initScrollReveal();
-}
-
-/* ===========================
-   LATEST PROJECTS  (index.html)
-   =========================== */
-async function loadLatestProjects(containerId, count = 3) {
-  const container = document.getElementById(containerId);
-  if (!container) return;
-
-  const projects = await fetchProjects();
-  const latest   = projects.slice(0, count);
-
-  latest.forEach((p, i) => {
-    const catUrl = p.category ? encodeURIComponent(p.category.toLowerCase()) : 'misc';
-    const href = p.page
-      ? `/${catUrl}/${encodeURIComponent(p.id)}`
-      : (p.link || '#');
-
-    const a = document.createElement('a');
-    a.className = `home-project-card reveal-right reveal-delay-${i + 1}`;
-    a.href = href;
-    if (p.link && !p.page) { a.target = '_blank'; a.rel = 'noopener noreferrer'; }
-
-    a.innerHTML = `
-      <img
-        src="${esc(imgUrl(p.preview))}"
-        alt="${esc(p.name)}"
-        loading="lazy"
-        onerror="this.style.opacity='0.15'"
-      />
-      <span class="card-name">${esc(p.name)}</span>
-      <span class="card-year">${esc(String(p.year))}</span>
-    `;
-
-    container.appendChild(a);
-  });
-
-  // Reveal after insertion
-  initScrollReveal();
 }
 
 /* ===========================
@@ -318,7 +166,7 @@ async function loadProjectDetail(containerId) {
    =========================== */
 function initScrollReveal() {
   const targets = document.querySelectorAll(
-    '.reveal:not(.visible), .reveal-right:not(.visible), .postit:not(.visible)'
+    '.reveal:not(.visible)'
   );
 
   if (!targets.length) return;
@@ -342,19 +190,6 @@ function initCopyrightYear() {
   document.querySelectorAll('.copyright-year').forEach(el => {
     el.textContent = new Date().getFullYear();
   });
-}
-
-/* ===========================
-   NOT FOUND
-   =========================== */
-function notFoundHtml() {
-  return `
-    <a href="projects.html" class="project-back">Projects</a>
-    <h1 class="project-title">Project not found</h1>
-    <p class="content-text" style="margin-top:1rem;">
-      The project you're looking for doesn't exist or may have been moved.
-    </p>
-  `;
 }
 
 /* ===========================
@@ -385,7 +220,10 @@ let pointerStartX = 0;
 let pointerStartY = 0;
 let pointerStartTime = 0;
 const TAP_DISTANCE_THRESHOLD = 8;
-const TAP_TIME_THRESHOLD = 300;
+// Distance is the real tap-vs-drag discriminator; the time limit only guards
+// long presses. Keep it generous — on slow devices the pointerdown→click gap
+// alone can exceed 300ms, which used to swallow legitimate clicks.
+const TAP_TIME_THRESHOLD = 800;
 
 function isRecentTap(e) {
   if (e.detail === 0 || (e.clientX === 0 && e.clientY === 0) || pointerStartTime === 0) {
@@ -401,11 +239,15 @@ function isRecentTap(e) {
 }
 
 const TEXTURES = [
-  '/assets/mars_texture_1782517556906.webp', 
-  '/assets/earth_texture_1782517565911.webp', 
-  '/assets/ice_texture_1782517572925.webp', 
+  '/assets/mars_texture_1782517556906.webp',
+  '/assets/earth_texture_1782517565911.webp',
+  '/assets/ice_texture_1782517572925.webp',
   '/assets/gas_giant_texture_1782517547949.webp'
 ];
+
+// On phones the camera sits farther back, so planets read small — scale them
+// up a touch there. 1 on desktop leaves that view unchanged.
+const planetScale = () => (isMobile ? 1.35 : 1);
 
 async function loadSolarSystem(systemId, bgId, mobileListId) {
   const container = document.getElementById(systemId);
@@ -998,7 +840,7 @@ function renderGalaxy3D() {
 
   categories.forEach((cat, idx) => {
     const numProjects = orbitsMap[cat] ? orbitsMap[cat].length : 0;
-    const planetSize = 10 + (numProjects * 2.5);
+    const planetSize = (10 + (numProjects * 2.5)) * planetScale();
 
     const radius = baseRadius + (idx * gap);
     const speed = 0.001 + (0.0005 * (categories.length - idx));
@@ -1039,7 +881,11 @@ function renderGalaxy3D() {
   // Setup Voyager for "Explorations"
   const setupVoyager = (model) => {
     if (currentView !== 'galaxy') return; // Don't add if we already navigated away
-    const radius = 320; // Furthest orbit
+    // Sit just beyond the outermost category orbit instead of a fixed far
+    // distance: keeps Explorations close to the system while staying clear as
+    // more categories are added.
+    const outerCategoryRadius = baseRadius + Math.max(0, categories.length - 1) * gap;
+    const radius = outerCategoryRadius + gap * 1.4;
     const speed = -0.0008; // Retrograde orbit to stand out
 
     if (!globalPlanetState['explorations']) {
@@ -1106,7 +952,7 @@ function renderSystem3D(category) {
   const texUrl = TEXTURES[catIdx % TEXTURES.length];
 
   const numProjects = orbitsMap[category] ? orbitsMap[category].length : 0;
-  const planetSize = 10 + (numProjects * 2.5);
+  const planetSize = (10 + (numProjects * 2.5)) * planetScale();
 
   // Central Planet
   const centerGeo = new THREE.SphereGeometry(planetSize * 3, 32, 32);
@@ -1136,7 +982,7 @@ function renderSystem3D(category) {
     const orbitLine = createOrbitLine(radius);
     scene.add(orbitLine);
 
-    const geo = new THREE.SphereGeometry(8 + Math.random() * 4, 32, 32);
+    const geo = new THREE.SphereGeometry((8 + Math.random() * 4) * planetScale(), 32, 32);
     const mTex = TEXTURES[idx % TEXTURES.length];
     
     // Mix base color with texture
@@ -1158,17 +1004,6 @@ function renderSystem3D(category) {
   });
   
   updateScreenReaderA11y();
-}
-
-function transitionCamera(tx, ty, tz, onComplete) {
-  new TWEEN.Tween(camera.position)
-    .to({ x: tx, y: ty, z: tz }, 1000)
-    .easing(TWEEN.Easing.Cubic.InOut)
-    .onComplete(() => {
-      controls.target.set(0,0,0);
-      onComplete();
-    })
-    .start();
 }
 
 function animate() {
