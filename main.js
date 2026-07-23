@@ -239,11 +239,15 @@ function isRecentTap(e) {
 }
 
 const TEXTURES = [
-  '/assets/mars_texture_1782517556906.webp', 
-  '/assets/earth_texture_1782517565911.webp', 
-  '/assets/ice_texture_1782517572925.webp', 
+  '/assets/mars_texture_1782517556906.webp',
+  '/assets/earth_texture_1782517565911.webp',
+  '/assets/ice_texture_1782517572925.webp',
   '/assets/gas_giant_texture_1782517547949.webp'
 ];
+
+// On phones the camera sits farther back, so planets read small — scale them
+// up a touch there. 1 on desktop leaves that view unchanged.
+const planetScale = () => (isMobile ? 1.35 : 1);
 
 async function loadSolarSystem(systemId, bgId, mobileListId) {
   const container = document.getElementById(systemId);
@@ -836,7 +840,7 @@ function renderGalaxy3D() {
 
   categories.forEach((cat, idx) => {
     const numProjects = orbitsMap[cat] ? orbitsMap[cat].length : 0;
-    const planetSize = 10 + (numProjects * 2.5);
+    const planetSize = (10 + (numProjects * 2.5)) * planetScale();
 
     const radius = baseRadius + (idx * gap);
     const speed = 0.001 + (0.0005 * (categories.length - idx));
@@ -877,7 +881,11 @@ function renderGalaxy3D() {
   // Setup Voyager for "Explorations"
   const setupVoyager = (model) => {
     if (currentView !== 'galaxy') return; // Don't add if we already navigated away
-    const radius = 320; // Furthest orbit
+    // Sit just beyond the outermost category orbit instead of a fixed far
+    // distance: keeps Explorations close to the system while staying clear as
+    // more categories are added.
+    const outerCategoryRadius = baseRadius + Math.max(0, categories.length - 1) * gap;
+    const radius = outerCategoryRadius + gap * 1.4;
     const speed = -0.0008; // Retrograde orbit to stand out
 
     if (!globalPlanetState['explorations']) {
@@ -944,7 +952,7 @@ function renderSystem3D(category) {
   const texUrl = TEXTURES[catIdx % TEXTURES.length];
 
   const numProjects = orbitsMap[category] ? orbitsMap[category].length : 0;
-  const planetSize = 10 + (numProjects * 2.5);
+  const planetSize = (10 + (numProjects * 2.5)) * planetScale();
 
   // Central Planet
   const centerGeo = new THREE.SphereGeometry(planetSize * 3, 32, 32);
@@ -974,7 +982,7 @@ function renderSystem3D(category) {
     const orbitLine = createOrbitLine(radius);
     scene.add(orbitLine);
 
-    const geo = new THREE.SphereGeometry(8 + Math.random() * 4, 32, 32);
+    const geo = new THREE.SphereGeometry((8 + Math.random() * 4) * planetScale(), 32, 32);
     const mTex = TEXTURES[idx % TEXTURES.length];
     
     // Mix base color with texture
