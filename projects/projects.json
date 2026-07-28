@@ -1,5 +1,27 @@
 [
   {
+    "id": "d-storto",
+    "name": "DìSTORTO",
+    "year": 2026,
+    "preview": "",
+    "color": "yellow",
+    "category": "Products",
+    "description": "",
+    "link": null,
+    "page": true,
+    "content": [
+      {
+        "type": "text",
+        "value": ""
+      },
+      {
+        "type": "image",
+        "src": "projects/images/d-storto-1785275644255.webp",
+        "caption": ""
+      }
+    ]
+  },
+  {
     "id": "barilla-mio-concept-iaad-admission-test",
     "name": "Barilla MIO Concept · IAAD Admission Test",
     "year": 2025,
