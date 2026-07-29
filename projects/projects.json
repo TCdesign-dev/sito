@@ -34,7 +34,7 @@
     "content": [
       {
         "type": "text",
-        "value": "This case study is one of two I created for my application to the IAAD in Turin (Institute of Applied Art and Design). Specifically, this was my case study for admission to their Digital Communication Design degree.\n\nThe brief discussed the Spotify Wrapped model and asked for its application to brands and companies outside the music industry."
+        "value": "This case study is one of two I created for my application to the IAAD in Turin (Institute of Applied Art and Design). Specifically, this was my case study for admission to their Digital Communication Design degree.\n\nThe brief discussed the Spotify Wrapped model and asked for its application to brands and companies outside the music industry.\nThe time window was about two days"
       },
       {
         "type": "text",
@@ -73,9 +73,25 @@
         "caption": ""
       },
       {
+        "type": "text",
+        "value": "The main challenge was that, unlike Spotify—which, as a music streaming platform, has direct access to users' listening data—Pasta needed a way to track physical purchases.\n\nThe most effective solution was to create a platform where users could voluntarily register their purchases by scanning the codes found inside the packages, allowing them to build a personal purchase history.\n\nBut there was one key question:"
+      },
+      {
+        "type": "text",
+        "value": "How do we motivate users to track their purchases?"
+      },
+      {
         "type": "image",
         "src": "projects/images/barilla-mio-concept-iaad-admission-test-1784673258445.webp",
         "caption": ""
+      },
+      {
+        "type": "text",
+        "value": "The answer was to offer tangible value through promotions and a loyalty program. Each package would be worth digital points that users could collect and redeem for exclusive offers and rewards."
+      },
+      {
+        "type": "text",
+        "value": "This is a small project that is particularly meaningful to me, not only because it earned me access to the course, but also since it unexpectedly stimulated me through the entire process, leaving me deeply satisfied with the final result.\n"
       }
     ]
   },
