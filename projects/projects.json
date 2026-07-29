@@ -68,13 +68,17 @@
         "caption": ""
       },
       {
+        "type": "text",
+        "value": "The main challenge was that, unlike Spotify—which, as a music streaming platform, has direct access to users' listening data—Pasta needed a way to track physical purchases.\n\nThe most effective solution was to create a platform where users could voluntarily register their purchases by scanning the codes found inside the packages, allowing them to build a personal purchase history."
+      },
+      {
         "type": "image",
         "src": "projects/images/barilla-mio-concept-iaad-admission-test-1784673251869.webp",
         "caption": ""
       },
       {
         "type": "text",
-        "value": "The main challenge was that, unlike Spotify—which, as a music streaming platform, has direct access to users' listening data—Pasta needed a way to track physical purchases.\n\nThe most effective solution was to create a platform where users could voluntarily register their purchases by scanning the codes found inside the packages, allowing them to build a personal purchase history.\n\nBut there was one key question:"
+        "value": "But there was one key question:\n"
       },
       {
         "type": "text",
