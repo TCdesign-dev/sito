@@ -55,6 +55,10 @@
         "caption": ""
       },
       {
+        "type": "text",
+        "value": "To wrap things up, I wanted to include some simple statistics, such as the “hottest” month and a ranking of favorite types of pasta.\nJust a quick note: as a decorative touch (given the short time), I tried to draw some simple patterns by hand that resemble spaghetti."
+      },
+      {
         "type": "image",
         "src": "projects/images/barilla-mio-concept-iaad-admission-test-1784673246812.webp",
         "caption": ""
