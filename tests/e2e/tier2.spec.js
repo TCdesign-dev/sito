@@ -1,6 +1,19 @@
 const { test, expect } = require('@playwright/test');
 
+// External-link project (page: false + link) picked from the live data;
+// the tests that need one skip themselves when none exists.
+const projects = require('../../projects/projects.json');
+const extSample = projects.find(
+  p => p.link && !p.page && p.category && p.category.toLowerCase() !== 'explorations'
+);
+
 test.describe('Tier 2: Boundary & Corner Cases', () => {
+
+  // Keep the suite hermetic: external font requests hang in sandboxed
+  // environments and can stall stylesheet-blocked script execution.
+  test.beforeEach(async ({ page }) => {
+    await page.route(/fonts\.(googleapis|gstatic)\.com/, r => r.abort());
+  });
 
   // ==========================================
   // FEATURE 1: Intro Sequence & Liveness (5 tests)
@@ -67,11 +80,11 @@ test.describe('Tier 2: Boundary & Corner Cases', () => {
 
   test('F2-2-4: WebGL context is initialized correctly', async ({ page }) => {
     await page.goto('/?skipIntro=true');
-    const hasGL = await page.evaluate(() => {
-      const canvas = document.getElementById('webgl-canvas');
-      if (!canvas) return false;
-      return !!canvas.getContext('webgl') || !!canvas.getContext('webgl2');
-    });
+    // Ask the Three.js renderer for its context: re-calling getContext with a
+    // different type than the one already created legitimately returns null.
+    const hasGL = await page.evaluate(() =>
+      typeof renderer !== 'undefined' && !!renderer.getContext()
+    );
     expect(hasGL).toBe(true);
   });
 
@@ -92,7 +105,7 @@ test.describe('Tier 2: Boundary & Corner Cases', () => {
     await page.evaluate(() => { window.isTransitioning = true; });
     const categoryLabel = page.locator('#labels-container .webgl-label:not(.webgl-label--moon)').first();
     await expect(categoryLabel).toBeVisible();
-    await categoryLabel.click({ force: true });
+    await categoryLabel.evaluate(el => el.click());
     const backBtn = page.locator('#galaxy-back-btn');
     await expect(backBtn).not.toHaveClass(/visible/);
   });
@@ -100,7 +113,7 @@ test.describe('Tier 2: Boundary & Corner Cases', () => {
   test('F3-2-2: Back button click is ignored when isTransitioning is true', async ({ page }) => {
     await page.goto('/?skipIntro=true');
     const categoryLabel = page.locator('#labels-container .webgl-label:not(.webgl-label--moon)').first();
-    await categoryLabel.click({ force: true });
+    await categoryLabel.evaluate(el => el.click());
     const backBtn = page.locator('#galaxy-back-btn');
     await expect(backBtn).toHaveClass(/visible/);
     
@@ -112,7 +125,10 @@ test.describe('Tier 2: Boundary & Corner Cases', () => {
   test('F3-2-3: Clicking outside elements on 3D canvas does not trigger navigation', async ({ page }) => {
     await page.goto('/?skipIntro=true');
     const canvas = page.locator('#webgl-canvas');
-    await canvas.click({ position: { x: 5, y: 5 } });
+    // Bottom-left corner: empty space, away from the transparent header
+    // that overlays the top of the canvas (force skips the overlay check)
+    const box = await canvas.boundingBox();
+    await canvas.click({ position: { x: 5, y: box.height - 5 }, force: true });
     const backBtn = page.locator('#galaxy-back-btn');
     await expect(backBtn).not.toHaveClass(/visible/);
   });
@@ -120,10 +136,12 @@ test.describe('Tier 2: Boundary & Corner Cases', () => {
   test('F3-2-4: Rapid back button click does not corrupt navigation state', async ({ page }) => {
     await page.goto('/?skipIntro=true');
     const categoryLabel = page.locator('#labels-container .webgl-label:not(.webgl-label--moon)').first();
-    await categoryLabel.click({ force: true });
+    await categoryLabel.evaluate(el => el.click());
     const backBtn = page.locator('#galaxy-back-btn');
     await expect(backBtn).toHaveClass(/visible/);
-    
+
+    // Clicks are ignored while the zoom transition is running — wait it out
+    await page.waitForFunction(() => window.isTransitioning === false);
     await backBtn.dblclick();
     await expect(backBtn).not.toHaveClass(/visible/);
   });
@@ -132,7 +150,7 @@ test.describe('Tier 2: Boundary & Corner Cases', () => {
     await page.goto('/?skipIntro=true');
     const categoryLabel = page.locator('#labels-container .webgl-label:not(.webgl-label--moon)').first();
     const text = await categoryLabel.textContent();
-    await categoryLabel.click({ force: true });
+    await categoryLabel.evaluate(el => el.click());
     
     const centerLabel = page.locator('#labels-container .webgl-label:not(.webgl-label--moon)').first();
     await expect(centerLabel).toContainText(text || '');
@@ -143,43 +161,44 @@ test.describe('Tier 2: Boundary & Corner Cases', () => {
   // ==========================================
 
   test('F4-2-1: Desktop click navigates differently based on project.page', async ({ page }) => {
+    test.skip(!extSample, 'No external-link (page: false) project in projects.json');
     await page.goto('/?skipIntro=true');
-    // Category "Web" has "creative-minds-archive" which has page: false, link: "https://github.com"
-    const webLabel = page.locator('#labels-container .webgl-label:has-text("Web")');
-    await expect(webLabel).toBeVisible();
-    await webLabel.click({ force: true });
-    
-    const moonLabel = page.locator('#labels-container .webgl-label--moon:has-text("Creative Minds Archive")');
+    const catLabel = page.locator(`#labels-container .webgl-label:has-text("${extSample.category}")`);
+    await expect(catLabel).toBeVisible();
+    await catLabel.evaluate(el => el.click());
+
+    const moonLabel = page.locator(`#labels-container .webgl-label--moon:has-text("${extSample.name}")`);
     await expect(moonLabel).toBeVisible({ timeout: 10000 });
     
     const [newPage] = await Promise.all([
       page.context().waitForEvent('page'),
-      moonLabel.click({ force: true }),
+      moonLabel.evaluate(el => el.click()),
     ]);
-    expect(newPage.url()).toContain('github.com');
+    expect(newPage.url()).toContain(new URL(extSample.link).hostname);
     await newPage.close();
   });
 
   test('F4-2-2: Clicking moon on mobile freezes its orbital motion', async ({ page }) => {
     await page.setViewportSize({ width: 700, height: 800 });
     await page.goto('/?skipIntro=true');
-    await page.locator('#labels-container .webgl-label:not(.webgl-label--moon)').first().click({ force: true });
+    await page.locator('#labels-container .webgl-label:not(.webgl-label--moon)').first().evaluate(el => el.click());
     const moonLabel = page.locator('#labels-container .webgl-label--moon').first();
     await expect(moonLabel).toBeVisible();
-    await moonLabel.click({ force: true });
+    await moonLabel.evaluate(el => el.click());
     
     const isFrozen = await page.evaluate(() => window.hoveredMoon !== null);
     expect(isFrozen).toBe(true);
   });
 
   test('F4-2-3: Mobile explore button target attribute matches project type', async ({ page }) => {
+    test.skip(!extSample, 'No external-link (page: false) project in projects.json');
     await page.setViewportSize({ width: 700, height: 800 });
     await page.goto('/?skipIntro=true');
-    
-    await page.locator('#labels-container .webgl-label:has-text("Web")').click({ force: true });
-    const extMoon = page.locator('#labels-container .webgl-label--moon:has-text("Creative Minds Archive")');
+
+    await page.locator(`#labels-container .webgl-label:has-text("${extSample.category}")`).evaluate(el => el.click());
+    const extMoon = page.locator(`#labels-container .webgl-label--moon:has-text("${extSample.name}")`);
     await expect(extMoon).toBeVisible();
-    await extMoon.click({ force: true });
+    await extMoon.evaluate(el => el.click());
     
     const exploreBtn = page.locator('#mobile-explore-btn');
     await expect(exploreBtn).toHaveAttribute('target', '_blank');
@@ -189,7 +208,7 @@ test.describe('Tier 2: Boundary & Corner Cases', () => {
     await page.setViewportSize({ width: 700, height: 800 });
     await page.goto('/?skipIntro=true');
     
-    await page.locator('#labels-container .webgl-label:not(.webgl-label--moon)').first().click({ force: true });
+    await page.locator('#labels-container .webgl-label:not(.webgl-label--moon)').first().evaluate(el => el.click());
     const moonLabel = page.locator('#labels-container .webgl-label--moon').first();
     await expect(moonLabel).toBeVisible();
     
@@ -200,7 +219,7 @@ test.describe('Tier 2: Boundary & Corner Cases', () => {
       }
     });
     
-    await moonLabel.click({ force: true });
+    await moonLabel.evaluate(el => el.click());
     const img = page.locator('#mobile-moon-img');
     await expect(img).toBeHidden();
   });
@@ -208,12 +227,12 @@ test.describe('Tier 2: Boundary & Corner Cases', () => {
   test('F4-2-5: Moon click on mobile is ignored if transition is active', async ({ page }) => {
     await page.setViewportSize({ width: 700, height: 800 });
     await page.goto('/?skipIntro=true');
-    await page.locator('#labels-container .webgl-label:not(.webgl-label--moon)').first().click({ force: true });
+    await page.locator('#labels-container .webgl-label:not(.webgl-label--moon)').first().evaluate(el => el.click());
     const moonLabel = page.locator('#labels-container .webgl-label--moon').first();
     await expect(moonLabel).toBeVisible();
     
     await page.evaluate(() => { window.isTransitioning = true; });
-    await moonLabel.click({ force: true });
+    await moonLabel.evaluate(el => el.click());
     const popup = page.locator('#mobile-moon-popup');
     await expect(popup).not.toHaveClass(/visible/);
   });
@@ -239,10 +258,10 @@ test.describe('Tier 2: Boundary & Corner Cases', () => {
   test('F5-2-2: Closing mobile bottom sheet unfreezes the moon orbit', async ({ page }) => {
     await page.setViewportSize({ width: 700, height: 800 });
     await page.goto('/?skipIntro=true');
-    await page.locator('#labels-container .webgl-label:not(.webgl-label--moon)').first().click({ force: true });
+    await page.locator('#labels-container .webgl-label:not(.webgl-label--moon)').first().evaluate(el => el.click());
     const moonLabel = page.locator('#labels-container .webgl-label--moon').first();
     await expect(moonLabel).toBeVisible();
-    await moonLabel.click({ force: true });
+    await moonLabel.evaluate(el => el.click());
     
     const popup = page.locator('#mobile-moon-popup');
     await expect(popup).toHaveClass(/visible/);
@@ -255,10 +274,10 @@ test.describe('Tier 2: Boundary & Corner Cases', () => {
   test('F5-2-3: Close button click is ignored if transition is active', async ({ page }) => {
     await page.setViewportSize({ width: 700, height: 800 });
     await page.goto('/?skipIntro=true');
-    await page.locator('#labels-container .webgl-label:not(.webgl-label--moon)').first().click({ force: true });
+    await page.locator('#labels-container .webgl-label:not(.webgl-label--moon)').first().evaluate(el => el.click());
     const moonLabel = page.locator('#labels-container .webgl-label--moon').first();
     await expect(moonLabel).toBeVisible();
-    await moonLabel.click({ force: true });
+    await moonLabel.evaluate(el => el.click());
     
     const popup = page.locator('#mobile-moon-popup');
     await expect(popup).toHaveClass(/visible/);
@@ -271,10 +290,10 @@ test.describe('Tier 2: Boundary & Corner Cases', () => {
   test('F5-2-4: Closing mobile popup restores camera position to system view', async ({ page }) => {
     await page.setViewportSize({ width: 700, height: 800 });
     await page.goto('/?skipIntro=true');
-    await page.locator('#labels-container .webgl-label:not(.webgl-label--moon)').first().click({ force: true });
+    await page.locator('#labels-container .webgl-label:not(.webgl-label--moon)').first().evaluate(el => el.click());
     const moonLabel = page.locator('#labels-container .webgl-label--moon').first();
     await expect(moonLabel).toBeVisible();
-    await moonLabel.click({ force: true });
+    await moonLabel.evaluate(el => el.click());
     
     await page.locator('#mobile-close-btn').click();
     await page.waitForTimeout(1000);
@@ -284,8 +303,9 @@ test.describe('Tier 2: Boundary & Corner Cases', () => {
 
   test('F5-2-5: Clicking labels-container non-label element does not trigger event handler', async ({ page }) => {
     await page.goto('/?skipIntro=true');
-    const container = page.locator('#labels-container');
-    await container.click({ position: { x: 10, y: 10 } });
+    // Fire the click on the container itself (not a .webgl-label child):
+    // the delegated handler must ignore it
+    await page.locator('#labels-container').evaluate(el => el.click());
     const backBtn = page.locator('#galaxy-back-btn');
     await expect(backBtn).not.toHaveClass(/visible/);
   });
