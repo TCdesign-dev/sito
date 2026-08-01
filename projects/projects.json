@@ -1,5 +1,17 @@
 [
   {
+    "id": "deviato",
+    "name": "DeviaTO",
+    "year": 2026,
+    "preview": "",
+    "color": "blue",
+    "category": "Apps",
+    "description": "An app that makes it easier to check public transportation detours, providing a clear overview of temporary changes to bus and tram routes and helping users get around more easily.",
+    "link": "https://github.com/TCdesign-dev/gtt-deviazioni",
+    "page": false,
+    "content": []
+  },
+  {
     "id": "d-storto",
     "name": "DìSTORTO",
     "year": 2026,
