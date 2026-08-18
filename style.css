@@ -84,10 +84,6 @@ a:hover { color: var(--link-hover); }
   outline: 2px solid #fff;
 }
 
-.galaxy-back-btn:focus-visible {
-  outline: 2px solid #fff;
-}
-
 img { max-width: 100%; display: block; }
 
 /* ===========================
@@ -549,38 +545,6 @@ footer {
   overflow: hidden;
 }
 
-/* Back button */
-.galaxy-back-btn {
-  position: absolute;
-  bottom: 5rem;
-  left: 50%;
-  transform: translateX(-50%) translateY(10px);
-  background: rgba(255,255,255,0.1);
-  color: #fff;
-  border: 1px solid rgba(255,255,255,0.2);
-  padding: 0.6rem 1.4rem;
-  border-radius: 100px;
-  font-family: inherit;
-  font-size: 0.95rem;
-  cursor: pointer;
-  backdrop-filter: blur(5px);
-  transition: all 0.2s;
-  z-index: 100;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.galaxy-back-btn.visible {
-  opacity: 1;
-  pointer-events: auto;
-  transform: translateX(-50%) translateY(0);
-}
-
-.galaxy-back-btn:hover {
-  background: rgba(255,255,255,0.2);
-  transform: translateX(-50%) scale(1.05);
-}
-
 .space-header {
   position: absolute;
   top: 0;
@@ -668,7 +632,11 @@ footer {
   opacity: 1;
 }
 
-/* WebGL 3D Container */
+/* WebGL 3D Container.
+   The renderer draws into a buffer 1/PIXEL_SIZE of this element's size
+   (see sizeRenderer in main.js); these rules stretch it back to full size
+   without smoothing, which is what produces the pixel-art look. The label
+   overlay sits above in its own layer and stays sharp. */
 #webgl-canvas {
   width: 100%;
   height: 100%;
@@ -677,6 +645,8 @@ footer {
   left: 0;
   z-index: 1;
   outline: none;
+  image-rendering: crisp-edges; /* fallback for older Firefox */
+  image-rendering: pixelated;   /* wins where supported — must stay last */
 }
 
 /* HTML Overlay for labels */
@@ -712,192 +682,6 @@ footer {
   background: transparent;
 }
 
-.webgl-label--moon {
-  font-size: 0.75rem;
-  background: transparent;
-}
-
-
-/* Moon Popup */
-.moon-popup {
-  position: absolute;
-  background: #F2F1EF;
-  border-radius: 20px;
-  padding: 9px;
-  width: 280px;
-  pointer-events: none; 
-  transform: translate(-50%, -100%) translateY(10px); 
-  opacity: 0;
-  transition: opacity 0.2s ease, transform 0.2s ease;
-  z-index: 100;
-  box-shadow: 0 12px 36px rgba(0,0,0,0.12);
-  color: #111;
-  left: -9999px; /* hidden out of screen */
-}
-
-.moon-popup.visible {
-  opacity: 1;
-  transform: translate(-50%, -100%) translateY(-20px);
-}
-
-.moon-popup img {
-  width: 100%;
-  height: 180px;
-  object-fit: cover;
-  border-radius: 12px;
-  margin-bottom: 12px;
-  background: #fff;
-}
-
-.moon-popup-content {
-  padding: 0 4px 6px 4px;
-}
-
-.moon-popup-content h3 {
-  font-size: 1.25rem;
-  font-weight: 500;
-  margin: 0 0 4px 0;
-  color: #111;
-  letter-spacing: -0.01em;
-}
-
-.moon-popup-content p {
-  font-size: 0.95rem;
-  color: #616161;
-  margin: 0;
-  line-height: 1.4;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.moon-popup-header {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 0.5rem;
-  margin-bottom: 4px;
-}
-
-.moon-popup-year {
-  font-size: 0.78rem;
-  font-weight: 500;
-  color: #999;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-/* Mobile Category Title */
-.mobile-category-title {
-  position: absolute;
-  top: 6rem;
-  left: 50%;
-  transform: translateX(-50%);
-  color: #fff;
-  font-size: 1.8rem;
-  font-weight: 500;
-  z-index: 99;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s;
-}
-.mobile-category-title.visible {
-  opacity: 1;
-}
-
-/* Mobile Bottom Sheet */
-.mobile-moon-popup {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  background: #F2F1EF;
-  border-radius: 24px 24px 0 0;
-  padding: 1.5rem;
-  z-index: 1000;
-  transform: translateY(100%);
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 -10px 40px rgba(0,0,0,0.3);
-  color: #111;
-  display: flex;
-  flex-direction: column;
-  opacity: 0;
-  pointer-events: none;
-}
-.mobile-moon-popup.visible {
-  transform: translateY(0);
-  opacity: 1;
-  pointer-events: auto;
-}
-.mobile-close-btn {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  border: none;
-  background: rgba(0,0,0,0.1);
-  color: #000;
-  font-size: 1.2rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.mobile-moon-popup-content {
-  margin-top: 1rem;
-  display: flex;
-  flex-direction: column;
-}
-#mobile-moon-img {
-  width: 100%;
-  height: 240px;
-  object-fit: cover;
-  border-radius: 12px;
-  background: #fff;
-  margin-bottom: 1rem;
-}
-#mobile-moon-title {
-  font-size: 1.5rem;
-  font-weight: 500;
-  margin: 0;
-}
-
-.mobile-moon-header {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 0.75rem;
-  margin-bottom: 0.5rem;
-}
-
-.mobile-moon-year {
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: rgba(255,255,255,0.4);
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-#mobile-moon-desc {
-  font-size: 0.95rem;
-  color: #616161;
-  margin: 0 0 1.5rem 0;
-  line-height: 1.5;
-}
-.mobile-explore-btn {
-  background: #111;
-  color: #fff;
-  text-align: center;
-  padding: 1rem;
-  border-radius: 100px;
-  text-decoration: none;
-  font-weight: 500;
-  display: block;
-  width: 100%;
-}
-
 @media (max-width: 768px) {
   .space-main {
     height: 100svh;
@@ -909,10 +693,6 @@ footer {
     inset: 0;
     width: 100%;
     height: 100%;
-  }
-  /* Hide desktop hover popup on mobile */
-  .moon-popup {
-    display: none !important;
   }
   /* Hide 2D card list — keep only 3D interaction */
   #mobile-planet-list {
@@ -928,10 +708,6 @@ footer {
   .hero-bio-wrap {
     padding: 0 1rem;
   }
-  /* Galaxy back button higher on mobile */
-  .galaxy-back-btn {
-    bottom: 7rem;
-  }
   /* Footer hidden on mobile */
   footer {
     display: none;
@@ -944,10 +720,6 @@ footer {
   .webgl-label {
     font-size: 0.75rem;
     padding: 0.25rem 0.5rem;
-  }
-  .webgl-label--moon {
-    font-size: 0.65rem;
-    padding: 0.2rem 0.4rem;
   }
 }
 @media (min-width: 769px) {

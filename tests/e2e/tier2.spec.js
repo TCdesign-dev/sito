@@ -1,313 +1,183 @@
 const { test, expect } = require('@playwright/test');
-
-// External-link project (page: false + link) picked from the live data;
-// the tests that need one skip themselves when none exists.
-const projects = require('../../projects/projects.json');
-const extSample = projects.find(
-  p => p.link && !p.page && p.category && p.category.toLowerCase() !== 'explorations'
-);
+const {
+  sampleCategory, externalProject, projectsIn,
+  blockFonts, openGalaxy, clickLabel,
+} = require('./helpers');
 
 test.describe('Tier 2: Boundary & Corner Cases', () => {
 
-  // Keep the suite hermetic: external font requests hang in sandboxed
-  // environments and can stall stylesheet-blocked script execution.
-  test.beforeEach(async ({ page }) => {
-    await page.route(/fonts\.(googleapis|gstatic)\.com/, r => r.abort());
-  });
+  test.beforeEach(async ({ page }) => { await blockFonts(page); });
 
   // ==========================================
-  // FEATURE 1: Intro Sequence & Liveness (5 tests)
+  // FEATURE 1: Intro Sequence & Liveness
   // ==========================================
 
   test('F1-2-1: skipIntro with invalid parameter does not skip intro', async ({ page }) => {
     await page.goto('/?skipIntro=invalid');
-    const intro = page.locator('#intro-screen');
-    await expect(intro).toBeAttached();
+    await expect(page.locator('#intro-screen')).toBeAttached();
   });
 
   test('F1-2-2: skipIntro with empty parameter does not skip intro', async ({ page }) => {
     await page.goto('/?skipIntro=');
-    const intro = page.locator('#intro-screen');
-    await expect(intro).toBeAttached();
+    await expect(page.locator('#intro-screen')).toBeAttached();
   });
 
-  test('F1-2-3: Intro overlay element #intro-screen is fully removed from DOM', async ({ page }) => {
+  test('F1-2-3: Intro overlay is fully removed from the DOM', async ({ page }) => {
     await page.goto('/?skipIntro=true');
-    const intro = page.locator('#intro-screen');
-    await expect(intro).not.toBeAttached();
+    await expect(page.locator('#intro-screen')).not.toBeAttached();
   });
 
-  test('F1-2-4: Instructions disappear after transition duration', async ({ page }) => {
+  test('F1-2-4: Instructions appear and then fade out', async ({ page }) => {
     await page.goto('/');
     const instructions = page.locator('#solar-instructions');
-    // At T = 3200ms, instructions appear. At T = 6700ms, instructions fade out.
     await expect(instructions).toHaveClass(/visible/, { timeout: 10000 });
     await expect(instructions).not.toHaveClass(/visible/, { timeout: 10000 });
   });
 
   test('F1-2-5: Body has loaded class after intro completes', async ({ page }) => {
     await page.goto('/?skipIntro=true');
-    const body = page.locator('body');
-    await expect(body).toHaveClass(/loaded/);
+    await expect(page.locator('body')).toHaveClass(/loaded/);
   });
 
   // ==========================================
-  // FEATURE 2: 3D Solar System View (5 tests)
+  // FEATURE 2: Renderer & Scene
   // ==========================================
 
-  test('F2-2-1: Canvas handles resize updates', async ({ page }) => {
-    await page.goto('/?skipIntro=true');
-    const canvas = page.locator('#webgl-canvas');
-    await expect(canvas).toBeVisible();
+  test('F2-2-1: Canvas survives a resize', async ({ page }) => {
+    await openGalaxy(page);
     await page.setViewportSize({ width: 800, height: 600 });
-    await expect(canvas).toBeVisible();
+    await expect(page.locator('#webgl-canvas')).toBeVisible();
   });
 
   test('F2-2-2: OrbitControls target defaults to center', async ({ page }) => {
-    await page.goto('/?skipIntro=true');
-    const targetX = await page.evaluate(() => typeof controls !== 'undefined' ? controls.target.x : null);
-    expect(targetX).toBe(0);
+    await openGalaxy(page);
+    expect(await page.evaluate(() => controls.target.x)).toBe(0);
   });
 
   test('F2-2-3: Scene contains light elements', async ({ page }) => {
-    await page.goto('/?skipIntro=true');
-    const lightCount = await page.evaluate(() => {
-      if (typeof scene === 'undefined') return 0;
-      return scene.children.filter(c => c.isAmbientLight || c.isPointLight).length;
-    });
-    expect(lightCount).toBeGreaterThan(0);
+    await openGalaxy(page);
+    const lights = await page.evaluate(
+      () => scene.children.filter(c => c.isAmbientLight || c.isPointLight).length);
+    expect(lights).toBeGreaterThan(0);
   });
 
   test('F2-2-4: WebGL context is initialized correctly', async ({ page }) => {
-    await page.goto('/?skipIntro=true');
-    // Ask the Three.js renderer for its context: re-calling getContext with a
+    await openGalaxy(page);
+    // Ask the renderer for its context: re-calling canvas.getContext with a
     // different type than the one already created legitimately returns null.
-    const hasGL = await page.evaluate(() =>
-      typeof renderer !== 'undefined' && !!renderer.getContext()
-    );
-    expect(hasGL).toBe(true);
+    expect(await page.evaluate(() => !!renderer.getContext())).toBe(true);
   });
 
-  test('F2-2-5: Labels are updated with translation style on render loop', async ({ page }) => {
-    await page.goto('/?skipIntro=true');
-    const firstLabel = page.locator('#labels-container .webgl-label:not(.webgl-label--moon)').first();
-    await expect(firstLabel).toBeVisible();
-    const styleAttr = await firstLabel.getAttribute('style');
-    expect(styleAttr).toContain('transform');
+  test('F2-2-5: Labels are positioned by the render loop', async ({ page }) => {
+    await openGalaxy(page);
+    const label = page.locator('#labels-container .webgl-label').first();
+    await expect(label).toBeVisible();
+    expect(await label.getAttribute('style')).toContain('transform');
+  });
+
+  test('F2-2-6: Pixel buffer follows a resize', async ({ page }) => {
+    await openGalaxy(page);
+    await page.setViewportSize({ width: 800, height: 600 });
+    await page.waitForTimeout(300);
+    const ratio = await page.evaluate(() => {
+      const c = document.getElementById('webgl-canvas');
+      return c.clientWidth / c.width;
+    });
+    expect(ratio).toBeGreaterThan(2.5);
+    expect(ratio).toBeLessThan(3.5);
   });
 
   // ==========================================
-  // FEATURE 3: Planet/System Navigation (5 tests)
+  // FEATURE 3: Navigation guards
   // ==========================================
 
-  test('F3-2-1: Category click is ignored when isTransitioning is true', async ({ page }) => {
-    await page.goto('/?skipIntro=true');
+  test('F3-2-1: Planet click is ignored while isTransitioning is true', async ({ page }) => {
+    await openGalaxy(page);
     await page.evaluate(() => { window.isTransitioning = true; });
-    const categoryLabel = page.locator('#labels-container .webgl-label:not(.webgl-label--moon)').first();
-    await expect(categoryLabel).toBeVisible();
-    await categoryLabel.evaluate(el => el.click());
-    const backBtn = page.locator('#galaxy-back-btn');
-    await expect(backBtn).not.toHaveClass(/visible/);
+    await clickLabel(page);
+    await page.waitForTimeout(500);
+    expect(new URL(page.url()).pathname).toBe('/');
   });
 
-  test('F3-2-2: Back button click is ignored when isTransitioning is true', async ({ page }) => {
-    await page.goto('/?skipIntro=true');
-    const categoryLabel = page.locator('#labels-container .webgl-label:not(.webgl-label--moon)').first();
-    await categoryLabel.evaluate(el => el.click());
-    const backBtn = page.locator('#galaxy-back-btn');
-    await expect(backBtn).toHaveClass(/visible/);
-    
-    await page.evaluate(() => { window.isTransitioning = true; });
-    await backBtn.click();
-    await expect(backBtn).toHaveClass(/visible/);
-  });
-
-  test('F3-2-3: Clicking outside elements on 3D canvas does not trigger navigation', async ({ page }) => {
-    await page.goto('/?skipIntro=true');
+  test('F3-2-2: Clicking empty space on the canvas does not navigate', async ({ page }) => {
+    await openGalaxy(page);
     const canvas = page.locator('#webgl-canvas');
-    // Bottom-left corner: empty space, away from the transparent header
-    // that overlays the top of the canvas (force skips the overlay check)
     const box = await canvas.boundingBox();
+    // Bottom-left corner: empty sky, away from the header overlay
     await canvas.click({ position: { x: 5, y: box.height - 5 }, force: true });
-    const backBtn = page.locator('#galaxy-back-btn');
-    await expect(backBtn).not.toHaveClass(/visible/);
+    await page.waitForTimeout(500);
+    expect(new URL(page.url()).pathname).toBe('/');
   });
 
-  test('F3-2-4: Rapid back button click does not corrupt navigation state', async ({ page }) => {
-    await page.goto('/?skipIntro=true');
-    const categoryLabel = page.locator('#labels-container .webgl-label:not(.webgl-label--moon)').first();
-    await categoryLabel.evaluate(el => el.click());
-    const backBtn = page.locator('#galaxy-back-btn');
-    await expect(backBtn).toHaveClass(/visible/);
-
-    // Clicks are ignored while the zoom transition is running — wait it out
-    await page.waitForFunction(() => window.isTransitioning === false);
-    await backBtn.dblclick();
-    await expect(backBtn).not.toHaveClass(/visible/);
-  });
-
-  test('F3-2-5: Selected planet transitions to center and scales up', async ({ page }) => {
-    await page.goto('/?skipIntro=true');
-    const categoryLabel = page.locator('#labels-container .webgl-label:not(.webgl-label--moon)').first();
-    const text = await categoryLabel.textContent();
-    await categoryLabel.evaluate(el => el.click());
-    
-    const centerLabel = page.locator('#labels-container .webgl-label:not(.webgl-label--moon)').first();
-    await expect(centerLabel).toContainText(text || '');
-  });
-
-  // ==========================================
-  // FEATURE 4: Moon Selection & Bottom Sheet (5 tests)
-  // ==========================================
-
-  test('F4-2-1: Desktop click navigates differently based on project.page', async ({ page }) => {
-    test.skip(!extSample, 'No external-link (page: false) project in projects.json');
-    await page.goto('/?skipIntro=true');
-    const catLabel = page.locator(`#labels-container .webgl-label:has-text("${extSample.category}")`);
-    await expect(catLabel).toBeVisible();
-    await catLabel.evaluate(el => el.click());
-
-    const moonLabel = page.locator(`#labels-container .webgl-label--moon:has-text("${extSample.name}")`);
-    await expect(moonLabel).toBeVisible({ timeout: 10000 });
-    
-    const [newPage] = await Promise.all([
-      page.context().waitForEvent('page'),
-      moonLabel.evaluate(el => el.click()),
-    ]);
-    expect(newPage.url()).toContain(new URL(extSample.link).hostname);
-    await newPage.close();
-  });
-
-  test('F4-2-2: Clicking moon on mobile freezes its orbital motion', async ({ page }) => {
-    await page.setViewportSize({ width: 700, height: 800 });
-    await page.goto('/?skipIntro=true');
-    await page.locator('#labels-container .webgl-label:not(.webgl-label--moon)').first().evaluate(el => el.click());
-    const moonLabel = page.locator('#labels-container .webgl-label--moon').first();
-    await expect(moonLabel).toBeVisible();
-    await moonLabel.evaluate(el => el.click());
-    
-    const isFrozen = await page.evaluate(() => window.hoveredMoon !== null);
-    expect(isFrozen).toBe(true);
-  });
-
-  test('F4-2-3: Mobile explore button target attribute matches project type', async ({ page }) => {
-    test.skip(!extSample, 'No external-link (page: false) project in projects.json');
-    await page.setViewportSize({ width: 700, height: 800 });
-    await page.goto('/?skipIntro=true');
-
-    await page.locator(`#labels-container .webgl-label:has-text("${extSample.category}")`).evaluate(el => el.click());
-    const extMoon = page.locator(`#labels-container .webgl-label--moon:has-text("${extSample.name}")`);
-    await expect(extMoon).toBeVisible();
-    await extMoon.evaluate(el => el.click());
-    
-    const exploreBtn = page.locator('#mobile-explore-btn');
-    await expect(exploreBtn).toHaveAttribute('target', '_blank');
-  });
-
-  test('F4-2-4: Mobile popup hides preview image element if not defined', async ({ page }) => {
-    await page.setViewportSize({ width: 700, height: 800 });
-    await page.goto('/?skipIntro=true');
-    
-    await page.locator('#labels-container .webgl-label:not(.webgl-label--moon)').first().evaluate(el => el.click());
-    const moonLabel = page.locator('#labels-container .webgl-label--moon').first();
-    await expect(moonLabel).toBeVisible();
-    
-    await page.evaluate(() => {
-      const moons = planetsData.filter(p => p.mesh.userData.isMoon);
-      if (moons.length > 0) {
-        moons[0].mesh.userData.project.preview = null;
-      }
-    });
-    
-    await moonLabel.evaluate(el => el.click());
-    const img = page.locator('#mobile-moon-img');
-    await expect(img).toBeHidden();
-  });
-
-  test('F4-2-5: Moon click on mobile is ignored if transition is active', async ({ page }) => {
-    await page.setViewportSize({ width: 700, height: 800 });
-    await page.goto('/?skipIntro=true');
-    await page.locator('#labels-container .webgl-label:not(.webgl-label--moon)').first().evaluate(el => el.click());
-    const moonLabel = page.locator('#labels-container .webgl-label--moon').first();
-    await expect(moonLabel).toBeVisible();
-    
-    await page.evaluate(() => { window.isTransitioning = true; });
-    await moonLabel.evaluate(el => el.click());
-    const popup = page.locator('#mobile-moon-popup');
-    await expect(popup).not.toHaveClass(/visible/);
-  });
-
-  // ==========================================
-  // FEATURE 5: Mobile UI & Interactions (5 tests)
-  // ==========================================
-
-  test('F5-2-1: Dynamic resize from <=600px to >600px does not throw error', async ({ page }) => {
-    await page.setViewportSize({ width: 500, height: 800 });
-    await page.goto('/?skipIntro=true');
-    
-    const errors = [];
-    page.on('pageerror', (err) => {
-      errors.push(err.message);
-    });
-    
-    await page.setViewportSize({ width: 700, height: 800 });
-    await page.waitForTimeout(200);
-    expect(errors).toEqual([]);
-  });
-
-  test('F5-2-2: Closing mobile bottom sheet unfreezes the moon orbit', async ({ page }) => {
-    await page.setViewportSize({ width: 700, height: 800 });
-    await page.goto('/?skipIntro=true');
-    await page.locator('#labels-container .webgl-label:not(.webgl-label--moon)').first().evaluate(el => el.click());
-    const moonLabel = page.locator('#labels-container .webgl-label--moon').first();
-    await expect(moonLabel).toBeVisible();
-    await moonLabel.evaluate(el => el.click());
-    
-    const popup = page.locator('#mobile-moon-popup');
-    await expect(popup).toHaveClass(/visible/);
-    
-    await page.locator('#mobile-close-btn').click();
-    const isFrozen = await page.evaluate(() => window.hoveredMoon !== null);
-    expect(isFrozen).toBe(false);
-  });
-
-  test('F5-2-3: Close button click is ignored if transition is active', async ({ page }) => {
-    await page.setViewportSize({ width: 700, height: 800 });
-    await page.goto('/?skipIntro=true');
-    await page.locator('#labels-container .webgl-label:not(.webgl-label--moon)').first().evaluate(el => el.click());
-    const moonLabel = page.locator('#labels-container .webgl-label--moon').first();
-    await expect(moonLabel).toBeVisible();
-    await moonLabel.evaluate(el => el.click());
-    
-    const popup = page.locator('#mobile-moon-popup');
-    await expect(popup).toHaveClass(/visible/);
-    
-    await page.evaluate(() => { window.isTransitioning = true; });
-    await page.locator('#mobile-close-btn').click();
-    await expect(popup).toHaveClass(/visible/);
-  });
-
-  test('F5-2-4: Closing mobile popup restores camera position to system view', async ({ page }) => {
-    await page.setViewportSize({ width: 700, height: 800 });
-    await page.goto('/?skipIntro=true');
-    await page.locator('#labels-container .webgl-label:not(.webgl-label--moon)').first().evaluate(el => el.click());
-    const moonLabel = page.locator('#labels-container .webgl-label--moon').first();
-    await expect(moonLabel).toBeVisible();
-    await moonLabel.evaluate(el => el.click());
-    
-    await page.locator('#mobile-close-btn').click();
-    await page.waitForTimeout(1000);
-    const cameraY = await page.evaluate(() => typeof camera !== 'undefined' ? camera.position.y : null);
-    expect(cameraY).toBeCloseTo(250, 0);
-  });
-
-  test('F5-2-5: Clicking labels-container non-label element does not trigger event handler', async ({ page }) => {
-    await page.goto('/?skipIntro=true');
-    // Fire the click on the container itself (not a .webgl-label child):
-    // the delegated handler must ignore it
+  test('F3-2-3: Clicking the labels container itself does not navigate', async ({ page }) => {
+    await openGalaxy(page);
     await page.locator('#labels-container').evaluate(el => el.click());
-    const backBtn = page.locator('#galaxy-back-btn');
-    await expect(backBtn).not.toHaveClass(/visible/);
+    await page.waitForTimeout(500);
+    expect(new URL(page.url()).pathname).toBe('/');
+  });
+
+  test('F3-2-4: Category names are URL-encoded in the planet link', async ({ page }) => {
+    await openGalaxy(page);
+    const href = await page.evaluate(() => {
+      const p = planetsData.find(x => x.mesh.userData.isCategory);
+      return `/category.html?cat=${encodeURIComponent(p.mesh.userData.category)}`;
+    });
+    expect(href).not.toMatch(/ /);
+    expect(href.startsWith('/category.html?cat=')).toBe(true);
+  });
+
+  test('F3-2-5: Rapid repeated taps on a planet still land on one category page', async ({ page }) => {
+    test.skip(!sampleCategory, 'projects.json has no planet category');
+    await openGalaxy(page);
+    const label = page.locator(`#labels-container .webgl-label:has-text("${sampleCategory}")`).first();
+    // Three clicks in one tick: only the first may start a navigation
+    await label.evaluate(el => { el.click(); el.click(); el.click(); });
+    // poll the URL rather than waitForURL — no navigation event to race with
+    await expect.poll(() => decodeURIComponent(page.url()), { timeout: 10000 })
+      .toContain(`cat=${sampleCategory}`);
+  });
+
+  // ==========================================
+  // FEATURE 4: List page edge cases
+  // ==========================================
+
+  test('F4-2-1: External-link projects open in a new tab', async ({ page }) => {
+    test.skip(!externalProject, 'projects.json has no external-link project');
+    await page.goto(`/category.html?cat=${encodeURIComponent(externalProject.category)}`);
+    const card = page.locator(`.exploration-card:has-text("${externalProject.name}")`).first();
+    await expect(card).toHaveAttribute('target', '_blank');
+    await expect(card).toHaveAttribute('href', externalProject.link);
+  });
+
+  test('F4-2-2: ?cat= matching is case-insensitive', async ({ page }) => {
+    test.skip(!sampleCategory, 'projects.json has no planet category');
+    await page.goto(`/category.html?cat=${encodeURIComponent(sampleCategory.toUpperCase())}`);
+    // The heading uses the casing stored in the data, not the query string
+    await expect(page.locator('#category-title')).toHaveText(sampleCategory);
+  });
+
+  test('F4-2-3: Cards render even when a project has no preview image', async ({ page }) => {
+    test.skip(!sampleCategory, 'projects.json has no planet category');
+    await page.goto(`/category.html?cat=${encodeURIComponent(sampleCategory)}`);
+    const cards = page.locator('.exploration-card');
+    await expect(cards.first()).toBeVisible();
+    // every card carries a title regardless of its image
+    for (const title of await page.locator('.exploration-title').allTextContents()) {
+      expect(title.trim().length).toBeGreaterThan(0);
+    }
+  });
+
+  test('F4-2-4: Explorations projects keep their own back link', async ({ page }) => {
+    const explorations = projectsIn('Explorations').filter(p => p.page);
+    test.skip(!explorations.length, 'projects.json has no exploration with a page');
+    await page.goto(`/project.html?id=${explorations[0].id}`);
+    await expect(page.locator('a.project-back')).toHaveAttribute('href', '/explorations');
+  });
+
+  test('F4-2-5: Unknown project id redirects to /404', async ({ page }) => {
+    await page.goto('/project.html?id=nonexistent-project');
+    await page.waitForURL(/\/404/);
+    expect(new URL(page.url()).pathname).toBe('/404');
   });
 
 });

@@ -2,10 +2,11 @@
  * main.js — Portfolio Tommaso Costanza
  *
  * Pages are routed via <body data-page="...">:
- * - home         → loadSolarSystem: 3D galaxy of category planets (Three.js);
- *                  clicking a planet zooms into its system of project moons
+ * - home         → loadSolarSystem: 3D galaxy of category planets (Three.js),
+ *                  rendered pixelated; a planet links to its category page
+ * - category     → loadCategoryPage: project list for ?cat=<category>
+ * - explorations → loadExplorations: project list for the Explorations category
  * - project      → loadProjectDetail: renders a project from ?id=<project-id>
- * - explorations → loadExplorations: card list of the Explorations category
  * - 404          → load404Scene: floating Voyager model
  *
  * Data source: projects/projects.json (edited via /admin).
@@ -53,41 +54,85 @@ async function fetchProjects() {
 }
 
 /* ===========================
-   EXPLORATIONS (explorations.html)
+   CATEGORY LISTS  (explorations.html, category.html)
    =========================== */
+
+/** One project card — shared by every list page */
+function buildListCard(p) {
+  const a = document.createElement('a');
+  a.className = 'exploration-card visible';
+  // Dedicated page if 'page' is true, OR if there's no external link
+  const hasPage = p.page || (!p.page && !p.link);
+  a.href = hasPage ? `/project.html?id=${encodeURIComponent(p.id)}` : p.link;
+  if (!hasPage && p.link) { a.target = '_blank'; a.rel = 'noopener noreferrer'; }
+
+  a.innerHTML = `
+    <img src="${esc(imgUrl(p.preview || ''))}" alt="${esc(p.name)}" class="exploration-img" loading="lazy" />
+    <div class="exploration-content">
+      <h3 class="exploration-title">${esc(p.name)}</h3>
+      <p class="exploration-desc">${esc(p.description || '')}</p>
+      <span class="exploration-date">${esc(String(p.year))}</span>
+    </div>
+  `;
+  return a;
+}
+
+/** Render every project of one category into a container */
+function renderCategoryList(container, projects, category, emptyText) {
+  const matches = projects.filter(
+    p => (p.category || '').toLowerCase() === category.toLowerCase()
+  );
+
+  if (!matches.length) {
+    container.innerHTML = `<p style="color:var(--text-muted);">${esc(emptyText)}</p>`;
+    return;
+  }
+
+  matches.forEach(p => container.appendChild(buildListCard(p)));
+  initScrollReveal();
+}
+
 async function loadExplorations(containerId) {
   const container = document.getElementById(containerId);
   if (!container) return;
 
   const projects = await fetchProjects();
-  // Filter for explorations (you can use category or a specific flag. Assuming category 'explorations')
-  const explorations = projects.filter(p => p.category && p.category.toLowerCase() === 'explorations');
+  renderCategoryList(container, projects, 'Explorations', 'No explorations found at the moment.');
+}
 
-  if (explorations.length === 0) {
-    container.innerHTML = `<p style="color:var(--text-muted);">No explorations found at the moment.</p>`;
-    return;
-  }
+/** category.html — the page a category planet links to, driven by ?cat=<name> */
+async function loadCategoryPage(containerId) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
 
-  explorations.forEach(p => {
-    const a = document.createElement('a');
-    a.className = 'exploration-card visible';
-    // Dedicated page if 'page' is true, OR if there's no external link
-    const hasPage = p.page || (!p.page && !p.link);
-    a.href = hasPage ? `/project.html?id=${encodeURIComponent(p.id)}` : p.link;
-    if (!hasPage && p.link) a.target = '_blank';
+  const requested = new URLSearchParams(window.location.search).get('cat');
+  if (!requested) { window.location.href = '/404'; return; }
 
-    a.innerHTML = `
-      <img src="${esc(imgUrl(p.preview || ''))}" alt="${esc(p.name)}" class="exploration-img" loading="lazy" />
-      <div class="exploration-content">
-        <h3 class="exploration-title">${esc(p.name)}</h3>
-        <p class="exploration-desc">${esc(p.description || '')}</p>
-        <span class="exploration-date">${esc(String(p.year))}</span>
-      </div>
-    `;
-    container.appendChild(a);
-  });
+  const projects = await fetchProjects();
+  // Resolve the category's real casing from the data, so the heading and the
+  // canonical URL match what the admin panel actually stores
+  const match = projects.find(
+    p => (p.category || '').toLowerCase() === requested.toLowerCase()
+  );
+  if (!match) { window.location.href = '/404'; return; }
+  const category = match.category;
 
-  initScrollReveal();
+  document.title = `${category} — Tommaso Costanza`;
+  const heading = document.getElementById('category-title');
+  if (heading) heading.textContent = category;
+
+  const canonicalUrl =
+    `https://tommasocostanza.space/category.html?cat=${encodeURIComponent(category)}`;
+  const setAttr = (selector, attr, value) => {
+    const el = document.querySelector(selector);
+    if (el) el.setAttribute(attr, value);
+  };
+  setAttr('meta[name="description"]', 'content', `${category} projects by Tommaso Costanza, Product Design student in Turin.`);
+  setAttr('link[rel="canonical"]', 'href', canonicalUrl);
+  setAttr('meta[property="og:url"]', 'content', canonicalUrl);
+  setAttr('meta[property="og:title"]', 'content', `${category} — Tommaso Costanza`);
+
+  renderCategoryList(container, projects, category, 'No projects in this category yet.');
 }
 
 
@@ -139,9 +184,18 @@ async function loadProjectDetail(containerId) {
     ? `<a href="${esc(project.link)}" class="project-link-btn" target="_blank" rel="noopener noreferrer">View project ↗</a>`
     : '';
 
-  const isExploration = project.category && (project.category.toLowerCase() === 'explorations' || project.category.toLowerCase() === 'esplorazioni');
-  const backHref = isExploration ? '/explorations' : '/?skipIntro=true';
-  const backText = isExploration ? 'Back to list' : 'Back to Galaxy';
+  // Back link mirrors how the visitor got here: galaxy → category → project
+  const category = project.category || '';
+  const isExploration = ['explorations', 'esplorazioni'].includes(category.toLowerCase());
+  let backHref = '/?skipIntro=true';
+  let backText = 'Back to Galaxy';
+  if (isExploration) {
+    backHref = '/explorations';
+    backText = 'Back to list';
+  } else if (category) {
+    backHref = `/category.html?cat=${encodeURIComponent(category)}`;
+    backText = `Back to ${category}`;
+  }
 
   container.innerHTML = `
     <a href="${backHref}" class="project-back">${backText}</a>
@@ -212,7 +266,6 @@ let isMobile = window.innerWidth <= 768;
 let textureLoader = null;
 let gltfLoader;
 let voyagerModel = null;
-let currentView = 'galaxy';
 let globalPlanetState = {};
 
 // Tap vs Drag differentiation variables
@@ -252,7 +305,6 @@ const planetScale = () => (isMobile ? 1.35 : 1);
 async function loadSolarSystem(systemId, bgId, mobileListId) {
   const container = document.getElementById(systemId);
   const mobileList = document.getElementById(mobileListId);
-  const backBtn = document.getElementById('galaxy-back-btn');
   if (!container) return;
 
   const projects = await fetchProjects();
@@ -274,8 +326,7 @@ async function loadSolarSystem(systemId, bgId, mobileListId) {
     categories.forEach(cat => {
       orbitsMap[cat].forEach(p => {
         const pColor = PLANET_COLORS[p.color] || '#aaa';
-        const catUrl = encodeURIComponent(cat.toLowerCase());
-        const href = p.page ? `/${catUrl}/${encodeURIComponent(p.id)}` : (p.link || '#');
+        const href = p.page ? `/project.html?id=${encodeURIComponent(p.id)}` : (p.link || '#');
         const isExternal = p.link && !p.page;
 
         const ml = document.createElement('a');
@@ -295,36 +346,52 @@ async function loadSolarSystem(systemId, bgId, mobileListId) {
     initScrollReveal();
   }
 
-  initThreeJS(container, backBtn);
+  initThreeJS(container);
   renderGalaxy3D();
 }
 
-function initThreeJS(container, backBtn) {
+/**
+ * Pixelation: the WebGL buffer is rendered at 1/PIXEL_SIZE of the CSS size and
+ * blown back up by the browser (CSS keeps the canvas full size and
+ * `image-rendering: pixelated` disables smoothing). The result is a chunky,
+ * pixel-art solar system, while the DOM labels layered above it stay crisp.
+ * It also renders far fewer pixels, so it is cheaper than the sharp version.
+ */
+const PIXEL_SIZE = 3;
+
+/** Resize the camera and the low-resolution pixel buffer to the container */
+function sizeRenderer(container) {
+  const w = container.clientWidth;
+  const h = container.clientHeight;
+  if (!w || !h || !camera || !renderer) return;
+
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+  // updateStyle = false: leave the canvas stretched to 100% by CSS
+  renderer.setSize(
+    Math.max(1, Math.round(w / PIXEL_SIZE)),
+    Math.max(1, Math.round(h / PIXEL_SIZE)),
+    false
+  );
+}
+
+function initThreeJS(container) {
   container.innerHTML = `
     <canvas id="webgl-canvas"></canvas>
     <div id="labels-container"></div>
-    <div id="moon-popup" class="moon-popup">
-      <img id="moon-popup-img" src="" alt="preview" />
-      <div class="moon-popup-content">
-        <div class="moon-popup-header">
-          <h3 id="moon-popup-title"></h3>
-          <span id="moon-popup-year" class="moon-popup-year"></span>
-        </div>
-        <p id="moon-popup-desc"></p>
-      </div>
-    </div>
   `;
   const canvas = document.getElementById('webgl-canvas');
-  
+
   scene = new THREE.Scene();
-  scene.add(new THREE.AmbientLight(0xffffff, 0.6)); 
+  scene.add(new THREE.AmbientLight(0xffffff, 0.6));
 
   camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 1, 3000);
   camera.position.set(0, 200, isMobile ? 780 : 400);
 
-  renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-  renderer.setSize(container.clientWidth, container.clientHeight);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  // No antialiasing and pixelRatio 1: smoothing would fight the pixel look
+  renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: false });
+  renderer.setPixelRatio(1);
+  sizeRenderer(container);
 
   controls = new THREE.OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
@@ -337,142 +404,10 @@ function initThreeJS(container, backBtn) {
   raycaster = new THREE.Raycaster();
   mouse = new THREE.Vector2();
 
-  backBtn.addEventListener('click', () => {
-    if (currentView !== 'galaxy' && !window.isTransitioning) {
-      window.isTransitioning = true;
-      const oldCat = currentView;
-      currentView = 'galaxy';
-      backBtn.classList.remove('visible');
-      
-      // Removed pushState
-      
-      const bioWrap = document.querySelector('.hero-bio-wrap');
-      if (bioWrap) bioWrap.style.display = 'block';
-
-      // Stop all orbits (moons)
-      planetsData.forEach(p => p.speed = 0);
-      
-      // Hide moons immediately to clean up scene
-      planetsData.forEach(p => {
-        if (p.mesh.userData.isMoon) {
-          scene.remove(p.mesh);
-          if (p.orbitLine) scene.remove(p.orbitLine);
-          if (p.labelEl) p.labelEl.remove();
-        }
-      });
-
-      // Rebuild Galaxy
-      renderGalaxy3D();
-      
-      // Animate it in!
-      const pData = planetsData.find(p => p.mesh.userData.category === oldCat);
-      
-      if (pData) {
-        const targetRadius = pData.radius;
-        // Start it at center, scaled up
-        pData.radius = 0;
-        pData.mesh.scale.set(3, 3, 3);
-        
-        new TWEEN.Tween(pData)
-          .to({ radius: targetRadius }, 1500)
-          .easing(TWEEN.Easing.Cubic.InOut)
-          .start();
-
-        const targetScale = pData.baseScale || 1;
-        new TWEEN.Tween(pData.mesh.scale)
-          .to({ x: targetScale, y: targetScale, z: targetScale }, 1500)
-          .easing(TWEEN.Easing.Cubic.InOut)
-          .start();
-      }
-
-      // Animate other things popping in
-      scene.children.forEach(child => {
-        if (child.userData.isSun) {
-           child.scale.set(0,0,0);
-           new TWEEN.Tween(child.scale).to({x:1, y:1, z:1}, 1500).easing(TWEEN.Easing.Cubic.InOut).start();
-        }
-      });
-      planetsData.forEach(p => {
-         if (p !== pData) {
-            p.mesh.scale.set(0,0,0);
-            const targetScale = p.baseScale || 1;
-            new TWEEN.Tween(p.mesh.scale).to({x: targetScale, y: targetScale, z: targetScale}, 1500).easing(TWEEN.Easing.Cubic.InOut).start();
-         }
-      });
-
-      const galaxyPos = isMobile ? { x: 0, y: 650, z: 900 } : { x: 0, y: 400, z: 700 };
-      new TWEEN.Tween(camera.position)
-        .to(galaxyPos, 1500)
-        .easing(TWEEN.Easing.Cubic.InOut)
-        .start();
-        
-      new TWEEN.Tween(controls.target)
-        .to({ x: 0, y: 0, z: 0 }, 1500)
-        .easing(TWEEN.Easing.Cubic.InOut)
-        .onComplete(() => { window.isTransitioning = false; })
-        .start();
-    }
-  });
-
   window.addEventListener('resize', () => {
     isMobile = window.innerWidth <= 768;
-    if (camera && renderer && container.clientHeight > 0) {
-      camera.aspect = container.clientWidth / container.clientHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(container.clientWidth, container.clientHeight);
-    }
+    sizeRenderer(container);
   });
-
-  const closeBtn = document.getElementById('mobile-close-btn');
-  if (closeBtn) {
-    closeBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      if (window.isTransitioning) return;
-      window.isTransitioning = true;
-      
-      const popup = document.getElementById('mobile-moon-popup');
-      const catTitle = document.getElementById('mobile-category-title');
-      if (popup) {
-        popup.classList.remove('visible');
-        popup.setAttribute('aria-hidden', 'true');
-      }
-      if (catTitle) catTitle.classList.remove('visible');
-      
-      window.hoveredMoon = null; // Unfreeze orbit
-      
-      // Restore all hidden moons, orbits, and labels
-      planetsData.forEach(p => {
-        if (p.mesh.userData.isMoon && p._hiddenByMobilePopup) {
-          new TWEEN.Tween(p.mesh.scale).to({x:1, y:1, z:1}, 500).easing(TWEEN.Easing.Cubic.Out).start();
-          if (p.orbitLine) p.orbitLine.visible = true;
-          p.isHidden = false;
-          p._hiddenByMobilePopup = false;
-        }
-        // Restore center label
-        if (p.radius === 0 && p._hiddenByMobilePopup) {
-          p.isHidden = false;
-          p._hiddenByMobilePopup = false;
-        }
-      });
-      
-      const sun = scene.children.find(c => c.userData.isSun);
-      if (sun) new TWEEN.Tween(sun.scale).to({x:1, y:1, z:1}, 500).start();
-      
-      const returnPos = isMobile ? { x: 0, y: 250, z: 500 } : { x: 0, y: 150, z: 350 };
-      new TWEEN.Tween(camera.position)
-        .to(returnPos, 800)
-        .easing(TWEEN.Easing.Cubic.Out)
-        .onComplete(() => window.isTransitioning = false)
-        .start();
-        
-      new TWEEN.Tween(controls.target)
-        .to({ x: 0, y: 0, z: 0 }, 800)
-        .easing(TWEEN.Easing.Cubic.Out)
-        .start();
-        
-      updateScreenReaderA11y();
-    });
-  }
 
   // Events
   container.addEventListener('pointerdown', (e) => {
@@ -498,256 +433,49 @@ function initThreeJS(container, backBtn) {
     const intersects = raycaster.intersectObjects(scene.children, true);
     if (intersects.length > 0) {
       let obj = intersects[0].object;
-      while (obj && !obj.userData.isCategory && !obj.userData.isMoon && !obj.userData.isVoyager) {
+      while (obj && !obj.userData.isCategory && !obj.userData.isVoyager) {
         obj = obj.parent;
       }
       if (obj) handleObjectClick(obj);
     }
   });
 
+  // Hover feedback only — clickable objects switch the cursor to a pointer
   canvas.addEventListener('mousemove', (e) => {
-    if (isMobile) {
-      const popup = document.getElementById('moon-popup');
-      if (popup) {
-        popup.classList.remove('visible');
-        popup.setAttribute('aria-hidden', 'true');
-      }
-      return;
-    }
+    if (isMobile) return;
     const rect = renderer.domElement.getBoundingClientRect();
     mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
     mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
     raycaster.setFromCamera(mouse, camera);
     const intersects = raycaster.intersectObjects(scene.children, true);
     let hovered = false;
-    let hoveredMoon = null;
     for (let i = 0; i < intersects.length; i++) {
       let obj = intersects[i].object;
-      while (obj && !obj.userData.isCategory && !obj.userData.isMoon && !obj.userData.isVoyager) {
+      while (obj && !obj.userData.isCategory && !obj.userData.isVoyager) {
         obj = obj.parent;
       }
-      if (!obj) continue;
-      
-      if (obj.userData.isMoon) {
-        hoveredMoon = obj;
-        hovered = true; break;
-      } else if (obj.userData.isCategory || obj.userData.isVoyager) {
-        hovered = true; break;
-      }
+      if (obj) { hovered = true; break; }
     }
     renderer.domElement.style.cursor = hovered ? 'pointer' : 'default';
-
-    if (window.hoveredMoon !== hoveredMoon) {
-      window.hoveredMoon = hoveredMoon;
-      const popup = document.getElementById('moon-popup');
-      if (hoveredMoon && !window.isTransitioning) {
-        const p = hoveredMoon.userData.project;
-        document.getElementById('moon-popup-title').textContent = p.name || '';
-        document.getElementById('moon-popup-desc').textContent = p.description || '';
-        const yearEl = document.getElementById('moon-popup-year');
-        if (yearEl) yearEl.textContent = p.year ? String(p.year) : '';
-        const img = document.getElementById('moon-popup-img');
-        if (p.preview) {
-          img.src = p.preview;
-          img.style.display = 'block';
-        } else {
-          img.style.display = 'none';
-        }
-      }
-    }
   });
 
   animate();
 }
 
-function handleObjectClick(obj, skipAnim = false) {
+function handleObjectClick(obj) {
   if (window.isTransitioning) return;
 
-  if (obj.userData.isVoyager) {
-    window.location.href = obj.userData.link;
-    return;
-  }
-
-  if (obj.userData.isCategory) {
+  // Leaving the page: latch the flag so repeated taps while the browser is
+  // still navigating don't fire overlapping navigations.
+  const navigateTo = (href) => {
     window.isTransitioning = true;
-    
-    const bioWrap = document.querySelector('.hero-bio-wrap');
-    if (bioWrap) bioWrap.style.display = 'none';
+    window.location.href = href;
+  };
 
-    updateScreenReaderA11y();
-
-    const cat = obj.userData.category;
-    currentView = cat;
-    document.getElementById('galaxy-back-btn').classList.add('visible');
-
-    // Removed pushState
-
-    // 1. Stop all orbits
-    planetsData.forEach(p => p.speed = 0);
-
-    const pData = planetsData.find(p => p.mesh === obj);
-
-    // 2. Fade out / scale down other planets and sun
-    planetsData.forEach(p => {
-      if (p !== pData) {
-        p.isHidden = true;
-        if (!skipAnim) new TWEEN.Tween(p.mesh.scale).to({x:0, y:0, z:0}, 1000).start();
-        else p.mesh.scale.set(0,0,0);
-        if (p.labelEl) p.labelEl.classList.remove('visible');
-      }
-    });
-    scene.children.forEach(child => {
-      if (child.userData.isSun) {
-        if (!skipAnim) new TWEEN.Tween(child.scale).to({x:0, y:0, z:0}, 1000).start();
-        else child.scale.set(0,0,0);
-      }
-    });
-
-    if (pData.labelEl) {
-      pData.isHidden = true;
-      pData.labelEl.classList.remove('visible');
-    }
-
-    const sysPos = isMobile ? { x: 0, y: 250, z: 500 } : { x: 0, y: 150, z: 350 };
-
-    if (skipAnim) {
-      pData.radius = 0;
-      obj.scale.set(3, 3, 3);
-      camera.position.set(sysPos.x, sysPos.y, sysPos.z);
-      controls.target.set(0, 0, 0);
-      renderSystem3D(cat);
-      planetsData.forEach(p => {
-        if (p.mesh.userData.isMoon) p.mesh.scale.set(1,1,1);
-      });
-      window.isTransitioning = false;
-      updateScreenReaderA11y();
-      
-      const intro = document.getElementById('intro-screen');
-      if (intro) intro.remove();
-      document.body.classList.add('loaded');
-      return;
-    }
-
-    // 3. Move clicked planet to center and scale up
-    new TWEEN.Tween(pData)
-      .to({ radius: 0 }, 1500)
-      .easing(TWEEN.Easing.Cubic.InOut)
-      .start();
-
-    new TWEEN.Tween(obj.scale)
-      .to({ x: 3, y: 3, z: 3 }, 1500)
-      .easing(TWEEN.Easing.Cubic.InOut)
-      .start();
-
-    // 4. Move camera to system view position
-    new TWEEN.Tween(camera.position)
-      .to(sysPos, 1500)
-      .easing(TWEEN.Easing.Cubic.InOut)
-      .start();
-
-    new TWEEN.Tween(controls.target)
-      .to({ x: 0, y: 0, z: 0 }, 1500)
-      .easing(TWEEN.Easing.Cubic.InOut)
-      .onComplete(() => {
-        // Once transition completes, truly switch scenes
-        renderSystem3D(cat);
-        // Pop in the moons
-        planetsData.forEach(p => {
-          if (p.mesh.userData.isMoon) {
-             p.mesh.scale.set(0,0,0);
-             new TWEEN.Tween(p.mesh.scale).to({x:1, y:1, z:1}, 1000).easing(TWEEN.Easing.Elastic.Out).start();
-          }
-        });
-        window.isTransitioning = false;
-        updateScreenReaderA11y();
-      })
-      .start();
-  } else if (obj.userData.isMoon) {
-    const p = obj.userData.project;
-    const href = p.page ? `/project.html?id=${encodeURIComponent(p.id)}` : (p.link || '#');
-    
-    if (isMobile) {
-      if (window.isTransitioning) return;
-      window.isTransitioning = true;
-      window.hoveredMoon = obj; // Freeze orbit
-      
-      const popup = document.getElementById('mobile-moon-popup');
-      const titleEl = document.getElementById('mobile-moon-title');
-      const descEl = document.getElementById('mobile-moon-desc');
-      const imgEl = document.getElementById('mobile-moon-img');
-      const exploreBtn = document.getElementById('mobile-explore-btn');
-      const catTitle = document.getElementById('mobile-category-title');
-      
-      if (titleEl) titleEl.textContent = p.name || '';
-      if (descEl) descEl.textContent = p.description || p.category || '';
-      const yearMobileEl = document.getElementById('mobile-moon-year');
-      if (yearMobileEl) yearMobileEl.textContent = p.year ? String(p.year) : '';
-      if (imgEl) {
-        imgEl.src = p.preview || '';
-        imgEl.style.display = p.preview ? 'block' : 'none';
-      }
-      if (exploreBtn) {
-        exploreBtn.href = href;
-        exploreBtn.target = p.page ? '_self' : '_blank';
-      }
-      
-      if (catTitle) {
-        // Capitalize current view
-        catTitle.textContent = currentView.charAt(0).toUpperCase() + currentView.slice(1);
-        catTitle.classList.add('visible');
-      }
-      
-      // Hide all other moons, orbit lines, labels + center label
-      planetsData.forEach(pd => {
-        if (pd.mesh.userData.isMoon && pd.mesh !== obj) {
-          new TWEEN.Tween(pd.mesh.scale).to({x:0, y:0, z:0}, 500).start();
-          if (pd.orbitLine) pd.orbitLine.visible = false;
-          pd.isHidden = true;
-          pd._hiddenByMobilePopup = true;
-        }
-        // Hide the selected moon's orbit line too
-        if (pd.mesh === obj && pd.orbitLine) {
-          pd.orbitLine.visible = false;
-          pd._hiddenByMobilePopup = true;
-        }
-        // Hide center category label (orbit count)
-        if (pd.radius === 0 && pd.labelEl) {
-          pd.isHidden = true;
-          pd._hiddenByMobilePopup = true;
-        }
-      });
-      
-      const sun = scene.children.find(c => c.userData.isSun);
-      if (sun) new TWEEN.Tween(sun.scale).to({x:0, y:0, z:0}, 500).start();
-
-      const targetPos = { 
-        x: obj.position.x, 
-        y: obj.position.y + 150, 
-        z: obj.position.z + 300 
-      };
-      
-      new TWEEN.Tween(camera.position)
-        .to(targetPos, 800)
-        .easing(TWEEN.Easing.Cubic.Out)
-        .start();
-        
-      new TWEEN.Tween(controls.target)
-        .to({ x: obj.position.x, y: obj.position.y - 60, z: obj.position.z }, 800)
-        .easing(TWEEN.Easing.Cubic.Out)
-        .onComplete(() => {
-          if (popup) {
-            popup.classList.add('visible');
-            popup.setAttribute('aria-hidden', 'false');
-          }
-          window.isTransitioning = false;
-          updateScreenReaderA11y();
-        })
-        .start();
-
-    } else {
-      if (p.link && !p.page) window.open(href, '_blank');
-      else window.location.href = href;
-    }
+  if (obj.userData.isVoyager) {
+    navigateTo(obj.userData.link);
+  } else if (obj.userData.isCategory) {
+    navigateTo(`/category.html?cat=${encodeURIComponent(obj.userData.category)}`);
   }
 }
 
@@ -767,9 +495,9 @@ function clearScene() {
   toRemove.forEach(c => scene.remove(c));
 }
 
-function createLabel(text, isMoon) {
+function createLabel(text) {
   const div = document.createElement('div');
-  div.className = `webgl-label ${isMoon ? 'webgl-label--moon' : ''}`;
+  div.className = 'webgl-label';
   div.textContent = text;
   div.setAttribute('aria-hidden', 'true');
   document.getElementById('labels-container').appendChild(div);
@@ -781,23 +509,10 @@ function updateScreenReaderA11y() {
   if (!srList) return;
   srList.innerHTML = '';
 
-  if (currentView !== 'galaxy') {
-    const backBtn = document.createElement('button');
-    backBtn.textContent = 'Back to Galaxy';
-    backBtn.addEventListener('click', () => {
-      const btn = document.getElementById('galaxy-back-btn');
-      if (btn) btn.click();
-    });
-    srList.appendChild(backBtn);
-  }
-
   planetsData.forEach(p => {
-    if (p.isHidden || p._hiddenByMobilePopup) return;
-    
     let label = '';
     if (p.mesh.userData.isCategory) label = `Category: ${p.mesh.userData.category}`;
-    else if (p.mesh.userData.isMoon) label = `Project: ${p.mesh.userData.project.name}`;
-    else if (p.mesh.userData.isVoyager) label = `Category: Explorations`;
+    else if (p.mesh.userData.isVoyager) label = 'Category: Explorations';
     else return;
 
     const btn = document.createElement('button');
@@ -868,7 +583,7 @@ function renderGalaxy3D() {
     mesh.userData = { isCategory: true, category: cat };
     scene.add(mesh);
 
-    const labelEl = createLabel(cat, false);
+    const labelEl = createLabel(cat);
 
     planetsData.push({
       mesh, orbitLine, labelEl, radius, speed, 
@@ -880,7 +595,6 @@ function renderGalaxy3D() {
 
   // Setup Voyager for "Explorations"
   const setupVoyager = (model) => {
-    if (currentView !== 'galaxy') return; // Don't add if we already navigated away
     // Sit just beyond the outermost category orbit instead of a fixed far
     // distance: keeps Explorations close to the system while staying clear as
     // more categories are added.
@@ -902,7 +616,7 @@ function renderGalaxy3D() {
     mesh.rotation.x = Math.PI / 4;
     scene.add(mesh);
 
-    const labelEl = createLabel('Explorations', false);
+    const labelEl = createLabel('Explorations');
 
     planetsData.push({
       mesh, orbitLine, labelEl, radius, speed,
@@ -945,141 +659,43 @@ function renderGalaxy3D() {
   updateScreenReaderA11y();
 }
 
-function renderSystem3D(category) {
-  clearScene();
-  
-  const catIdx = Object.keys(orbitsMap).indexOf(category);
-  const texUrl = TEXTURES[catIdx % TEXTURES.length];
-
-  const numProjects = orbitsMap[category] ? orbitsMap[category].length : 0;
-  const planetSize = (10 + (numProjects * 2.5)) * planetScale();
-
-  // Central Planet
-  const centerGeo = new THREE.SphereGeometry(planetSize * 3, 32, 32);
-  const centerMat = new THREE.MeshStandardMaterial({ 
-    map: textureLoader.load(texUrl),
-    emissive: new THREE.Color(0x222222) // so it's slightly visible
-  });
-  const centerMesh = new THREE.Mesh(centerGeo, centerMat);
-  centerMesh.userData.isSun = true; 
-  scene.add(centerMesh);
-
-  // Light radiating from the center planet to illuminate moons
-  const light = new THREE.PointLight(0xffffff, 1, 800);
-  scene.add(light);
-
-  const centerLabel = createLabel(category, false);
-  planetsData.push({ mesh: centerMesh, labelEl: centerLabel, radius: 0, speed: 0, angle: 0 });
-
-  const projects = orbitsMap[category];
-  const baseRadius = 80;
-  const gap = 35;
-
-  projects.forEach((p, idx) => {
-    const radius = baseRadius + (idx * gap);
-    const speed = 0.002 + (Math.random() * 0.002);
-    
-    const orbitLine = createOrbitLine(radius);
-    scene.add(orbitLine);
-
-    const geo = new THREE.SphereGeometry((8 + Math.random() * 4) * planetScale(), 32, 32);
-    const mTex = TEXTURES[idx % TEXTURES.length];
-    
-    // Mix base color with texture
-    const color = new THREE.Color(PLANET_COLORS[p.color] || '#aaaaaa');
-    const mat = new THREE.MeshStandardMaterial({ 
-      map: textureLoader.load(mTex),
-      color: color,
-      roughness: 0.7
-    });
-    const mesh = new THREE.Mesh(geo, mat);
-    mesh.userData = { isMoon: true, project: p };
-    scene.add(mesh);
-
-    const labelEl = createLabel(p.name, true);
-
-    planetsData.push({
-      mesh, orbitLine, labelEl, radius, speed, angle: Math.random() * Math.PI * 2
-    });
-  });
-  
-  updateScreenReaderA11y();
-}
-
 function animate() {
   requestAnimationFrame(animate);
   TWEEN.update();
   controls.update();
 
-  const isHoveringMoon = !!window.hoveredMoon;
-  const popup = document.getElementById('moon-popup');
-  if (!isHoveringMoon || window.isTransitioning) {
-    if (popup) {
-      popup.classList.remove('visible');
-      popup.setAttribute('aria-hidden', 'true');
-    }
-  }
-
   planetsData.forEach(p => {
     if (p.radius > 0) {
-      const shouldMove = !isHoveringMoon || !p.mesh.userData.isMoon;
-      
-      if (shouldMove) {
-        p.angle += p.speed;
+      p.angle += p.speed;
 
-        if (p.catRef) {
-          p.catRef.angle = p.angle;
-          p.catRef.totalOrbits = Math.floor((p.angle - p.catRef.startAngle) / (Math.PI * 2));
-        }
+      if (p.catRef) {
+        p.catRef.angle = p.angle;
+        p.catRef.totalOrbits = Math.floor((p.angle - p.catRef.startAngle) / (Math.PI * 2));
       }
 
       p.mesh.position.x = Math.cos(p.angle) * p.radius;
       p.mesh.position.z = Math.sin(p.angle) * p.radius;
-      
-      if (!p.mesh.userData.isVoyager) {
-        p.mesh.rotation.y += 0.01;
-      } else {
-        // Optionally make it face the direction of orbit:
-        // p.mesh.rotation.y = -p.angle;
-      }
+
+      if (!p.mesh.userData.isVoyager) p.mesh.rotation.y += 0.01;
     } else if (p.mesh.userData.isSun) {
       p.mesh.rotation.y += 0.005;
     }
 
-    // Map 3D pos to 2D Screen Label
+    // Project the 3D position onto the 2D label overlay
     if (p.labelEl) {
-      if (p.isHidden) {
-        p.labelEl.classList.remove('visible');
+      const pos = p.mesh.position.clone();
+      pos.y += 20;
+      pos.project(camera);
+
+      // Only show labels that are in front of the camera and on screen
+      if (pos.z < 1 && pos.x > -1 && pos.x < 1 && pos.y > -1 && pos.y < 1) {
+        const canvas = renderer.domElement;
+        const x = (pos.x * 0.5 + 0.5) * canvas.clientWidth;
+        const y = (pos.y * -0.5 + 0.5) * canvas.clientHeight;
+        p.labelEl.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px)`;
+        p.labelEl.classList.add('visible');
       } else {
-        const pos = p.mesh.position.clone();
-        // Y offset based on whether it's center or orbit
-        pos.y += (p.radius === 0) ? 55 : 20; 
-        pos.project(camera);
-
-        // Check if behind camera
-        if (pos.z < 1 && pos.x > -1 && pos.x < 1 && pos.y > -1 && pos.y < 1) {
-          const canvas = renderer.domElement;
-          const x = (pos.x * 0.5 + 0.5) * canvas.clientWidth;
-          const y = (pos.y * -0.5 + 0.5) * canvas.clientHeight;
-          p.labelEl.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px)`;
-          
-          if (window.hoveredMoon === p.mesh) {
-            p.labelEl.classList.remove('visible');
-          } else {
-            p.labelEl.classList.add('visible');
-          }
-
-          if (window.hoveredMoon === p.mesh && !window.isTransitioning && !isMobile) {
-             popup.style.left = x + 'px';
-             popup.style.top = y + 'px';
-             popup.classList.add('visible');
-          }
-        } else {
-          p.labelEl.classList.remove('visible');
-          if (window.hoveredMoon === p.mesh) {
-             popup.classList.remove('visible');
-          }
-        }
+        p.labelEl.classList.remove('visible');
       }
     }
   });
@@ -1242,6 +858,8 @@ onDocumentReady(() => {
     loadProjectDetail('project-detail');
   } else if (pageType === 'explorations') {
     loadExplorations('explorations-list');
+  } else if (pageType === 'category') {
+    loadCategoryPage('category-list');
   } else if (pageType === '404') {
     load404Scene('solar-system');
   }
