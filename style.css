@@ -22,12 +22,6 @@
   --link-hover: #555;
   --accent: #111;
 
-  /* Post-it colors */
-  --postit-yellow: #fef08a;
-  --postit-green:  #bbf7d0;
-  --postit-pink:   #fecaca;
-  --postit-blue:   #bae6fd;
-
   /* Spacing */
   --max-width: 700px;
   --page-pad: clamp(1.25rem, 5vw, 3rem);
@@ -90,10 +84,6 @@ a:hover { color: var(--link-hover); }
   outline: 2px solid #fff;
 }
 
-.galaxy-back-btn:focus-visible {
-  outline: 2px solid #fff;
-}
-
 img { max-width: 100%; display: block; }
 
 /* ===========================
@@ -149,23 +139,12 @@ body.loaded #intro-screen {
   margin: 0 auto;
 }
 
-/* Wide column (projects grid) */
-.content-wide {
-  max-width: 1280px;
-  margin: 0 auto;
-}
-
 /* ===========================
    HEADER / NAV
    =========================== */
 header {
   padding-top: 2rem;
   padding-bottom: 2rem;
-}
-
-header .content-narrow,
-header .content-wide {
-  display: contents; /* nav fills directly */
 }
 
 nav {
@@ -269,387 +248,6 @@ footer {
 .reveal.visible {
   opacity: 1;
   transform: translateY(0);
-}
-
-/* Slide from right (project preview cards on home) */
-.reveal-right {
-  opacity: 0;
-  transform: translateX(28px);
-  transition: opacity 0.5s ease, transform 0.5s ease;
-}
-.reveal-right.visible {
-  opacity: 1;
-  transform: translateX(0);
-}
-
-/* Stagger delays */
-.reveal-delay-1  { transition-delay: 0.08s; }
-.reveal-delay-2  { transition-delay: 0.16s; }
-.reveal-delay-3  { transition-delay: 0.24s; }
-
-/* ===========================
-   HOME PAGE
-   =========================== */
-.home-content {
-  padding-top: 0.5rem;
-  padding-bottom: var(--section-gap);
-}
-
-.home-bio {
-  font-size: 1rem;
-  line-height: 1.8;
-  text-align: justify;
-  hyphens: auto;
-  margin-bottom: var(--section-gap);
-  color: var(--text);
-}
-
-.home-section {
-  margin-bottom: var(--section-gap);
-}
-
-.home-section h2 {
-  font-size: 1rem;
-  font-weight: 500;
-  margin-bottom: 0.75rem;
-}
-
-.now-list {
-  list-style: disc;
-  padding-left: 1.25rem;
-  font-size: 0.95rem;
-  line-height: 1.9;
-}
-.now-list a {
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
-/* Latest projects on home — slide from right */
-.home-latest-projects {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.25rem;
-  margin-top: 1.25rem;
-}
-
-.home-project-card {
-  text-decoration: none;
-  color: var(--text);
-  display: flex;
-  flex-direction: column;
-  gap: 0.45rem;
-  transition: opacity 0.2s, transform 0.25s ease;
-}
-.home-project-card:hover {
-  opacity: 0.75;
-  transform: translateY(-2px);
-}
-
-.home-project-card img {
-  width: 100%;
-  aspect-ratio: 1;
-  object-fit: cover;
-  background: var(--border);
-  border-radius: 2px;
-}
-
-.home-project-card .card-name {
-  font-size: 0.85rem;
-  font-weight: 500;
-}
-.home-project-card .card-year {
-  font-size: 0.8rem;
-  color: var(--text-muted);
-}
-
-.home-all-link {
-  display: inline-block;
-  margin-top: 1rem;
-  font-size: 0.85rem;
-  color: var(--text-muted);
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
-.contact-section p {
-  font-size: 0.95rem;
-  line-height: 1.75;
-}
-
-/* ===========================
-   PROJECTS PAGE — POST-IT BOARD
-   =========================== */
-.projects-page-header {
-  padding: 0.75rem 0 2.5rem;
-  /* Same centering as home content */
-  max-width: var(--max-width);
-  margin: 0 auto;
-}
-
-.projects-page-header h1 {
-  font-size: 1rem;
-  font-weight: 500;
-  margin-bottom: 0.2rem;
-}
-
-.projects-count {
-  font-size: 0.85rem;
-  color: var(--text-muted);
-}
-
-/* Post-it grid — same left/right margin as home */
-.postit-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-  gap: 2.5rem 1.75rem;
-  padding-bottom: 5rem;
-  max-width: var(--max-width);
-  margin: 0 auto;
-}
-
-/* ===========================
-   POST-IT CARD — Realistic
-   =========================== */
-.postit {
-  position: relative;
-  display: block;
-  text-decoration: none;
-  color: var(--text);
-  /* Rotation set via --r custom prop inline */
-  transform: rotate(var(--r, 0deg));
-  transform-origin: 50% 8%;   /* near top = where glue would be */
-  transition:
-    transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  will-change: transform;
-  cursor: pointer;
-}
-
-/*
-   SHADOW — simple elliptical blob below the card.
-   Sits only at the BOTTOM (where paper lifts from the wall).
-   Top stays shadow-free (adhesive strip is flat against surface).
-   No mask tricks — just a positioned ellipse, reliable across all browsers.
-*/
-.postit-shadow {
-  position: absolute;
-  /* Slightly below the bottom edge of the card */
-  bottom: -7px;
-  /* Narrower than the card so it reads as "floating" not "stuck" */
-  left: 6%;
-  right: 6%;
-  height: 20px;
-  background: rgba(0,0,0,0.22);
-  border-radius: 50%;
-  filter: blur(10px);
-  z-index: -1;
-  pointer-events: none;
-  transition: bottom 0.3s ease, opacity 0.3s ease, filter 0.3s ease, left 0.3s ease, right 0.3s ease;
-}
-
-/* Hover: card lifts, shadow moves further down and softens */
-.postit:hover {
-  transform: rotate(0deg) scale(1.05) translateY(-8px) !important;
-  z-index: 20;
-}
-.postit:hover .postit-shadow {
-  bottom: -14px;
-  left: 10%;
-  right: 10%;
-  opacity: 0.75;
-  filter: blur(16px);
-}
-
-/* Color variants */
-.postit--yellow .postit-paper { background: var(--postit-yellow); }
-.postit--green  .postit-paper { background: var(--postit-green); }
-.postit--pink   .postit-paper { background: var(--postit-pink); }
-.postit--blue   .postit-paper { background: var(--postit-blue); }
-
-/* Paper surface */
-.postit-paper {
-  position: relative;
-  border-radius: 2px;
-  overflow: hidden;
-}
-
-
-/*
-   Very subtle gradient overlay:
-   slightly darker at top (paper pressed flat against wall),
-   slightly lighter at bottom (bowing towards viewer).
-   Two-stop only — avoids any visible transparency-edge artifacts.
-*/
-.postit-paper::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    to bottom,
-    rgba(0,0,0,0.06) 0%,
-    rgba(255,255,255,0.12) 100%
-  );
-  pointer-events: none;
-  z-index: 1;
-  border-radius: inherit;
-}
-
-/* Content area */
-.postit-body {
-  padding: 0.7rem 0.8rem 1rem;
-}
-
-/* Post-it image */
-.postit-image {
-  width: 100%;
-  aspect-ratio: 4/3;
-  object-fit: cover;
-  border-radius: 1px;
-  margin-bottom: 0.65rem;
-  background: rgba(0,0,0,0.06);
-  display: block;
-}
-
-.postit-name {
-  font-size: 0.82rem;
-  font-weight: 600;
-  line-height: 1.3;
-  margin-bottom: 0.3rem;
-  letter-spacing: -0.01em;
-}
-
-.postit-meta {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  gap: 0.4rem;
-}
-
-.postit-year {
-  font-size: 0.72rem;
-  opacity: 0.55;
-  flex-shrink: 0;
-}
-
-.postit-tags {
-  display: flex;
-  gap: 0.25rem;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-}
-
-.postit-tag {
-  font-size: 0.62rem;
-  opacity: 0.5;
-  background: rgba(0,0,0,0.08);
-  padding: 0.08rem 0.35rem;
-  border-radius: 100px;
-}
-
-.postit-external-icon {
-  position: absolute;
-  top: 1.4rem;
-  right: 0.6rem;
-  font-size: 0.65rem;
-  opacity: 0.35;
-}
-
-/* ===========================
-   CURL EFFECT (--curled variant)
-
-   The curl is rendered by .postit-curl which sits OUTSIDE .postit-paper
-   (not subject to overflow:hidden). It creates a right-triangle in the
-   bottom-right corner that shows the page background, making it look like
-   the corner is physically peeled away from the wall.
-
-   The ::after on .postit-paper draws the shadow cast by the lifted flap
-   onto the paper surface below it.
-   =========================== */
-
-/* Flat bottom-right corner for curled variant (no border-radius there) */
-.postit--curled .postit-paper {
-  border-radius: 2px 2px 0 2px;
-}
-
-/*
-   Shadow on paper from the lifted flap.
-   Goes from dark (at corner) to transparent (spreading into paper).
-   Uses ::after on the paper so it's clipped by overflow:hidden (correct).
-*/
-.postit--curled .postit-paper::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 50px;
-  height: 50px;
-  /*
-    135deg goes top-left → bottom-right.
-    Bottom-right triangle = dark (shadow under curl).
-    Top-left triangle = transparent.
-  */
-  background: linear-gradient(
-    135deg,
-    transparent  50%,
-    rgba(0,0,0,0.16) 50%,
-    rgba(0,0,0,0.04) 75%,
-    transparent  90%
-  );
-  pointer-events: none;
-  z-index: 2;
-}
-
-/*
-   The "lifted flap" curl triangle.
-   Sits OUTSIDE .postit-paper (no overflow clipping).
-   Shows page background in bottom-right triangle.
-
-   drop-shadow casts a shadow from the flap onto the paper:
-   direction: upper-left (−x, −y) = shadow falls toward top-left of curl.
-*/
-.postit-curl {
-  display: none;
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 50px;
-  height: 50px;
-  z-index: 5;
-  pointer-events: none;
-}
-.postit--curled .postit-curl { display: block; }
-
-.postit-curl::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  /*
-    135deg: top-left half = transparent (paper shows through),
-            bottom-right half = page background (the "revealed" curl).
-  */
-  background: linear-gradient(
-    135deg,
-    transparent 50%,
-    var(--bg)   50%
-  );
-  filter: drop-shadow(-2px -2px 5px rgba(0,0,0,0.28));
-}
-
-/* Post-it scroll reveal */
-.postit {
-  opacity: 0;
-  transform: rotate(var(--r, 0deg)) translateY(12px) scale(0.97);
-  transition:
-    opacity 0.45s ease,
-    transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-.postit.visible {
-  opacity: 1;
-  transform: rotate(var(--r, 0deg)) translateY(0) scale(1);
-}
-.postit:hover {
-  opacity: 1;
-  transform: rotate(0deg) scale(1.05) translateY(-8px) !important;
 }
 
 /* ===========================
@@ -854,26 +452,10 @@ footer {
     --page-pad: 1.25rem;
     --section-gap: 2.25rem;
   }
-  .home-latest-projects {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .postit-grid {
-    grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
-    gap: 2rem 1.25rem;
-  }
 }
 
 @media (max-width: 480px) {
   :root { --page-pad: 1rem; }
-
-  .home-latest-projects {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-  }
-  .postit-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1.75rem 1rem;
-  }
   .project-title { font-size: 1.25rem; }
   .project-header-meta {
     flex-direction: column;
@@ -884,17 +466,6 @@ footer {
     flex-direction: column;
     align-items: flex-start;
   }
-}
-
-/* ===========================
-   UTILITY
-   =========================== */
-.visually-hidden {
-  position: absolute;
-  width: 1px; height: 1px;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  white-space: nowrap;
 }
 
 /* ===========================
@@ -972,38 +543,6 @@ footer {
   min-height: calc(100svh - 160px);
   padding: 2rem 0;
   overflow: hidden;
-}
-
-/* Back button */
-.galaxy-back-btn {
-  position: absolute;
-  bottom: 5rem;
-  left: 50%;
-  transform: translateX(-50%) translateY(10px);
-  background: rgba(255,255,255,0.1);
-  color: #fff;
-  border: 1px solid rgba(255,255,255,0.2);
-  padding: 0.6rem 1.4rem;
-  border-radius: 100px;
-  font-family: inherit;
-  font-size: 0.95rem;
-  cursor: pointer;
-  backdrop-filter: blur(5px);
-  transition: all 0.2s;
-  z-index: 100;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.galaxy-back-btn.visible {
-  opacity: 1;
-  pointer-events: auto;
-  transform: translateX(-50%) translateY(0);
-}
-
-.galaxy-back-btn:hover {
-  background: rgba(255,255,255,0.2);
-  transform: translateX(-50%) scale(1.05);
 }
 
 .space-header {
@@ -1093,7 +632,11 @@ footer {
   opacity: 1;
 }
 
-/* WebGL 3D Container */
+/* WebGL 3D Container.
+   The renderer draws into a buffer 1/PIXEL_SIZE of this element's size
+   (see sizeRenderer in main.js); these rules stretch it back to full size
+   without smoothing, which is what produces the pixel-art look. The label
+   overlay sits above in its own layer and stays sharp. */
 #webgl-canvas {
   width: 100%;
   height: 100%;
@@ -1102,6 +645,8 @@ footer {
   left: 0;
   z-index: 1;
   outline: none;
+  image-rendering: crisp-edges; /* fallback for older Firefox */
+  image-rendering: pixelated;   /* wins where supported — must stay last */
 }
 
 /* HTML Overlay for labels */
@@ -1137,193 +682,6 @@ footer {
   background: transparent;
 }
 
-.webgl-label--moon {
-  font-size: 0.75rem;
-  background: transparent;
-}
-
-
-
-/* Moon Popup */
-.moon-popup {
-  position: absolute;
-  background: #F2F1EF;
-  border-radius: 20px;
-  padding: 9px;
-  width: 280px;
-  pointer-events: none; 
-  transform: translate(-50%, -100%) translateY(10px); 
-  opacity: 0;
-  transition: opacity 0.2s ease, transform 0.2s ease;
-  z-index: 100;
-  box-shadow: 0 12px 36px rgba(0,0,0,0.12);
-  color: #111;
-  left: -9999px; /* hidden out of screen */
-}
-
-.moon-popup.visible {
-  opacity: 1;
-  transform: translate(-50%, -100%) translateY(-20px);
-}
-
-.moon-popup img {
-  width: 100%;
-  height: 180px;
-  object-fit: cover;
-  border-radius: 12px;
-  margin-bottom: 12px;
-  background: #fff;
-}
-
-.moon-popup-content {
-  padding: 0 4px 6px 4px;
-}
-
-.moon-popup-content h3 {
-  font-size: 1.25rem;
-  font-weight: 500;
-  margin: 0 0 4px 0;
-  color: #111;
-  letter-spacing: -0.01em;
-}
-
-.moon-popup-content p {
-  font-size: 0.95rem;
-  color: #616161;
-  margin: 0;
-  line-height: 1.4;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.moon-popup-header {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 0.5rem;
-  margin-bottom: 4px;
-}
-
-.moon-popup-year {
-  font-size: 0.78rem;
-  font-weight: 500;
-  color: #999;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-/* Mobile Category Title */
-.mobile-category-title {
-  position: absolute;
-  top: 6rem;
-  left: 50%;
-  transform: translateX(-50%);
-  color: #fff;
-  font-size: 1.8rem;
-  font-weight: 500;
-  z-index: 99;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s;
-}
-.mobile-category-title.visible {
-  opacity: 1;
-}
-
-/* Mobile Bottom Sheet */
-.mobile-moon-popup {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  background: #F2F1EF;
-  border-radius: 24px 24px 0 0;
-  padding: 1.5rem;
-  z-index: 1000;
-  transform: translateY(100%);
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 -10px 40px rgba(0,0,0,0.3);
-  color: #111;
-  display: flex;
-  flex-direction: column;
-  opacity: 0;
-  pointer-events: none;
-}
-.mobile-moon-popup.visible {
-  transform: translateY(0);
-  opacity: 1;
-  pointer-events: auto;
-}
-.mobile-close-btn {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  border: none;
-  background: rgba(0,0,0,0.1);
-  color: #000;
-  font-size: 1.2rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.mobile-moon-popup-content {
-  margin-top: 1rem;
-  display: flex;
-  flex-direction: column;
-}
-#mobile-moon-img {
-  width: 100%;
-  height: 240px;
-  object-fit: cover;
-  border-radius: 12px;
-  background: #fff;
-  margin-bottom: 1rem;
-}
-#mobile-moon-title {
-  font-size: 1.5rem;
-  font-weight: 500;
-  margin: 0;
-}
-
-.mobile-moon-header {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 0.75rem;
-  margin-bottom: 0.5rem;
-}
-
-.mobile-moon-year {
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: rgba(255,255,255,0.4);
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-#mobile-moon-desc {
-  font-size: 0.95rem;
-  color: #616161;
-  margin: 0 0 1.5rem 0;
-  line-height: 1.5;
-}
-.mobile-explore-btn {
-  background: #111;
-  color: #fff;
-  text-align: center;
-  padding: 1rem;
-  border-radius: 100px;
-  text-decoration: none;
-  font-weight: 500;
-  display: block;
-  width: 100%;
-}
-
 @media (max-width: 768px) {
   .space-main {
     height: 100svh;
@@ -1335,10 +693,6 @@ footer {
     inset: 0;
     width: 100%;
     height: 100%;
-  }
-  /* Hide desktop hover popup on mobile */
-  .moon-popup {
-    display: none !important;
   }
   /* Hide 2D card list — keep only 3D interaction */
   #mobile-planet-list {
@@ -1354,10 +708,6 @@ footer {
   .hero-bio-wrap {
     padding: 0 1rem;
   }
-  /* Galaxy back button higher on mobile */
-  .galaxy-back-btn {
-    bottom: 7rem;
-  }
   /* Footer hidden on mobile */
   footer {
     display: none;
@@ -1371,57 +721,10 @@ footer {
     font-size: 0.75rem;
     padding: 0.25rem 0.5rem;
   }
-  .webgl-label--moon {
-    font-size: 0.65rem;
-    padding: 0.2rem 0.4rem;
-  }
 }
 @media (min-width: 769px) {
   #mobile-planet-list {
     display: none;
-  }
-}
-
-
-/* Floating back button for subpages */
-.floating-back-btn {
-  position: fixed;
-  bottom: 2.5rem;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(255, 255, 255, 0.08);
-  color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  padding: 0.6rem 1.5rem;
-  border-radius: 100px;
-  font-family: inherit;
-  font-size: 0.9rem;
-  cursor: pointer;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  z-index: 999;
-  transition: all 0.3s ease;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  animation: fadeInSlideUp 0.6s ease forwards;
-}
-
-@keyframes fadeInSlideUp {
-  from { opacity: 0; transform: translate(-50%, 20px); }
-  to { opacity: 1; transform: translate(-50%, 0); }
-}
-
-.floating-back-btn:hover {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 255, 255, 0.3);
-  transform: translateX(-50%) scale(1.05);
-}
-
-@media (max-width: 768px) {
-  .floating-back-btn {
-    bottom: 2rem;
   }
 }
 body:not(.assets-loaded) .webgl-label { opacity: 0 !important; pointer-events: none !important; }

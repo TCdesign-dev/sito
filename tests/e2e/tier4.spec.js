@@ -1,138 +1,97 @@
 const { test, expect } = require('@playwright/test');
+const {
+  sampleCategory, sampleProject, projectsIn,
+  blockFonts, openGalaxy, clickLabel,
+} = require('./helpers');
 
 test.describe('Tier 4: Real-World Application Scenarios', () => {
 
+  test.beforeEach(async ({ page }) => { await blockFonts(page); });
+
   test('F4-Scenario-1: Full Desktop Navigation Journey', async ({ page }) => {
-    // 1. Load the main page with intro sequence
+    test.skip(!sampleProject, 'projects.json has no project with a page');
+
+    // 1. Land on the site and sit through the intro
     await page.goto('/');
     const intro = page.locator('#intro-screen');
     await expect(intro).toBeAttached();
-    
-    // 2. Wait for intro to dismiss and UI to reveal
     await expect(intro).not.toBeAttached({ timeout: 12000 });
     const header = page.locator('#space-header');
     await expect(header).toHaveClass(/reveal-header/, { timeout: 12000 });
-    
-    // 3. Click a category planet label (e.g. Design)
-    const categoryLabel = page.locator('#labels-container .webgl-label:has-text("Design")');
-    await expect(categoryLabel).toBeVisible();
-    await categoryLabel.click({ force: true });
-    
-    // 4. Click a project moon label (e.g. Compact Security Camera)
-    const moonLabel = page.locator('#labels-container .webgl-label--moon:has-text("Compact Security Camera")');
-    await expect(moonLabel).toBeVisible({ timeout: 5000 });
-    await moonLabel.click({ force: true });
-    
-    // 5. Verify navigation to project details page
-    await page.waitForURL(/\/project\.html\?id=compact-security-camera/);
-    expect(page.url()).toContain('project.html?id=compact-security-camera');
-    
-    // 6. Click back button in project detail to return to Galaxy
-    const projectBackLink = page.locator('a.project-back');
-    await expect(projectBackLink).toBeVisible();
-    await projectBackLink.click();
-    
-    // 7. Verify we are back on index.html with skipIntro enabled
-    await page.waitForURL(/\/index\.html\?skipIntro=true/);
-    await expect(header).toHaveClass(/reveal-header/);
+
+    // 2. Click the category planet -> its list page
+    await clickLabel(page, sampleCategory);
+    await page.waitForURL(/category\.html\?cat=/);
+    await expect(page.locator('#category-title')).toHaveText(sampleCategory);
+
+    // 3. Open a project from the list
+    await page.locator(`.exploration-card:has-text("${sampleProject.name}")`).first().click();
+    await page.waitForURL(new RegExp(`project\\.html\\?id=${sampleProject.id}`));
+    await expect(page.locator('h1.project-title')).toHaveText(sampleProject.name);
+
+    // 4. Back link returns to the category list
+    await page.locator('a.project-back').click();
+    await page.waitForURL(/category\.html\?cat=/);
+    await expect(page.locator('#category-title')).toHaveText(sampleCategory);
+
+    // 5. And from there back to the galaxy
+    await page.locator('a.project-back').click();
+    await page.waitForURL(/skipIntro=true/);
+    await expect(page.locator('#webgl-canvas')).toBeVisible();
   });
 
-  test('F4-Scenario-2: Full Mobile Interaction Journey', async ({ page }) => {
-    await page.setViewportSize({ width: 700, height: 800 });
-    await page.goto('/?skipIntro=true');
-    
-    // 1. Enter category system
-    const categoryLabel = page.locator('#labels-container .webgl-label:has-text("Design")');
-    await expect(categoryLabel).toBeVisible();
-    await categoryLabel.click({ force: true });
-    
-    // 2. Click a moon to open bottom sheet
-    const moonLabel = page.locator('#labels-container .webgl-label--moon:has-text("Compact Security Camera")');
-    await expect(moonLabel).toBeVisible({ timeout: 5000 });
-    await moonLabel.click({ force: true });
-    
-    // 3. Verify mobile bottom sheet and category title are visible
-    const popup = page.locator('#mobile-moon-popup');
-    const categoryTitle = page.locator('#mobile-category-title');
-    await expect(popup).toHaveClass(/visible/);
-    await expect(categoryTitle).toHaveClass(/visible/);
-    await expect(page.locator('#mobile-moon-title')).toHaveText('Compact Security Camera');
-    
-    // 4. Click close button on bottom sheet
-    await page.locator('#mobile-close-btn').click();
-    await expect(popup).not.toHaveClass(/visible/);
-    await expect(categoryTitle).not.toHaveClass(/visible/);
-    
-    // 5. Click back button to return to galaxy
-    const backBtn = page.locator('#galaxy-back-btn');
-    await expect(backBtn).toBeVisible();
-    await backBtn.click();
-    await expect(backBtn).not.toHaveClass(/visible/);
+  test('F4-Scenario-2: Full Mobile Navigation Journey', async ({ page }) => {
+    test.skip(!sampleProject, 'projects.json has no project with a page');
+    await page.setViewportSize({ width: 390, height: 800 });
+
+    await openGalaxy(page);
+    await clickLabel(page, sampleCategory);
+    await page.waitForURL(/category\.html\?cat=/);
+
+    const cards = page.locator('.exploration-card');
+    await expect(cards).toHaveCount(projectsIn(sampleCategory).length);
+
+    await page.locator(`.exploration-card:has-text("${sampleProject.name}")`).first().click();
+    await page.waitForURL(new RegExp(`project\\.html\\?id=${sampleProject.id}`));
+    await expect(page.locator('h1.project-title')).toHaveText(sampleProject.name);
   });
 
-  test('F4-Scenario-3: Multi-orientation Resize Stability', async ({ page }) => {
-    // Start in mobile portrait
+  test('F4-Scenario-3: Explorations journey through the Voyager', async ({ page }) => {
+    const explorations = projectsIn('Explorations');
+    test.skip(!explorations.length, 'projects.json has no explorations');
+
+    await openGalaxy(page);
+    await clickLabel(page, 'Explorations');
+    await page.waitForURL(/explorations/);
+
+    // The live server rewrites /explorations; the bare test server does not,
+    // so load the file directly to check the list itself.
+    await page.goto('/explorations.html');
+    await expect(page.locator('.exploration-card')).toHaveCount(explorations.length);
+  });
+
+  test('F4-Scenario-4: Multi-orientation Resize Stability', async ({ page }) => {
     await page.setViewportSize({ width: 700, height: 800 });
-    await page.goto('/?skipIntro=true');
-    
-    // Open system view
-    const categoryLabel = page.locator('#labels-container .webgl-label:not(.webgl-label--moon)').first();
-    await expect(categoryLabel).toBeVisible();
-    await categoryLabel.click({ force: true });
-    
-    // Rotate to landscape (width > 768px resolves to desktop behavior)
+    await openGalaxy(page);
+
     await page.setViewportSize({ width: 800, height: 600 });
     await page.waitForTimeout(200);
-    
-    // Verify galaxy back button is still visible
-    const backBtn = page.locator('#galaxy-back-btn');
-    await expect(backBtn).toHaveClass(/visible/);
-    
-    // Rotate back to portrait
+    await expect(page.locator('#webgl-canvas')).toBeVisible();
+    await expect(page.locator('#labels-container .webgl-label').first()).toBeVisible();
+
     await page.setViewportSize({ width: 700, height: 800 });
     await page.waitForTimeout(200);
-    await expect(backBtn).toHaveClass(/visible/);
+    await expect(page.locator('#webgl-canvas')).toBeVisible();
+    await expect(page.locator('#labels-container .webgl-label').first()).toBeVisible();
   });
 
-  test('F4-Scenario-4: Rapid/Abusive User Interactions', async ({ page }) => {
-    await page.goto('/?skipIntro=true');
-    
-    // Double click or spam click on category label rapidly
-    const categoryLabel = page.locator('#labels-container .webgl-label:not(.webgl-label--moon)').first();
-    await expect(categoryLabel).toBeVisible();
-    await categoryLabel.click({ force: true });
-    await categoryLabel.click({ force: true });
-    await categoryLabel.click({ force: true });
-    
-    // Wait and verify we entered system view correctly
-    const backBtn = page.locator('#galaxy-back-btn');
-    await expect(backBtn).toHaveClass(/visible/, { timeout: 5000 });
-    
-    // Spam click back button
-    await backBtn.click();
-    await backBtn.click();
-    await backBtn.click();
-    
-    // Verify we returned to galaxy view correctly
-    await expect(backBtn).not.toHaveClass(/visible/, { timeout: 5000 });
-  });
-
-  test('F4-Scenario-5: Invalid Route / Error Redirection', async ({ page }) => {
-    // Directly navigate to project.html with invalid ID
+  test('F4-Scenario-5: Invalid routes redirect to /404', async ({ page }) => {
     await page.goto('/project.html?id=nonexistent-project');
-    
-    // Verify error UI is displayed
-    const title = page.locator('h1.project-title');
-    await expect(title).toHaveText('Project not found');
-    
-    // Click "Projects" back link
-    const backLink = page.locator('a.project-back');
-    await expect(backLink).toBeVisible();
-    await backLink.click();
-    
-    // Verify redirection back to a safe route (projects.html)
-    await page.waitForURL(/\/projects\.html/);
-    expect(page.url()).toContain('projects.html');
+    await page.waitForURL(/\/404/);
+
+    await page.goto('/category.html?cat=nonexistent-category');
+    await page.waitForURL(/\/404/);
+    expect(new URL(page.url()).pathname).toBe('/404');
   });
 
 });

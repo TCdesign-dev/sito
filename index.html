@@ -72,36 +72,15 @@
 
   <!-- Solar system -->
   <main class="space-main" role="main">
-    
-    <!-- Controls (Hidden initially) -->
-    <button id="galaxy-back-btn" class="galaxy-back-btn" aria-label="Back to Galaxy">
-      Back to Galaxy
-    </button>
-    
-    <div id="mobile-category-title" class="mobile-category-title"></div>
 
     <div class="solar-system" id="solar-system" aria-hidden="true">
       <!-- ThreeJS renders here -->
     </div>
-    
+
     <!-- Screen Reader access to 3D Solar System -->
     <div id="sr-planet-list" class="sr-only" aria-live="polite"></div>
 
     <div id="mobile-planet-list" class="mobile-planet-list"></div>
-
-    <!-- Mobile Bottom Sheet Popup -->
-    <div id="mobile-moon-popup" class="mobile-moon-popup" role="dialog" aria-modal="true" aria-labelledby="mobile-moon-title" aria-hidden="true">
-      <button id="mobile-close-btn" class="mobile-close-btn" aria-label="Close">✕</button>
-      <div class="mobile-moon-popup-content">
-        <img id="mobile-moon-img" src="" alt="preview" />
-        <div class="mobile-moon-header">
-          <h3 id="mobile-moon-title"></h3>
-          <span id="mobile-moon-year" class="mobile-moon-year"></span>
-        </div>
-        <p id="mobile-moon-desc"></p>
-        <a href="#" id="mobile-explore-btn" class="mobile-explore-btn">Explore project</a>
-      </div>
-    </div>
   </main>
 
   <!-- Footer -->
@@ -115,11 +94,11 @@
     </div>
   </footer>
 
-  <!-- Three.js & TWEEN for WebGL 3D -->
-  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+  <!-- Three.js & TWEEN for WebGL 3D (vendored — no CDN dependency) -->
+  <script defer src="/assets/vendor/three-r128.min.js"></script>
+  <script defer src="/assets/vendor/orbit-controls-r128.js"></script>
+  <script defer src="/assets/vendor/tween-18.6.4.js"></script>
+  <script defer src="/assets/vendor/gltf-loader-r128.js"></script>
 
   <script defer src="/main.js?v=2"></script>
 </body>
